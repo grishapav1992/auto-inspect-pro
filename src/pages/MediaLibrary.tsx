@@ -16,7 +16,6 @@ const MediaLibrary = () => {
   const [filterSection, setFilterSection] = useState<InspectionSection | 'all'>('all');
   const [showAssignSheet, setShowAssignSheet] = useState(false);
 
-  // Set active on mount
   useState(() => { if (id) setActiveInspection(id); });
 
   const filteredMedia = useMemo(() => {
@@ -93,17 +92,16 @@ const MediaLibrary = () => {
           <button onClick={() => navigate(`/inspection/${id}`)} className="p-2 -ml-2 text-foreground">
             <ArrowLeft className="w-5 h-5" />
           </button>
-          <h1 className="font-semibold text-foreground flex-1">Media Library</h1>
-          <span className="text-sm text-muted-foreground">{inspection.media.length} items</span>
+          <h1 className="font-semibold text-foreground flex-1">Медиатека</h1>
+          <span className="text-sm text-muted-foreground">{inspection.media.length} файлов</span>
         </div>
 
-        {/* Search & filter */}
         <div className="mt-3 flex gap-2">
           <div className="flex-1 relative">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
             <input
               className="w-full bg-secondary rounded-xl pl-9 pr-3 py-2.5 text-sm text-foreground placeholder:text-muted-foreground outline-none"
-              placeholder="Search by note, part..."
+              placeholder="Поиск по заметке, детали..."
               value={searchQuery}
               onChange={e => setSearchQuery(e.target.value)}
             />
@@ -113,7 +111,7 @@ const MediaLibrary = () => {
             value={filterSection}
             onChange={e => setFilterSection(e.target.value as InspectionSection | 'all')}
           >
-            <option value="all">All</option>
+            <option value="all">Все</option>
             {(Object.keys(SECTION_LABELS) as InspectionSection[]).map(s => (
               <option key={s} value={s}>{SECTION_LABELS[s]}</option>
             ))}
@@ -124,9 +122,9 @@ const MediaLibrary = () => {
       {/* Select all / upload */}
       <div className="px-4 py-3 flex items-center justify-between">
         <button className="text-sm font-medium text-foreground" onClick={selectAll}>
-          {selectedIds.size === filteredMedia.length && filteredMedia.length > 0 ? 'Deselect all' : 'Select all'}
+          {selectedIds.size === filteredMedia.length && filteredMedia.length > 0 ? 'Снять выделение' : 'Выбрать все'}
         </button>
-        <Button size="sm" variant="outline" onClick={handleUpload}>Upload photos</Button>
+        <Button size="sm" variant="outline" onClick={handleUpload}>Загрузить фото</Button>
       </div>
 
       {/* Grid */}
@@ -135,8 +133,8 @@ const MediaLibrary = () => {
           <div className="w-16 h-16 rounded-2xl bg-secondary flex items-center justify-center">
             <Filter className="w-8 h-8 text-muted-foreground" />
           </div>
-          <p className="text-muted-foreground">No photos yet. Upload or take some photos.</p>
-          <Button onClick={handleUpload}>Upload photos</Button>
+          <p className="text-muted-foreground">Фото пока нет. Загрузите или сделайте снимки.</p>
+          <Button onClick={handleUpload}>Загрузить фото</Button>
         </div>
       ) : (
         <div className="px-4 grid grid-cols-3 gap-1.5">
@@ -154,7 +152,6 @@ const MediaLibrary = () => {
                     <Check className="w-3.5 h-3.5 text-primary-foreground" />
                   </div>
                 )}
-                {/* Tags */}
                 <div className="absolute bottom-0 left-0 right-0 p-1.5 flex flex-wrap gap-0.5">
                   {media.section && (
                     <span className="text-[9px] bg-primary/80 text-primary-foreground px-1.5 py-0.5 rounded-md">
@@ -177,10 +174,10 @@ const MediaLibrary = () => {
       {selectedIds.size > 0 && (
         <div className="fixed bottom-0 left-0 right-0 bg-card border-t border-border p-4 flex gap-2 z-20">
           <Button size="sm" className="flex-1" onClick={() => setShowAssignSheet(true)}>
-            <Tag className="w-4 h-4" /> Assign ({selectedIds.size})
+            <Tag className="w-4 h-4" /> Назначить ({selectedIds.size})
           </Button>
           <Button size="sm" variant="destructive" onClick={handleDeleteSelected}>
-            <X className="w-4 h-4" /> Delete
+            <X className="w-4 h-4" /> Удалить
           </Button>
         </div>
       )}
@@ -189,7 +186,7 @@ const MediaLibrary = () => {
       {showAssignSheet && (
         <div className="fixed inset-0 bg-foreground/30 z-30 flex items-end" onClick={() => setShowAssignSheet(false)}>
           <div className="bg-card w-full rounded-t-3xl p-6 max-h-[70vh] overflow-y-auto" onClick={e => e.stopPropagation()}>
-            <h3 className="font-semibold text-foreground text-lg mb-4">Assign to section</h3>
+            <h3 className="font-semibold text-foreground text-lg mb-4">Назначить раздел</h3>
             <div className="flex flex-col gap-2">
               {(Object.keys(SECTION_LABELS) as InspectionSection[]).map(s => (
                 <button
@@ -201,7 +198,7 @@ const MediaLibrary = () => {
                 </button>
               ))}
             </div>
-            <Button variant="ghost" className="w-full mt-4" onClick={() => setShowAssignSheet(false)}>Cancel</Button>
+            <Button variant="ghost" className="w-full mt-4" onClick={() => setShowAssignSheet(false)}>Отмена</Button>
           </div>
         </div>
       )}

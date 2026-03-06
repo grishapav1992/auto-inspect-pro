@@ -31,17 +31,17 @@ const Index = () => {
             <ClipboardList className="w-12 h-12 text-muted-foreground" />
           </div>
           <div>
-            <h1 className="text-2xl font-bold text-foreground mb-2">My Inspections</h1>
-            <p className="text-muted-foreground text-base">No inspection reports yet.</p>
+            <h1 className="text-2xl font-bold text-foreground mb-2">Мои осмотры</h1>
+            <p className="text-muted-foreground text-base">Отчётов об осмотрах пока нет.</p>
           </div>
           <div className="flex flex-col gap-3 w-full">
             <Button size="xl" onClick={handleCreate} className="w-full">
               <Plus className="w-5 h-5" />
-              Create new inspection
+              Создать новый осмотр
             </Button>
             <Button variant="outline" size="lg" onClick={handleImport} className="w-full">
               <ImagePlus className="w-5 h-5" />
-              Import photos from gallery
+              Импорт фото из галереи
             </Button>
           </div>
         </div>
@@ -53,7 +53,7 @@ const Index = () => {
     <div className="min-h-screen bg-background">
       <div className="sticky top-0 bg-background/95 backdrop-blur-sm border-b border-border z-10 px-4 py-4">
         <div className="flex items-center justify-between">
-          <h1 className="text-2xl font-bold text-foreground">My Inspections</h1>
+          <h1 className="text-2xl font-bold text-foreground">Мои осмотры</h1>
           <Button size="icon" onClick={handleCreate}>
             <Plus className="w-5 h-5" />
           </Button>
@@ -63,7 +63,7 @@ const Index = () => {
         {inspections.map(insp => {
           const carLabel = insp.carInfo.make && insp.carInfo.model
             ? `${insp.carInfo.make} ${insp.carInfo.model} ${insp.carInfo.year || ''}`
-            : 'Car not specified';
+            : 'Авто не указано';
           return (
             <div
               key={insp.id}
@@ -80,7 +80,7 @@ const Index = () => {
               <div className="flex-1 min-w-0">
                 <p className="font-semibold text-foreground truncate">{carLabel}</p>
                 <p className="text-sm text-muted-foreground">
-                  {insp.media.length} photos · {new Date(insp.createdAt).toLocaleDateString()}
+                  {insp.media.length} фото · {new Date(insp.createdAt).toLocaleDateString('ru-RU')}
                 </p>
               </div>
               <div className="flex items-center gap-2">

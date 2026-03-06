@@ -4,7 +4,7 @@ import { PartStatus } from '@/types/inspection';
 import { Button } from '@/components/ui/button';
 import { ArrowLeft, Camera, ImagePlus } from 'lucide-react';
 
-const STATUSES: PartStatus[] = ['OK', 'Repainted', 'Body filler', 'Replacement', 'Risk'];
+const STATUSES: PartStatus[] = ['OK', 'Перекрашено', 'Шпаклёвка', 'Замена', 'Риск'];
 
 const PartDetail = () => {
   const { id, part } = useParams<{ id: string; part: string }>();
@@ -48,9 +48,9 @@ const PartDetail = () => {
       </div>
 
       <div className="px-4 py-4 flex flex-col gap-5">
-        {/* Status */}
+        {/* Статус */}
         <div>
-          <label className="text-sm font-semibold text-muted-foreground uppercase tracking-wider mb-2 block">Status</label>
+          <label className="text-sm font-semibold text-muted-foreground uppercase tracking-wider mb-2 block">Статус</label>
           <div className="flex flex-wrap gap-2">
             {STATUSES.map(s => (
               <button
@@ -58,7 +58,7 @@ const PartDetail = () => {
                 className={`px-4 py-2.5 rounded-xl text-sm font-medium transition-colors ${
                   partData.status === s
                     ? s === 'OK' ? 'bg-success text-success-foreground' :
-                      s === 'Risk' ? 'bg-destructive text-destructive-foreground' :
+                      s === 'Риск' ? 'bg-destructive text-destructive-foreground' :
                       'bg-primary text-primary-foreground'
                     : 'bg-secondary text-secondary-foreground'
                 }`}
@@ -70,37 +70,37 @@ const PartDetail = () => {
           </div>
         </div>
 
-        {/* Paint thickness */}
+        {/* Толщина ЛКП */}
         <div>
-          <label className="text-sm font-semibold text-muted-foreground uppercase tracking-wider mb-2 block">Paint Thickness</label>
+          <label className="text-sm font-semibold text-muted-foreground uppercase tracking-wider mb-2 block">Толщина ЛКП</label>
           <input
             className="w-full bg-card border border-border rounded-xl px-4 py-3 text-foreground placeholder:text-muted-foreground outline-none focus:ring-2 focus:ring-ring"
-            placeholder="e.g. 120 μm"
+            placeholder="напр. 120 мкм"
             value={partData.paintThickness || ''}
             onChange={e => updateBodyPart(decodedPart, { paintThickness: e.target.value })}
           />
         </div>
 
-        {/* Comment */}
+        {/* Комментарий */}
         <div>
-          <label className="text-sm font-semibold text-muted-foreground uppercase tracking-wider mb-2 block">Comment</label>
+          <label className="text-sm font-semibold text-muted-foreground uppercase tracking-wider mb-2 block">Комментарий</label>
           <textarea
             className="w-full bg-card border border-border rounded-xl px-4 py-3 text-foreground placeholder:text-muted-foreground outline-none focus:ring-2 focus:ring-ring min-h-[100px] resize-none"
-            placeholder="Add notes..."
+            placeholder="Добавить заметки..."
             value={partData.comment || ''}
             onChange={e => updateBodyPart(decodedPart, { comment: e.target.value })}
           />
         </div>
 
-        {/* Photos */}
+        {/* Фото */}
         <div>
-          <label className="text-sm font-semibold text-muted-foreground uppercase tracking-wider mb-2 block">Photos ({partMedia.length})</label>
+          <label className="text-sm font-semibold text-muted-foreground uppercase tracking-wider mb-2 block">Фото ({partMedia.length})</label>
           <div className="flex gap-2 mb-3">
             <Button size="sm" variant="outline" onClick={handleCapture}>
-              <Camera className="w-4 h-4" /> Take photo
+              <Camera className="w-4 h-4" /> Сделать фото
             </Button>
             <Button size="sm" variant="outline" onClick={() => navigate(`/inspection/${id}/media`)}>
-              <ImagePlus className="w-4 h-4" /> Add from library
+              <ImagePlus className="w-4 h-4" /> Из библиотеки
             </Button>
           </div>
           <div className="grid grid-cols-3 gap-1.5">

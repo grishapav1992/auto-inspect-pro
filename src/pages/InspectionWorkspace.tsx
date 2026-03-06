@@ -28,14 +28,14 @@ const InspectionWorkspace = () => {
   if (!inspection) {
     return (
       <div className="flex min-h-screen items-center justify-center bg-background">
-        <p className="text-muted-foreground">Inspection not found.</p>
+        <p className="text-muted-foreground">Осмотр не найден.</p>
       </div>
     );
   }
 
   const carLabel = inspection.carInfo.make && inspection.carInfo.model
     ? `${inspection.carInfo.make} ${inspection.carInfo.model} ${inspection.carInfo.year || ''}`
-    : 'Car not specified';
+    : 'Авто не указано';
 
   const handleCapture = () => {
     const input = document.createElement('input');
@@ -88,7 +88,7 @@ const InspectionWorkspace = () => {
       case 'car-info':
         return !!(inspection.carInfo.make && inspection.carInfo.model);
       case 'legal-check':
-        return inspection.legalChecks.every(c => c.status !== 'Not checked');
+        return inspection.legalChecks.every(c => c.status !== 'Не проверено');
       case 'final-verdict':
         return !!inspection.finalVerdict.verdict;
       default:
@@ -107,7 +107,7 @@ const InspectionWorkspace = () => {
           <div className="flex-1">
             <p className="font-semibold text-foreground">{carLabel}</p>
             <p className="text-xs text-muted-foreground">
-              {inspection.carInfo.inspectionDate || 'No date'} · {inspection.media.length} photos
+              {inspection.carInfo.inspectionDate || 'Нет даты'} · {inspection.media.length} фото
             </p>
           </div>
         </div>
@@ -117,11 +117,11 @@ const InspectionWorkspace = () => {
       <div className="px-4 py-4 grid grid-cols-3 gap-3">
         <Button variant="action" className="flex-col h-auto py-4 gap-2" onClick={handleCapture}>
           <Camera className="w-6 h-6" />
-          <span className="text-xs">Take photo</span>
+          <span className="text-xs">Снять фото</span>
         </Button>
         <Button variant="action" className="flex-col h-auto py-4 gap-2" onClick={handleUpload}>
           <ImagePlus className="w-6 h-6" />
-          <span className="text-xs">Upload</span>
+          <span className="text-xs">Загрузить</span>
         </Button>
         <Button
           variant="action"
@@ -129,7 +129,7 @@ const InspectionWorkspace = () => {
           onClick={() => navigate(`/inspection/${id}/media`)}
         >
           <Images className="w-6 h-6" />
-          <span className="text-xs">Library</span>
+          <span className="text-xs">Библиотека</span>
           {inspection.media.length > 0 && (
             <span className="absolute top-2 right-2 bg-primary text-primary-foreground text-[10px] font-bold rounded-full w-5 h-5 flex items-center justify-center">
               {inspection.media.length}
@@ -140,7 +140,7 @@ const InspectionWorkspace = () => {
 
       {/* Sections */}
       <div className="px-4">
-        <h2 className="text-sm font-semibold text-muted-foreground uppercase tracking-wider mb-3">Sections</h2>
+        <h2 className="text-sm font-semibold text-muted-foreground uppercase tracking-wider mb-3">Разделы</h2>
         <div className="flex flex-col gap-2">
           {(Object.keys(SECTION_LABELS) as InspectionSection[]).map(section => {
             const count = getSectionPhotoCount(section);
@@ -156,7 +156,7 @@ const InspectionWorkspace = () => {
                 </div>
                 <div className="flex-1 min-w-0">
                   <p className="font-medium text-foreground">{SECTION_LABELS[section]}</p>
-                  {count > 0 && <p className="text-xs text-muted-foreground">{count} photos</p>}
+                  {count > 0 && <p className="text-xs text-muted-foreground">{count} фото</p>}
                 </div>
                 <div className="flex items-center gap-2">
                   {complete && (
@@ -179,7 +179,7 @@ const InspectionWorkspace = () => {
           onClick={() => navigate(`/inspection/${id}/report`)}
         >
           <FileCheck className="w-5 h-5" />
-          Preview Report
+          Предпросмотр отчёта
         </Button>
       </div>
     </div>

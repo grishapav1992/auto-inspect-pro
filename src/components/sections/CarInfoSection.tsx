@@ -5,14 +5,14 @@ const CarInfoSection = ({ inspection }: { inspection: Inspection }) => {
   const { updateCarInfo } = useInspectionStore();
 
   const fields = [
-    { key: 'make', label: 'Make', placeholder: 'e.g. Toyota' },
-    { key: 'model', label: 'Model', placeholder: 'e.g. Camry' },
-    { key: 'year', label: 'Year', placeholder: 'e.g. 2020' },
-    { key: 'vin', label: 'VIN', placeholder: 'Vehicle identification number' },
-    { key: 'licensePlate', label: 'License Plate', placeholder: 'e.g. ABC 1234' },
-    { key: 'mileage', label: 'Mileage', placeholder: 'e.g. 45000 km' },
-    { key: 'city', label: 'City', placeholder: 'e.g. Berlin' },
-    { key: 'inspectionDate', label: 'Inspection Date', placeholder: 'YYYY-MM-DD', type: 'date' },
+    { key: 'make', label: 'Марка', placeholder: 'напр. Toyota' },
+    { key: 'model', label: 'Модель', placeholder: 'напр. Camry' },
+    { key: 'year', label: 'Год выпуска', placeholder: 'напр. 2020' },
+    { key: 'vin', label: 'VIN', placeholder: 'Идентификационный номер' },
+    { key: 'licensePlate', label: 'Гос. номер', placeholder: 'напр. А123БВ777' },
+    { key: 'mileage', label: 'Пробег', placeholder: 'напр. 45000 км' },
+    { key: 'city', label: 'Город', placeholder: 'напр. Москва' },
+    { key: 'inspectionDate', label: 'Дата осмотра', placeholder: 'ГГГГ-ММ-ДД', type: 'date' },
   ] as const;
 
   return (
