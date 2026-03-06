@@ -40,8 +40,29 @@ const SectionDetail = () => {
     input.click();
   };
 
+  const unassignedBodyMedia = inspection.media.filter(m => m.section === 'body' && !m.carPart);
+  const unassignedBodyIds = unassignedBodyMedia.map(m => m.id);
+  const unassignedImages = useMediaImages(unassignedBodyIds);
+
   const renderBodySection = () => (
     <div className="flex flex-col gap-2">
+      {unassignedBodyMedia.length > 0 && (
+        <div className="bg-card border border-border rounded-xl p-4 mb-2">
+          <p className="font-medium text-foreground text-sm mb-2">Неназначенные фото ({unassignedBodyMedia.length})</p>
+          <div className="grid grid-cols-4 gap-1.5">
+            {unassignedBodyMedia.map(m => (
+              <div key={m.id} className="aspect-square rounded-lg overflow-hidden">
+                {unassignedImages[m.id] ? (
+                  <img src={unassignedImages[m.id]} alt="" className="w-full h-full object-cover" />
+                ) : (
+                  <div className="w-full h-full bg-secondary" />
+                )}
+              </div>
+            ))}
+          </div>
+          <p className="text-xs text-muted-foreground mt-2">Откройте деталь кузова, чтобы назначить фото.</p>
+        </div>
+      )}
       {BODY_PARTS.map(part => {
         const partPhotos = inspection.media.filter(m => m.section === 'body' && m.carPart === part).length;
         const partData = inspection.bodyParts[part];
