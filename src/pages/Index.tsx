@@ -1,11 +1,17 @@
+import { useMemo } from 'react';
 import { useInspectionStore } from '@/store/useInspectionStore';
 import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
-import { Plus, ImagePlus, ClipboardList, ChevronRight, Trash2 } from 'lucide-react';
+import { Plus, ClipboardList, ChevronRight, Trash2 } from 'lucide-react';
+import { useMediaImages } from '@/hooks/useMediaImages';
 
 const Index = () => {
   const { inspections, createInspection, setActiveInspection, deleteInspection } = useInspectionStore();
   const navigate = useNavigate();
+
+  // Get first media id per inspection for thumbnails
+  const thumbnailIds = useMemo(() => inspections.map(i => i.media[0]?.id).filter(Boolean), [inspections]);
+  const thumbnails = useMediaImages(thumbnailIds);
 
   const handleCreate = () => {
     const id = createInspection();
@@ -15,12 +21,6 @@ const Index = () => {
   const handleOpen = (id: string) => {
     setActiveInspection(id);
     navigate(`/inspection/${id}`);
-  };
-
-  const handleImport = () => {
-    const id = createInspection();
-    setActiveInspection(id);
-    navigate(`/inspection/${id}/media`);
   };
 
   if (inspections.length === 0) {
@@ -58,6 +58,7 @@ const Index = () => {
           const carLabel = insp.carInfo.make && insp.carInfo.model
             ? `${insp.carInfo.make} ${insp.carInfo.model} ${insp.carInfo.year || ''}`
             : 'Авто не указано';
+          const thumbId = insp.media[0]?.id;
           return (
             <div
               key={insp.id}
@@ -65,8 +66,8 @@ const Index = () => {
               onClick={() => handleOpen(insp.id)}
             >
               <div className="w-14 h-14 rounded-xl bg-secondary flex items-center justify-center shrink-0 overflow-hidden">
-                {insp.media[0] ? (
-                  <img src={insp.media[0].dataUrl} alt="" className="w-full h-full object-cover" />
+                {thumbId && thumbnails[thumbId] ? (
+                  <img src={thumbnails[thumbId]} alt="" className="w-full h-full object-cover" />
                 ) : (
                   <ClipboardList className="w-6 h-6 text-muted-foreground" />
                 )}

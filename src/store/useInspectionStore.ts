@@ -1,6 +1,7 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 import { Inspection, MediaItem, CarInfo, BodyPartData, LegalCheckItem, DiagnosticItem, FinalVerdictData, createNewInspection, InspectionSection } from '@/types/inspection';
+import { saveImage, deleteImages as deleteImagesFromDB } from '@/lib/mediaDB';
 
 interface InspectionStore {
   inspections: Inspection[];
@@ -11,7 +12,7 @@ interface InspectionStore {
   deleteInspection: (id: string) => void;
   setActiveInspection: (id: string | null) => void;
   
-  addMedia: (items: MediaItem[]) => void;
+  addMedia: (items: (MediaItem & { dataUrl: string })[]) => Promise<void>;
   updateMedia: (mediaId: string, updates: Partial<MediaItem>) => void;
   removeMedia: (mediaIds: string[]) => void;
   bulkAssignMedia: (mediaIds: string[], updates: Partial<MediaItem>) => void;
@@ -43,20 +44,32 @@ export const useInspectionStore = create<InspectionStore>()(
         return newInspection.id;
       },
       
-      deleteInspection: (id) => set(state => ({
-        inspections: state.inspections.filter(i => i.id !== id),
-        activeInspectionId: state.activeInspectionId === id ? null : state.activeInspectionId,
-      })),
+      deleteInspection: (id) => {
+        const inspection = get().inspections.find(i => i.id === id);
+        if (inspection) {
+          deleteImagesFromDB(inspection.media.map(m => m.id)).catch(console.error);
+        }
+        set(state => ({
+          inspections: state.inspections.filter(i => i.id !== id),
+          activeInspectionId: state.activeInspectionId === id ? null : state.activeInspectionId,
+        }));
+      },
       
       setActiveInspection: (id) => set({ activeInspectionId: id }),
       
-      addMedia: (items) => set(state => ({
-        inspections: state.inspections.map(i =>
-          i.id === state.activeInspectionId
-            ? { ...i, media: [...i.media, ...items] }
-            : i
-        ),
-      })),
+      addMedia: async (items) => {
+        // Save images to IndexedDB first
+        await Promise.all(items.map(item => saveImage(item.id, item.dataUrl)));
+        // Store metadata only (no dataUrl) in zustand
+        const metaItems: MediaItem[] = items.map(({ dataUrl, ...meta }) => meta);
+        set(state => ({
+          inspections: state.inspections.map(i =>
+            i.id === state.activeInspectionId
+              ? { ...i, media: [...i.media, ...metaItems] }
+              : i
+          ),
+        }));
+      },
       
       updateMedia: (mediaId, updates) => set(state => ({
         inspections: state.inspections.map(i =>
@@ -66,13 +79,16 @@ export const useInspectionStore = create<InspectionStore>()(
         ),
       })),
       
-      removeMedia: (mediaIds) => set(state => ({
-        inspections: state.inspections.map(i =>
-          i.id === state.activeInspectionId
-            ? { ...i, media: i.media.filter(m => !mediaIds.includes(m.id)) }
-            : i
-        ),
-      })),
+      removeMedia: (mediaIds) => {
+        deleteImagesFromDB(mediaIds).catch(console.error);
+        set(state => ({
+          inspections: state.inspections.map(i =>
+            i.id === state.activeInspectionId
+              ? { ...i, media: i.media.filter(m => !mediaIds.includes(m.id)) }
+              : i
+          ),
+        }));
+      },
       
       bulkAssignMedia: (mediaIds, updates) => set(state => ({
         inspections: state.inspections.map(i =>

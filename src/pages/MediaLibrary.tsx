@@ -1,9 +1,10 @@
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useInspectionStore } from '@/store/useInspectionStore';
 import { Button } from '@/components/ui/button';
 import { SECTION_LABELS, InspectionSection } from '@/types/inspection';
-import { ArrowLeft, Check, Tag, MessageSquare, X, Search, Filter } from 'lucide-react';
+import { ArrowLeft, Check, Tag, X, Search, Filter } from 'lucide-react';
+import { useMediaImages } from '@/hooks/useMediaImages';
 
 const MediaLibrary = () => {
   const { id } = useParams<{ id: string }>();
@@ -16,7 +17,7 @@ const MediaLibrary = () => {
   const [filterSection, setFilterSection] = useState<InspectionSection | 'all'>('all');
   const [showAssignSheet, setShowAssignSheet] = useState(false);
 
-  useState(() => { if (id) setActiveInspection(id); });
+  useEffect(() => { if (id) setActiveInspection(id); }, [id, setActiveInspection]);
 
   const filteredMedia = useMemo(() => {
     if (!inspection) return [];
@@ -31,6 +32,9 @@ const MediaLibrary = () => {
       return true;
     });
   }, [inspection, filterSection, searchQuery]);
+
+  const mediaIds = useMemo(() => filteredMedia.map(m => m.id), [filteredMedia]);
+  const images = useMediaImages(mediaIds);
 
   if (!inspection) return null;
 
@@ -86,7 +90,6 @@ const MediaLibrary = () => {
 
   return (
     <div className="min-h-screen bg-background pb-32">
-      {/* Header */}
       <div className="sticky top-0 bg-background/95 backdrop-blur-sm border-b border-border z-10 px-4 py-3">
         <div className="flex items-center gap-3">
           <button onClick={() => navigate(`/inspection/${id}`)} className="p-2 -ml-2 text-foreground">
@@ -119,7 +122,6 @@ const MediaLibrary = () => {
         </div>
       </div>
 
-      {/* Select all / upload */}
       <div className="px-4 py-3 flex items-center justify-between">
         <button className="text-sm font-medium text-foreground" onClick={selectAll}>
           {selectedIds.size === filteredMedia.length && filteredMedia.length > 0 ? 'Снять выделение' : 'Выбрать все'}
@@ -127,7 +129,6 @@ const MediaLibrary = () => {
         <Button size="sm" variant="outline" onClick={handleUpload}>Загрузить фото</Button>
       </div>
 
-      {/* Grid */}
       {filteredMedia.length === 0 ? (
         <div className="flex flex-col items-center justify-center py-20 gap-3 text-center px-6">
           <div className="w-16 h-16 rounded-2xl bg-secondary flex items-center justify-center">
@@ -140,13 +141,18 @@ const MediaLibrary = () => {
         <div className="px-4 grid grid-cols-3 gap-1.5">
           {filteredMedia.map(media => {
             const selected = selectedIds.has(media.id);
+            const src = images[media.id];
             return (
               <div
                 key={media.id}
                 className={`relative aspect-square rounded-xl overflow-hidden cursor-pointer ${selected ? 'ring-2 ring-primary ring-offset-2' : ''}`}
                 onClick={() => toggleSelect(media.id)}
               >
-                <img src={media.dataUrl} alt="" className="w-full h-full object-cover" />
+                {src ? (
+                  <img src={src} alt="" className="w-full h-full object-cover" />
+                ) : (
+                  <div className="w-full h-full bg-secondary" />
+                )}
                 {selected && (
                   <div className="absolute top-1.5 right-1.5 w-6 h-6 rounded-full bg-primary flex items-center justify-center">
                     <Check className="w-3.5 h-3.5 text-primary-foreground" />
@@ -159,7 +165,7 @@ const MediaLibrary = () => {
                     </span>
                   )}
                   {media.carPart && (
-                    <span className="text-[9px] bg-info/80 text-info-foreground px-1.5 py-0.5 rounded-md">
+                    <span className="text-[9px] bg-accent/80 text-accent-foreground px-1.5 py-0.5 rounded-md">
                       {media.carPart}
                     </span>
                   )}
@@ -170,7 +176,6 @@ const MediaLibrary = () => {
         </div>
       )}
 
-      {/* Bottom action bar */}
       {selectedIds.size > 0 && (
         <div className="fixed bottom-0 left-0 right-0 bg-card border-t border-border p-4 flex gap-2 z-20">
           <Button size="sm" className="flex-1" onClick={() => setShowAssignSheet(true)}>
@@ -182,7 +187,6 @@ const MediaLibrary = () => {
         </div>
       )}
 
-      {/* Assign sheet */}
       {showAssignSheet && (
         <div className="fixed inset-0 bg-foreground/30 z-30 flex items-end" onClick={() => setShowAssignSheet(false)}>
           <div className="bg-card w-full rounded-t-3xl p-6 max-h-[70vh] overflow-y-auto" onClick={e => e.stopPropagation()}>

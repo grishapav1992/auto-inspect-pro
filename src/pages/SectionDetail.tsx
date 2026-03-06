@@ -1,3 +1,4 @@
+import { useMemo } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useInspectionStore } from '@/store/useInspectionStore';
 import { InspectionSection, SECTION_LABELS, BODY_PARTS } from '@/types/inspection';
@@ -7,6 +8,7 @@ import CarInfoSection from '@/components/sections/CarInfoSection';
 import LegalCheckSection from '@/components/sections/LegalCheckSection';
 import DiagnosticsSection from '@/components/sections/DiagnosticsSection';
 import FinalVerdictSection from '@/components/sections/FinalVerdictSection';
+import { useMediaImages } from '@/hooks/useMediaImages';
 
 const SectionDetail = () => {
   const { id, section } = useParams<{ id: string; section: InspectionSection }>();
@@ -17,6 +19,8 @@ const SectionDetail = () => {
   if (!inspection || !section) return null;
 
   const sectionMedia = inspection.media.filter(m => m.section === section);
+  const mediaIds = sectionMedia.map(m => m.id);
+  const images = useMediaImages(mediaIds);
 
   const handleCapture = () => {
     const input = document.createElement('input');
@@ -80,7 +84,11 @@ const SectionDetail = () => {
             <div className="grid grid-cols-3 gap-1.5">
               {sectionMedia.map(m => (
                 <div key={m.id} className="aspect-square rounded-xl overflow-hidden">
-                  <img src={m.dataUrl} alt="" className="w-full h-full object-cover" />
+                  {images[m.id] ? (
+                    <img src={images[m.id]} alt="" className="w-full h-full object-cover" />
+                  ) : (
+                    <div className="w-full h-full bg-secondary" />
+                  )}
                 </div>
               ))}
             </div>

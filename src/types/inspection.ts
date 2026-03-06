@@ -36,7 +36,6 @@ export type RiskLevel = 'Низкий' | 'Средний' | 'Высокий';
 
 export interface MediaItem {
   id: string;
-  dataUrl: string;
   section?: InspectionSection;
   carPart?: string;
   note?: string;
