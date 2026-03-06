@@ -3,7 +3,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { useInspectionStore } from '@/store/useInspectionStore';
 import { InspectionSection, SECTION_LABELS, BODY_PARTS } from '@/types/inspection';
 import { Button } from '@/components/ui/button';
-import { ArrowLeft, ChevronRight, Camera, ImagePlus, Check, MapPin } from 'lucide-react';
+import { ArrowLeft, ChevronRight, Camera, ImagePlus, Check, MapPin, Save } from 'lucide-react';
 import CarInfoSection from '@/components/sections/CarInfoSection';
 import LegalCheckSection from '@/components/sections/LegalCheckSection';
 import DiagnosticsSection from '@/components/sections/DiagnosticsSection';
