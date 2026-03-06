@@ -34,16 +34,10 @@ const Index = () => {
             <h1 className="text-2xl font-bold text-foreground mb-2">Мои осмотры</h1>
             <p className="text-muted-foreground text-base">Отчётов об осмотрах пока нет.</p>
           </div>
-          <div className="flex flex-col gap-3 w-full">
-            <Button size="xl" onClick={handleCreate} className="w-full">
-              <Plus className="w-5 h-5" />
-              Создать новый осмотр
-            </Button>
-            <Button variant="outline" size="lg" onClick={handleImport} className="w-full">
-              <ImagePlus className="w-5 h-5" />
-              Импорт фото из галереи
-            </Button>
-          </div>
+          <Button size="xl" onClick={handleCreate} className="w-full">
+            <Plus className="w-5 h-5" />
+            Создать новый осмотр
+          </Button>
         </div>
       </div>
     );
