@@ -114,11 +114,7 @@ const InspectionWorkspace = () => {
       </div>
 
       {/* Action buttons */}
-      <div className="px-4 py-4 grid grid-cols-3 gap-3">
-        <Button variant="action" className="flex-col h-auto py-4 gap-2" onClick={handleCapture}>
-          <Camera className="w-6 h-6" />
-          <span className="text-xs">Снять фото</span>
-        </Button>
+      <div className="px-4 py-4 grid grid-cols-2 gap-3">
         <Button variant="action" className="flex-col h-auto py-4 gap-2" onClick={handleUpload}>
           <ImagePlus className="w-6 h-6" />
           <span className="text-xs">Загрузить</span>
