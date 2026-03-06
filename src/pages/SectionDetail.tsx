@@ -208,6 +208,14 @@ const SectionDetail = () => {
       <div className="px-4">
         {renderContent()}
       </div>
+
+      {/* Save button */}
+      <div className="sticky bottom-0 bg-background/95 backdrop-blur-sm border-t border-border px-4 py-4 mt-6">
+        <Button size="lg" className="w-full" onClick={() => navigate(`/inspection/${id}`)}>
+          <Save className="w-5 h-5" />
+          Сохранить
+        </Button>
+      </div>
     </div>
   );
 };
