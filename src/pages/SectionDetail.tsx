@@ -3,7 +3,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { useInspectionStore } from '@/store/useInspectionStore';
 import { InspectionSection, SECTION_LABELS, BODY_PARTS } from '@/types/inspection';
 import { Button } from '@/components/ui/button';
-import { ArrowLeft, ChevronRight, Camera, ImagePlus, Check, MapPin } from 'lucide-react';
+import { ArrowLeft, ChevronRight, Camera, ImagePlus, Check, MapPin, Save } from 'lucide-react';
 import CarInfoSection from '@/components/sections/CarInfoSection';
 import LegalCheckSection from '@/components/sections/LegalCheckSection';
 import DiagnosticsSection from '@/components/sections/DiagnosticsSection';
@@ -207,6 +207,14 @@ const SectionDetail = () => {
 
       <div className="px-4">
         {renderContent()}
+      </div>
+
+      {/* Save button */}
+      <div className="sticky bottom-0 bg-background/95 backdrop-blur-sm border-t border-border px-4 py-4 mt-6">
+        <Button size="lg" className="w-full" onClick={() => navigate(`/inspection/${id}`)}>
+          <Save className="w-5 h-5" />
+          Сохранить
+        </Button>
       </div>
     </div>
   );
