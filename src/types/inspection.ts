@@ -8,13 +8,13 @@ export type InspectionSection =
   | 'final-verdict';
 
 export const SECTION_LABELS: Record<InspectionSection, string> = {
-  'car-info': 'Car Info',
-  'legal-check': 'Legal Check',
-  'body': 'Body',
-  'interior': 'Interior',
-  'technical': 'Technical',
-  'diagnostics': 'Diagnostics',
-  'final-verdict': 'Final Verdict',
+  'car-info': 'Информация об авто',
+  'legal-check': 'Юридическая проверка',
+  'body': 'Кузов',
+  'interior': 'Салон',
+  'technical': 'Техническая часть',
+  'diagnostics': 'Диагностика',
+  'final-verdict': 'Итоговый вердикт',
 };
 
 export const BODY_PARTS = [
