@@ -67,8 +67,8 @@ const InspectionWorkspace = () => {
       const files = Array.from((e.target as HTMLInputElement).files || []);
       files.forEach(file => {
         const reader = new FileReader();
-        reader.onload = () => {
-          addMedia([{
+        reader.onload = async () => {
+          await addMedia([{
             id: crypto.randomUUID(),
             dataUrl: reader.result as string,
             createdAt: new Date().toISOString(),
