@@ -1,9 +1,9 @@
-import { useMemo } from 'react';
+import { useState, useMemo } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useInspectionStore } from '@/store/useInspectionStore';
 import { InspectionSection, SECTION_LABELS, BODY_PARTS } from '@/types/inspection';
 import { Button } from '@/components/ui/button';
-import { ArrowLeft, ChevronRight, Camera, ImagePlus } from 'lucide-react';
+import { ArrowLeft, ChevronRight, Camera, ImagePlus, Check, MapPin } from 'lucide-react';
 import CarInfoSection from '@/components/sections/CarInfoSection';
 import LegalCheckSection from '@/components/sections/LegalCheckSection';
 import DiagnosticsSection from '@/components/sections/DiagnosticsSection';
@@ -13,8 +13,11 @@ import { useMediaImages } from '@/hooks/useMediaImages';
 const SectionDetail = () => {
   const { id, section } = useParams<{ id: string; section: InspectionSection }>();
   const navigate = useNavigate();
-  const { inspections, setActiveInspection, addMedia } = useInspectionStore();
+  const { inspections, setActiveInspection, addMedia, updateMedia } = useInspectionStore();
   const inspection = inspections.find(i => i.id === id);
+
+  const [selectedUnassigned, setSelectedUnassigned] = useState<Set<string>>(new Set());
+  const [showPartPicker, setShowPartPicker] = useState(false);
 
   if (!inspection || !section) return null;
 
@@ -44,23 +47,63 @@ const SectionDetail = () => {
   const unassignedBodyIds = unassignedBodyMedia.map(m => m.id);
   const unassignedImages = useMediaImages(unassignedBodyIds);
 
+  const toggleUnassigned = (mediaId: string) => {
+    setSelectedUnassigned(prev => {
+      const next = new Set(prev);
+      if (next.has(mediaId)) next.delete(mediaId);
+      else next.add(mediaId);
+      return next;
+    });
+  };
+
+  const handleAssignToPart = (part: string) => {
+    selectedUnassigned.forEach(mediaId => {
+      updateMedia(mediaId, { carPart: part });
+    });
+    setSelectedUnassigned(new Set());
+    setShowPartPicker(false);
+  };
+
   const renderBodySection = () => (
     <div className="flex flex-col gap-2">
       {unassignedBodyMedia.length > 0 && (
         <div className="bg-card border border-border rounded-xl p-4 mb-2">
-          <p className="font-medium text-foreground text-sm mb-2">Неназначенные фото ({unassignedBodyMedia.length})</p>
-          <div className="grid grid-cols-4 gap-1.5">
-            {unassignedBodyMedia.map(m => (
-              <div key={m.id} className="aspect-square rounded-lg overflow-hidden">
-                {unassignedImages[m.id] ? (
-                  <img src={unassignedImages[m.id]} alt="" className="w-full h-full object-cover" />
-                ) : (
-                  <div className="w-full h-full bg-secondary" />
-                )}
-              </div>
-            ))}
+          <div className="flex items-center justify-between mb-2">
+            <p className="font-medium text-foreground text-sm">Неназначенные фото ({unassignedBodyMedia.length})</p>
+            {selectedUnassigned.size > 0 && (
+              <Button size="sm" variant="default" className="h-7 text-xs" onClick={() => setShowPartPicker(true)}>
+                <MapPin className="w-3 h-3" /> Назначить ({selectedUnassigned.size})
+              </Button>
+            )}
           </div>
-          <p className="text-xs text-muted-foreground mt-2">Откройте деталь кузова, чтобы назначить фото.</p>
+          <div className="grid grid-cols-4 gap-1.5">
+            {unassignedBodyMedia.map(m => {
+              const selected = selectedUnassigned.has(m.id);
+              return (
+                <div
+                  key={m.id}
+                  className={`relative aspect-square rounded-lg overflow-hidden cursor-pointer ${selected ? 'ring-2 ring-primary ring-offset-1' : ''}`}
+                  onClick={() => toggleUnassigned(m.id)}
+                >
+                  {unassignedImages[m.id] ? (
+                    <img src={unassignedImages[m.id]} alt="" className="w-full h-full object-cover" />
+                  ) : (
+                    <div className="w-full h-full bg-secondary" />
+                  )}
+                  {selected && (
+                    <div className="absolute top-1 right-1 w-5 h-5 rounded-full bg-primary flex items-center justify-center">
+                      <Check className="w-3 h-3 text-primary-foreground" />
+                    </div>
+                  )}
+                </div>
+              );
+            })}
+          </div>
+          <p className="text-xs text-muted-foreground mt-2">
+            {selectedUnassigned.size > 0
+              ? 'Нажмите «Назначить», чтобы привязать к детали кузова'
+              : 'Нажмите на фото, чтобы выбрать и назначить на деталь'}
+          </p>
         </div>
       )}
       {BODY_PARTS.map(part => {
@@ -89,6 +132,27 @@ const SectionDetail = () => {
           </button>
         );
       })}
+
+      {/* Part picker sheet */}
+      {showPartPicker && (
+        <div className="fixed inset-0 bg-foreground/30 z-30 flex items-end" onClick={() => setShowPartPicker(false)}>
+          <div className="bg-card w-full rounded-t-3xl p-6 max-h-[70vh] overflow-y-auto" onClick={e => e.stopPropagation()}>
+            <h3 className="font-semibold text-foreground text-lg mb-4">Назначить на деталь</h3>
+            <div className="flex flex-col gap-2">
+              {BODY_PARTS.map(part => (
+                <button
+                  key={part}
+                  className="p-4 rounded-xl bg-secondary text-foreground text-left font-medium active:bg-border transition-colors"
+                  onClick={() => handleAssignToPart(part)}
+                >
+                  {part}
+                </button>
+              ))}
+            </div>
+            <Button variant="ghost" className="w-full mt-4" onClick={() => setShowPartPicker(false)}>Отмена</Button>
+          </div>
+        </div>
+      )}
     </div>
   );
 
