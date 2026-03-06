@@ -1,14 +1,19 @@
+import { useMemo } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useInspectionStore } from '@/store/useInspectionStore';
 import { SECTION_LABELS, BODY_PARTS } from '@/types/inspection';
 import { Button } from '@/components/ui/button';
 import { ArrowLeft, Share } from 'lucide-react';
+import { useMediaImages } from '@/hooks/useMediaImages';
 
 const ReportPreview = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const { inspections } = useInspectionStore();
   const inspection = inspections.find(i => i.id === id);
+
+  const mediaIds = useMemo(() => inspection?.media.slice(0, 12).map(m => m.id) || [], [inspection]);
+  const images = useMediaImages(mediaIds);
 
   if (!inspection) return null;
 
@@ -27,7 +32,6 @@ const ReportPreview = () => {
       </div>
 
       <div className="px-4 py-4 flex flex-col gap-6">
-        {/* Информация об авто */}
         <section className="bg-card border border-border rounded-2xl p-5">
           <h2 className="font-bold text-foreground text-lg mb-3">Информация об автомобиле</h2>
           <div className="grid grid-cols-2 gap-3 text-sm">
@@ -40,7 +44,6 @@ const ReportPreview = () => {
           </div>
         </section>
 
-        {/* Юридическая проверка */}
         <section className="bg-card border border-border rounded-2xl p-5">
           <h2 className="font-bold text-foreground text-lg mb-3">Юридическая проверка</h2>
           <div className="flex flex-col gap-2">
@@ -55,7 +58,6 @@ const ReportPreview = () => {
           </div>
         </section>
 
-        {/* Кузов */}
         {Object.keys(inspection.bodyParts).length > 0 && (
           <section className="bg-card border border-border rounded-2xl p-5">
             <h2 className="font-bold text-foreground text-lg mb-3">Осмотр кузова</h2>
@@ -74,14 +76,17 @@ const ReportPreview = () => {
           </section>
         )}
 
-        {/* Фото */}
         {inspection.media.length > 0 && (
           <section className="bg-card border border-border rounded-2xl p-5">
             <h2 className="font-bold text-foreground text-lg mb-3">Фото ({inspection.media.length})</h2>
             <div className="grid grid-cols-3 gap-1.5">
               {inspection.media.slice(0, 12).map(m => (
                 <div key={m.id} className="aspect-square rounded-lg overflow-hidden">
-                  <img src={m.dataUrl} alt="" className="w-full h-full object-cover" />
+                  {images[m.id] ? (
+                    <img src={images[m.id]} alt="" className="w-full h-full object-cover" />
+                  ) : (
+                    <div className="w-full h-full bg-secondary" />
+                  )}
                 </div>
               ))}
             </div>
@@ -91,7 +96,6 @@ const ReportPreview = () => {
           </section>
         )}
 
-        {/* Вердикт */}
         {fv.verdict && (
           <section className={`rounded-2xl p-5 ${
             fv.verdict === 'Рекомендован' ? 'bg-success/10 border border-success/20' :
@@ -110,7 +114,6 @@ const ReportPreview = () => {
           </section>
         )}
 
-        {/* Публикация */}
         <Button size="xl" className="w-full">
           <Share className="w-5 h-5" /> Опубликовать отчёт
         </Button>

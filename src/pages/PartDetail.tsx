@@ -1,8 +1,10 @@
+import { useMemo } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useInspectionStore } from '@/store/useInspectionStore';
 import { PartStatus } from '@/types/inspection';
 import { Button } from '@/components/ui/button';
 import { ArrowLeft, Camera, ImagePlus } from 'lucide-react';
+import { useMediaImages } from '@/hooks/useMediaImages';
 
 const STATUSES: PartStatus[] = ['OK', 'Перекрашено', 'Шпаклёвка', 'Замена', 'Риск'];
 
@@ -17,6 +19,8 @@ const PartDetail = () => {
 
   const partData = inspection.bodyParts[decodedPart] || {};
   const partMedia = inspection.media.filter(m => m.section === 'body' && m.carPart === decodedPart);
+  const mediaIds = partMedia.map(m => m.id);
+  const images = useMediaImages(mediaIds);
 
   const handleCapture = () => {
     const input = document.createElement('input');
@@ -48,7 +52,6 @@ const PartDetail = () => {
       </div>
 
       <div className="px-4 py-4 flex flex-col gap-5">
-        {/* Статус */}
         <div>
           <label className="text-sm font-semibold text-muted-foreground uppercase tracking-wider mb-2 block">Статус</label>
           <div className="flex flex-wrap gap-2">
@@ -70,7 +73,6 @@ const PartDetail = () => {
           </div>
         </div>
 
-        {/* Толщина ЛКП */}
         <div>
           <label className="text-sm font-semibold text-muted-foreground uppercase tracking-wider mb-2 block">Толщина ЛКП</label>
           <input
@@ -81,7 +83,6 @@ const PartDetail = () => {
           />
         </div>
 
-        {/* Комментарий */}
         <div>
           <label className="text-sm font-semibold text-muted-foreground uppercase tracking-wider mb-2 block">Комментарий</label>
           <textarea
@@ -92,7 +93,6 @@ const PartDetail = () => {
           />
         </div>
 
-        {/* Фото */}
         <div>
           <label className="text-sm font-semibold text-muted-foreground uppercase tracking-wider mb-2 block">Фото ({partMedia.length})</label>
           <div className="flex gap-2 mb-3">
@@ -106,7 +106,11 @@ const PartDetail = () => {
           <div className="grid grid-cols-3 gap-1.5">
             {partMedia.map(m => (
               <div key={m.id} className="aspect-square rounded-xl overflow-hidden">
-                <img src={m.dataUrl} alt="" className="w-full h-full object-cover" />
+                {images[m.id] ? (
+                  <img src={images[m.id]} alt="" className="w-full h-full object-cover" />
+                ) : (
+                  <div className="w-full h-full bg-secondary" />
+                )}
               </div>
             ))}
           </div>
