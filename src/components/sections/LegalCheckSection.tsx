@@ -1,7 +1,7 @@
 import { Inspection, CheckStatus } from '@/types/inspection';
 import { useInspectionStore } from '@/store/useInspectionStore';
 
-const STATUSES: CheckStatus[] = ['OK', 'Issue', 'Not checked'];
+const STATUSES: CheckStatus[] = ['OK', 'Проблема', 'Не проверено'];
 
 const LegalCheckSection = ({ inspection }: { inspection: Inspection }) => {
   const { updateLegalCheck } = useInspectionStore();
@@ -18,7 +18,7 @@ const LegalCheckSection = ({ inspection }: { inspection: Inspection }) => {
                 className={`flex-1 py-2.5 rounded-lg text-sm font-medium transition-colors ${
                   check.status === s
                     ? s === 'OK' ? 'bg-success text-success-foreground' :
-                      s === 'Issue' ? 'bg-destructive text-destructive-foreground' :
+                      s === 'Проблема' ? 'bg-destructive text-destructive-foreground' :
                       'bg-secondary text-secondary-foreground'
                     : 'bg-muted text-muted-foreground'
                 }`}

@@ -1,7 +1,7 @@
 import { Inspection, CheckStatus } from '@/types/inspection';
 import { useInspectionStore } from '@/store/useInspectionStore';
 
-const STATUSES: CheckStatus[] = ['OK', 'Issue', 'Not checked'];
+const STATUSES: CheckStatus[] = ['OK', 'Проблема', 'Не проверено'];
 
 const DiagnosticsSection = ({ inspection }: { inspection: Inspection }) => {
   const { updateDiagnostic } = useInspectionStore();
@@ -18,7 +18,7 @@ const DiagnosticsSection = ({ inspection }: { inspection: Inspection }) => {
                 className={`flex-1 py-2.5 rounded-lg text-sm font-medium transition-colors ${
                   diag.status === s
                     ? s === 'OK' ? 'bg-success text-success-foreground' :
-                      s === 'Issue' ? 'bg-destructive text-destructive-foreground' :
+                      s === 'Проблема' ? 'bg-destructive text-destructive-foreground' :
                       'bg-secondary text-secondary-foreground'
                     : 'bg-muted text-muted-foreground'
                 }`}
@@ -30,7 +30,7 @@ const DiagnosticsSection = ({ inspection }: { inspection: Inspection }) => {
           </div>
           <textarea
             className="w-full bg-muted border-none rounded-lg px-3 py-2 text-sm text-foreground placeholder:text-muted-foreground outline-none resize-none"
-            placeholder="Add comment..."
+            placeholder="Добавить комментарий..."
             rows={2}
             value={diag.comment || ''}
             onChange={e => updateDiagnostic(i, { comment: e.target.value })}

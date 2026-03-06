@@ -8,31 +8,31 @@ export type InspectionSection =
   | 'final-verdict';
 
 export const SECTION_LABELS: Record<InspectionSection, string> = {
-  'car-info': 'Car Info',
-  'legal-check': 'Legal Check',
-  'body': 'Body',
-  'interior': 'Interior',
-  'technical': 'Technical',
-  'diagnostics': 'Diagnostics',
-  'final-verdict': 'Final Verdict',
+  'car-info': 'Информация об авто',
+  'legal-check': 'Юридическая проверка',
+  'body': 'Кузов',
+  'interior': 'Салон',
+  'technical': 'Техническая часть',
+  'diagnostics': 'Диагностика',
+  'final-verdict': 'Итоговый вердикт',
 };
 
 export const BODY_PARTS = [
-  'General view', 'Hood', 'Front left fender', 'Front right fender',
-  'Front left door', 'Front right door', 'Rear left door', 'Rear right door',
-  'Rear left fender', 'Rear right fender', 'Roof', 'Trunk',
-  'Front bumper', 'Rear bumper',
+  'Общий вид', 'Капот', 'Переднее левое крыло', 'Переднее правое крыло',
+  'Передняя левая дверь', 'Передняя правая дверь', 'Задняя левая дверь', 'Задняя правая дверь',
+  'Заднее левое крыло', 'Заднее правое крыло', 'Крыша', 'Багажник',
+  'Передний бампер', 'Задний бампер',
 ] as const;
 
 export type BodyPart = typeof BODY_PARTS[number];
 
-export type PartStatus = 'OK' | 'Repainted' | 'Body filler' | 'Replacement' | 'Risk';
+export type PartStatus = 'OK' | 'Перекрашено' | 'Шпаклёвка' | 'Замена' | 'Риск';
 
-export type CheckStatus = 'OK' | 'Issue' | 'Not checked';
+export type CheckStatus = 'OK' | 'Проблема' | 'Не проверено';
 
-export type Verdict = 'Recommended' | 'Questionable' | 'Not recommended';
+export type Verdict = 'Рекомендован' | 'Сомнительно' | 'Не рекомендован';
 
-export type RiskLevel = 'Low' | 'Medium' | 'High';
+export type RiskLevel = 'Низкий' | 'Средний' | 'Высокий';
 
 export interface MediaItem {
   id: string;
@@ -95,17 +95,17 @@ export const createNewInspection = (): Inspection => ({
   media: [],
   bodyParts: {},
   legalChecks: [
-    { label: 'VIN verified', status: 'Not checked' },
-    { label: 'Documents verified', status: 'Not checked' },
-    { label: 'Restrictions', status: 'Not checked' },
-    { label: 'Loan / pledge', status: 'Not checked' },
-    { label: 'Taxi history', status: 'Not checked' },
+    { label: 'VIN проверен', status: 'Не проверено' },
+    { label: 'Документы проверены', status: 'Не проверено' },
+    { label: 'Ограничения', status: 'Не проверено' },
+    { label: 'Залог / кредит', status: 'Не проверено' },
+    { label: 'История такси', status: 'Не проверено' },
   ],
   diagnostics: [
-    { label: 'OBD scan', status: 'Not checked' },
-    { label: 'Error codes', status: 'Not checked' },
-    { label: 'Electronics', status: 'Not checked' },
-    { label: 'Equipment', status: 'Not checked' },
+    { label: 'OBD-сканирование', status: 'Не проверено' },
+    { label: 'Коды ошибок', status: 'Не проверено' },
+    { label: 'Электроника', status: 'Не проверено' },
+    { label: 'Комплектация', status: 'Не проверено' },
   ],
   finalVerdict: {},
   createdAt: new Date().toISOString(),

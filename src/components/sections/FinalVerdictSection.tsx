@@ -1,8 +1,8 @@
 import { Inspection, Verdict, RiskLevel } from '@/types/inspection';
 import { useInspectionStore } from '@/store/useInspectionStore';
 
-const VERDICTS: Verdict[] = ['Recommended', 'Questionable', 'Not recommended'];
-const RISK_LEVELS: RiskLevel[] = ['Low', 'Medium', 'High'];
+const VERDICTS: Verdict[] = ['Рекомендован', 'Сомнительно', 'Не рекомендован'];
+const RISK_LEVELS: RiskLevel[] = ['Низкий', 'Средний', 'Высокий'];
 
 const FinalVerdictSection = ({ inspection }: { inspection: Inspection }) => {
   const { updateFinalVerdict } = useInspectionStore();
@@ -10,17 +10,17 @@ const FinalVerdictSection = ({ inspection }: { inspection: Inspection }) => {
 
   return (
     <div className="flex flex-col gap-5">
-      {/* Verdict */}
+      {/* Вердикт */}
       <div>
-        <label className="text-sm font-semibold text-muted-foreground uppercase tracking-wider mb-2 block">Verdict</label>
+        <label className="text-sm font-semibold text-muted-foreground uppercase tracking-wider mb-2 block">Вердикт</label>
         <div className="flex flex-col gap-2">
           {VERDICTS.map(v => (
             <button
               key={v}
               className={`p-4 rounded-xl text-left font-medium transition-colors ${
                 fv.verdict === v
-                  ? v === 'Recommended' ? 'bg-success text-success-foreground' :
-                    v === 'Not recommended' ? 'bg-destructive text-destructive-foreground' :
+                  ? v === 'Рекомендован' ? 'bg-success text-success-foreground' :
+                    v === 'Не рекомендован' ? 'bg-destructive text-destructive-foreground' :
                     'bg-warning text-warning-foreground'
                   : 'bg-card border border-border text-foreground'
               }`}
@@ -32,17 +32,17 @@ const FinalVerdictSection = ({ inspection }: { inspection: Inspection }) => {
         </div>
       </div>
 
-      {/* Risk */}
+      {/* Уровень риска */}
       <div>
-        <label className="text-sm font-semibold text-muted-foreground uppercase tracking-wider mb-2 block">Risk Level</label>
+        <label className="text-sm font-semibold text-muted-foreground uppercase tracking-wider mb-2 block">Уровень риска</label>
         <div className="flex gap-2">
           {RISK_LEVELS.map(r => (
             <button
               key={r}
               className={`flex-1 py-3 rounded-xl text-sm font-medium transition-colors ${
                 fv.riskLevel === r
-                  ? r === 'Low' ? 'bg-success text-success-foreground' :
-                    r === 'High' ? 'bg-destructive text-destructive-foreground' :
+                  ? r === 'Низкий' ? 'bg-success text-success-foreground' :
+                    r === 'Высокий' ? 'bg-destructive text-destructive-foreground' :
                     'bg-warning text-warning-foreground'
                   : 'bg-secondary text-secondary-foreground'
               }`}
@@ -54,23 +54,23 @@ const FinalVerdictSection = ({ inspection }: { inspection: Inspection }) => {
         </div>
       </div>
 
-      {/* Repair cost */}
+      {/* Стоимость ремонта */}
       <div>
-        <label className="text-sm font-semibold text-muted-foreground uppercase tracking-wider mb-2 block">Estimated Repair Cost</label>
+        <label className="text-sm font-semibold text-muted-foreground uppercase tracking-wider mb-2 block">Ориентировочная стоимость ремонта</label>
         <input
           className="w-full bg-card border border-border rounded-xl px-4 py-3 text-foreground placeholder:text-muted-foreground outline-none focus:ring-2 focus:ring-ring"
-          placeholder="e.g. $500"
+          placeholder="напр. 50 000 ₽"
           value={fv.estimatedRepairCost || ''}
           onChange={e => updateFinalVerdict({ estimatedRepairCost: e.target.value })}
         />
       </div>
 
-      {/* Final comment */}
+      {/* Итоговый комментарий */}
       <div>
-        <label className="text-sm font-semibold text-muted-foreground uppercase tracking-wider mb-2 block">Final Comment</label>
+        <label className="text-sm font-semibold text-muted-foreground uppercase tracking-wider mb-2 block">Итоговый комментарий</label>
         <textarea
           className="w-full bg-card border border-border rounded-xl px-4 py-3 text-foreground placeholder:text-muted-foreground outline-none focus:ring-2 focus:ring-ring min-h-[120px] resize-none"
-          placeholder="Write your final assessment..."
+          placeholder="Напишите итоговую оценку..."
           value={fv.finalComment || ''}
           onChange={e => updateFinalVerdict({ finalComment: e.target.value })}
         />

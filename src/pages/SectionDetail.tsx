@@ -1,6 +1,6 @@
 import { useParams, useNavigate } from 'react-router-dom';
 import { useInspectionStore } from '@/store/useInspectionStore';
-import { InspectionSection, SECTION_LABELS, BODY_PARTS, PartStatus } from '@/types/inspection';
+import { InspectionSection, SECTION_LABELS, BODY_PARTS } from '@/types/inspection';
 import { Button } from '@/components/ui/button';
 import { ArrowLeft, ChevronRight, Camera, ImagePlus } from 'lucide-react';
 import CarInfoSection from '@/components/sections/CarInfoSection';
@@ -50,11 +50,11 @@ const SectionDetail = () => {
             <div className="flex-1">
               <p className="font-medium text-foreground text-sm">{part}</p>
               <div className="flex gap-2 mt-1">
-                {partPhotos > 0 && <span className="text-xs text-muted-foreground">{partPhotos} photos</span>}
+                {partPhotos > 0 && <span className="text-xs text-muted-foreground">{partPhotos} фото</span>}
                 {partData?.status && (
                   <span className={`text-xs px-2 py-0.5 rounded-md font-medium ${
                     partData.status === 'OK' ? 'bg-success/10 text-success' :
-                    partData.status === 'Risk' ? 'bg-destructive/10 text-destructive' :
+                    partData.status === 'Риск' ? 'bg-destructive/10 text-destructive' :
                     'bg-warning/10 text-warning'
                   }`}>{partData.status}</span>
                 )}
@@ -77,7 +77,6 @@ const SectionDetail = () => {
       default:
         return (
           <div>
-            {/* Generic section with photos */}
             <div className="grid grid-cols-3 gap-1.5">
               {sectionMedia.map(m => (
                 <div key={m.id} className="aspect-square rounded-xl overflow-hidden">
@@ -86,7 +85,7 @@ const SectionDetail = () => {
               ))}
             </div>
             {sectionMedia.length === 0 && (
-              <p className="text-muted-foreground text-center py-10">No photos in this section yet.</p>
+              <p className="text-muted-foreground text-center py-10">В этом разделе пока нет фото.</p>
             )}
           </div>
         );
@@ -104,13 +103,12 @@ const SectionDetail = () => {
         </div>
       </div>
 
-      {/* Quick add photos */}
       <div className="px-4 py-3 flex gap-2">
         <Button size="sm" variant="outline" className="flex-1" onClick={handleCapture}>
-          <Camera className="w-4 h-4" /> Take photo
+          <Camera className="w-4 h-4" /> Снять фото
         </Button>
         <Button size="sm" variant="outline" className="flex-1" onClick={() => navigate(`/inspection/${id}/media`)}>
-          <ImagePlus className="w-4 h-4" /> Add from library
+          <ImagePlus className="w-4 h-4" /> Из библиотеки
         </Button>
       </div>
 
