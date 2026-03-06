@@ -26,13 +26,13 @@ export const BODY_PARTS = [
 
 export type BodyPart = typeof BODY_PARTS[number];
 
-export type PartStatus = 'OK' | 'Repainted' | 'Body filler' | 'Replacement' | 'Risk';
+export type PartStatus = 'OK' | 'Перекрашено' | 'Шпаклёвка' | 'Замена' | 'Риск';
 
-export type CheckStatus = 'OK' | 'Issue' | 'Not checked';
+export type CheckStatus = 'OK' | 'Проблема' | 'Не проверено';
 
-export type Verdict = 'Recommended' | 'Questionable' | 'Not recommended';
+export type Verdict = 'Рекомендован' | 'Сомнительно' | 'Не рекомендован';
 
-export type RiskLevel = 'Low' | 'Medium' | 'High';
+export type RiskLevel = 'Низкий' | 'Средний' | 'Высокий';
 
 export interface MediaItem {
   id: string;
