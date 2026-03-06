@@ -1,10 +1,12 @@
 import { useMemo } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useInspectionStore } from '@/store/useInspectionStore';
-import { SECTION_LABELS, BODY_PARTS } from '@/types/inspection';
+import { SECTION_LABELS, InspectionSection } from '@/types/inspection';
 import { Button } from '@/components/ui/button';
 import { ArrowLeft, Share } from 'lucide-react';
 import { useMediaImages } from '@/hooks/useMediaImages';
+
+const PHOTO_SECTIONS: InspectionSection[] = ['car-info', 'body', 'interior', 'technical', 'diagnostics'];
 
 const ReportPreview = () => {
   const { id } = useParams<{ id: string }>();
@@ -12,13 +14,35 @@ const ReportPreview = () => {
   const { inspections } = useInspectionStore();
   const inspection = inspections.find(i => i.id === id);
 
-  const mediaIds = useMemo(() => inspection?.media.slice(0, 12).map(m => m.id) || [], [inspection]);
-  const images = useMediaImages(mediaIds);
+  const allMediaIds = useMemo(() => inspection?.media.map(m => m.id) || [], [inspection]);
+  const images = useMediaImages(allMediaIds);
 
   if (!inspection) return null;
 
   const ci = inspection.carInfo;
   const fv = inspection.finalVerdict;
+
+  const PhotoGrid = ({ mediaIds }: { mediaIds: string[] }) => {
+    if (mediaIds.length === 0) return null;
+    return (
+      <div className="grid grid-cols-3 gap-1.5 mt-3">
+        {mediaIds.map(mId => (
+          <div key={mId} className="aspect-square rounded-lg overflow-hidden">
+            {images[mId] ? (
+              <img src={images[mId]} alt="" className="w-full h-full object-cover" />
+            ) : (
+              <div className="w-full h-full bg-secondary" />
+            )}
+          </div>
+        ))}
+      </div>
+    );
+  };
+
+  const getMediaForSection = (section: InspectionSection) =>
+    inspection.media.filter(m => m.section === section).map(m => m.id);
+
+  const unassignedMedia = inspection.media.filter(m => !m.section).map(m => m.id);
 
   return (
     <div className="min-h-screen bg-background pb-6">
@@ -32,6 +56,7 @@ const ReportPreview = () => {
       </div>
 
       <div className="px-4 py-4 flex flex-col gap-6">
+        {/* Car info */}
         <section className="bg-card border border-border rounded-2xl p-5">
           <h2 className="font-bold text-foreground text-lg mb-3">Информация об автомобиле</h2>
           <div className="grid grid-cols-2 gap-3 text-sm">
@@ -42,8 +67,10 @@ const ReportPreview = () => {
             {ci.licensePlate && <div><span className="text-muted-foreground">Гос. номер:</span> <span className="font-medium text-foreground">{ci.licensePlate}</span></div>}
             {ci.mileage && <div><span className="text-muted-foreground">Пробег:</span> <span className="font-medium text-foreground">{ci.mileage}</span></div>}
           </div>
+          <PhotoGrid mediaIds={getMediaForSection('car-info')} />
         </section>
 
+        {/* Legal check */}
         <section className="bg-card border border-border rounded-2xl p-5">
           <h2 className="font-bold text-foreground text-lg mb-3">Юридическая проверка</h2>
           <div className="flex flex-col gap-2">
@@ -56,46 +83,89 @@ const ReportPreview = () => {
               </div>
             ))}
           </div>
+          <PhotoGrid mediaIds={getMediaForSection('legal-check')} />
         </section>
 
-        {Object.keys(inspection.bodyParts).length > 0 && (
+        {/* Body */}
+        {(Object.keys(inspection.bodyParts).length > 0 || getMediaForSection('body').length > 0) && (
           <section className="bg-card border border-border rounded-2xl p-5">
             <h2 className="font-bold text-foreground text-lg mb-3">Осмотр кузова</h2>
-            <div className="flex flex-col gap-2">
-              {Object.entries(inspection.bodyParts).map(([part, data]) => (
-                <div key={part} className="flex justify-between items-center text-sm">
-                  <span className="text-foreground">{part}</span>
-                  <span className={`font-medium ${
-                    data.status === 'OK' ? 'text-success' :
-                    data.status === 'Риск' ? 'text-destructive' :
-                    'text-warning'
-                  }`}>{data.status || '—'}</span>
-                </div>
-              ))}
-            </div>
-          </section>
-        )}
-
-        {inspection.media.length > 0 && (
-          <section className="bg-card border border-border rounded-2xl p-5">
-            <h2 className="font-bold text-foreground text-lg mb-3">Фото ({inspection.media.length})</h2>
-            <div className="grid grid-cols-3 gap-1.5">
-              {inspection.media.slice(0, 12).map(m => (
-                <div key={m.id} className="aspect-square rounded-lg overflow-hidden">
-                  {images[m.id] ? (
-                    <img src={images[m.id]} alt="" className="w-full h-full object-cover" />
-                  ) : (
-                    <div className="w-full h-full bg-secondary" />
-                  )}
-                </div>
-              ))}
-            </div>
-            {inspection.media.length > 12 && (
-              <p className="text-sm text-muted-foreground mt-2 text-center">+{inspection.media.length - 12} ещё фото</p>
+            {Object.keys(inspection.bodyParts).length > 0 && (
+              <div className="flex flex-col gap-2">
+                {Object.entries(inspection.bodyParts).map(([part, data]) => {
+                  const partPhotos = inspection.media.filter(m => m.section === 'body' && m.carPart === part).map(m => m.id);
+                  return (
+                    <div key={part}>
+                      <div className="flex justify-between items-center text-sm">
+                        <span className="text-foreground">{part}</span>
+                        <span className={`font-medium ${
+                          data.status === 'OK' ? 'text-success' :
+                          data.status === 'Риск' ? 'text-destructive' :
+                          'text-warning'
+                        }`}>{data.status || '—'}</span>
+                      </div>
+                      {data.comment && <p className="text-xs text-muted-foreground mt-0.5">{data.comment}</p>}
+                      <PhotoGrid mediaIds={partPhotos} />
+                    </div>
+                  );
+                })}
+              </div>
             )}
+            {/* Body photos without part assignment */}
+            {(() => {
+              const unassignedBody = inspection.media.filter(m => m.section === 'body' && !m.carPart).map(m => m.id);
+              if (unassignedBody.length === 0) return null;
+              return (
+                <div className="mt-3">
+                  <p className="text-sm text-muted-foreground mb-1">Общие фото кузова</p>
+                  <PhotoGrid mediaIds={unassignedBody} />
+                </div>
+              );
+            })()}
           </section>
         )}
 
+        {/* Interior */}
+        {getMediaForSection('interior').length > 0 && (
+          <section className="bg-card border border-border rounded-2xl p-5">
+            <h2 className="font-bold text-foreground text-lg mb-3">Салон</h2>
+            <PhotoGrid mediaIds={getMediaForSection('interior')} />
+          </section>
+        )}
+
+        {/* Technical */}
+        {getMediaForSection('technical').length > 0 && (
+          <section className="bg-card border border-border rounded-2xl p-5">
+            <h2 className="font-bold text-foreground text-lg mb-3">Техническая часть</h2>
+            <PhotoGrid mediaIds={getMediaForSection('technical')} />
+          </section>
+        )}
+
+        {/* Diagnostics */}
+        <section className="bg-card border border-border rounded-2xl p-5">
+          <h2 className="font-bold text-foreground text-lg mb-3">Диагностика</h2>
+          <div className="flex flex-col gap-2">
+            {inspection.diagnostics.map((d, i) => (
+              <div key={i} className="flex justify-between items-center text-sm">
+                <span className="text-foreground">{d.label}</span>
+                <span className={`font-medium ${d.status === 'OK' ? 'text-success' : d.status === 'Проблема' ? 'text-destructive' : 'text-muted-foreground'}`}>
+                  {d.status}
+                </span>
+              </div>
+            ))}
+          </div>
+          <PhotoGrid mediaIds={getMediaForSection('diagnostics')} />
+        </section>
+
+        {/* Unassigned photos */}
+        {unassignedMedia.length > 0 && (
+          <section className="bg-card border border-border rounded-2xl p-5">
+            <h2 className="font-bold text-foreground text-lg mb-3">Прочие фото ({unassignedMedia.length})</h2>
+            <PhotoGrid mediaIds={unassignedMedia} />
+          </section>
+        )}
+
+        {/* Final verdict */}
         {fv.verdict && (
           <section className={`rounded-2xl p-5 ${
             fv.verdict === 'Рекомендован' ? 'bg-success/10 border border-success/20' :
