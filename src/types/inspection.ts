@@ -18,10 +18,10 @@ export const SECTION_LABELS: Record<InspectionSection, string> = {
 };
 
 export const BODY_PARTS = [
-  'General view', 'Hood', 'Front left fender', 'Front right fender',
-  'Front left door', 'Front right door', 'Rear left door', 'Rear right door',
-  'Rear left fender', 'Rear right fender', 'Roof', 'Trunk',
-  'Front bumper', 'Rear bumper',
+  'Общий вид', 'Капот', 'Переднее левое крыло', 'Переднее правое крыло',
+  'Передняя левая дверь', 'Передняя правая дверь', 'Задняя левая дверь', 'Задняя правая дверь',
+  'Заднее левое крыло', 'Заднее правое крыло', 'Крыша', 'Багажник',
+  'Передний бампер', 'Задний бампер',
 ] as const;
 
 export type BodyPart = typeof BODY_PARTS[number];
