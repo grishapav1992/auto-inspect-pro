@@ -1,8 +1,13 @@
 import { Inspection } from '@/types/inspection';
 import { useInspectionStore } from '@/store/useInspectionStore';
+import { useMediaImages } from '@/hooks/useMediaImages';
 
 const CarInfoSection = ({ inspection }: { inspection: Inspection }) => {
   const { updateCarInfo } = useInspectionStore();
+
+  const sectionMedia = inspection.media.filter(m => m.section === 'car-info');
+  const mediaIds = sectionMedia.map(m => m.id);
+  const images = useMediaImages(mediaIds);
 
   const fields = [
     { key: 'make', label: 'Марка', placeholder: 'напр. Toyota' },
@@ -17,6 +22,22 @@ const CarInfoSection = ({ inspection }: { inspection: Inspection }) => {
 
   return (
     <div className="flex flex-col gap-4">
+      {sectionMedia.length > 0 && (
+        <div>
+          <label className="text-sm font-semibold text-muted-foreground uppercase tracking-wider mb-1.5 block">Фото</label>
+          <div className="grid grid-cols-3 gap-1.5">
+            {sectionMedia.map(m => (
+              <div key={m.id} className="aspect-square rounded-xl overflow-hidden">
+                {images[m.id] ? (
+                  <img src={images[m.id]} alt="" className="w-full h-full object-cover" />
+                ) : (
+                  <div className="w-full h-full bg-secondary" />
+                )}
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
       {fields.map(f => (
         <div key={f.key}>
           <label className="text-sm font-semibold text-muted-foreground uppercase tracking-wider mb-1.5 block">{f.label}</label>
