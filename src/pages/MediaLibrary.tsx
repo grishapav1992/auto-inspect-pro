@@ -16,8 +16,12 @@ const MediaLibrary = () => {
   const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
   const [searchQuery, setSearchQuery] = useState('');
   const [filterSection, setFilterSection] = useState<InspectionSection | 'all'>('all');
-  const [showAssignSheet, setShowAssignSheet] = useState(false);
-  const [editingMediaId, setEditingMediaId] = useState<string | null>(null);
+  const [showBulkEditSheet, setShowBulkEditSheet] = useState(false);
+  const [bulkDamageType, setBulkDamageType] = useState<PartStatus | undefined>();
+  const [bulkPaintThickness, setBulkPaintThickness] = useState('');
+  const [bulkSection, setBulkSection] = useState<InspectionSection | undefined>();
+  const [bulkCarPart, setBulkCarPart] = useState<string | undefined>();
+  const [bulkNote, setBulkNote] = useState('');
   const [selectionMode, setSelectionMode] = useState(false);
 
   useEffect(() => { if (id) setActiveInspection(id); }, [id, setActiveInspection]);
