@@ -51,11 +51,6 @@ const MediaDetailSheet = ({ media, onClose, onUpdate }: MediaDetailSheetProps) =
           </button>
         </div>
 
-        {images[media.id] && (
-          <div className="rounded-xl overflow-hidden mb-4 max-h-48">
-            <img src={images[media.id]} alt="" className="w-full h-full object-cover" />
-          </div>
-        )}
 
         <div className="flex flex-col gap-4">
           {/* Damage Type */}
