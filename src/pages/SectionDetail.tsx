@@ -15,7 +15,7 @@ import { useMediaImages } from '@/hooks/useMediaImages';
 const SectionDetail = () => {
   const { id, section } = useParams<{ id: string; section: string }>();
   const navigate = useNavigate();
-  const { inspections, setActiveInspection, addMedia, updateMedia, removeMedia, bulkAssignMedia, updateBodyPaintThickness, customDamageTags, addCustomDamageTag, addCustomSectionTag } = useInspectionStore();
+  const { inspections, setActiveInspection, addMedia, updateMedia, removeMedia, bulkAssignMedia, updateBodyPaintThickness, customDamageTags, addCustomDamageTag } = useInspectionStore();
   const inspection = inspections.find(i => i.id === id);
 
   const [selectionMode, setSelectionMode] = useState(false);
