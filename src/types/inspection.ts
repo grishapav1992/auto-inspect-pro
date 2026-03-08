@@ -135,6 +135,7 @@ export interface Inspection {
   diagnostics: DiagnosticItem[];
   testDrive: DiagnosticItem[];
   finalVerdict: FinalVerdictData;
+  enabledOptionalSections: InspectionSection[];
   createdAt: string;
 }
 
