@@ -265,8 +265,8 @@ const MediaLibrary = () => {
                 )}
                 {/* No damage indicator */}
                 {media.noDamage && (
-                  <div className="absolute top-1.5 left-1.5 bg-emerald-500 text-white text-[10px] font-bold px-1.5 py-0.5 rounded-md shadow-sm leading-tight tracking-wide">
-                    ОК
+                  <div className="absolute top-1.5 left-1.5 bg-emerald-500 text-white text-[9px] font-bold px-1.5 py-0.5 rounded-md shadow-sm leading-tight">
+                    Без повреждений
                   </div>
                 )}
                 {/* Compact tag indicators */}
