@@ -26,6 +26,7 @@ interface InspectionStore {
   updateTestDrive: (index: number, item: Partial<DiagnosticItem>) => void;
   updateBodyPaintThickness: (value: string) => void;
   updateFinalVerdict: (data: Partial<FinalVerdictData>) => void;
+  toggleOptionalSection: (section: InspectionSection) => void;
 }
 
 export const useInspectionStore = create<InspectionStore>()(
@@ -157,6 +158,19 @@ export const useInspectionStore = create<InspectionStore>()(
         inspections: state.inspections.map(i =>
           i.id === state.activeInspectionId
             ? { ...i, finalVerdict: { ...i.finalVerdict, ...data } }
+            : i
+        ),
+      })),
+
+      toggleOptionalSection: (section) => set(state => ({
+        inspections: state.inspections.map(i =>
+          i.id === state.activeInspectionId
+            ? {
+                ...i,
+                enabledOptionalSections: (i.enabledOptionalSections || []).includes(section)
+                  ? (i.enabledOptionalSections || []).filter(s => s !== section)
+                  : [...(i.enabledOptionalSections || []), section],
+              }
             : i
         ),
       })),
