@@ -363,7 +363,7 @@ const SectionDetail = () => {
                   {/* Tags */}
                   <div>
                     <label className="text-sm font-semibold text-muted-foreground uppercase tracking-wider mb-2 block">
-                      {isCustomSection ? 'Теги' : 'Повреждения'}
+                      Повреждения
                     </label>
                     <div className="flex flex-wrap gap-2">
                       {allTags.map(tag => (
