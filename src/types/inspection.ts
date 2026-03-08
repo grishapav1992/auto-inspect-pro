@@ -125,13 +125,6 @@ export interface FinalVerdictData {
   overallRating?: string;
 }
 
-export interface CustomSection {
-  id: string;
-  name: string;
-  icon: string;
-  customTags: string[];
-}
-
 export interface Inspection {
   id: string;
   carInfo: CarInfo;
@@ -142,15 +135,9 @@ export interface Inspection {
   diagnostics: DiagnosticItem[];
   testDrive: DiagnosticItem[];
   finalVerdict: FinalVerdictData;
-  
   createdAt: string;
 }
 
-export const AVAILABLE_ICONS = [
-  'Camera', 'Car', 'Wrench', 'Shield', 'Layers', 'Eye', 'Zap', 'Star',
-  'AlertTriangle', 'CheckCircle', 'Settings', 'Gauge', 'Thermometer',
-  'Droplets', 'Wind', 'Battery', 'Lightbulb', 'Search', 'Tag', 'Box',
-] as const;
 
 export const SECTION_PARTS: Partial<Record<InspectionSection, readonly string[]>> = {
   'body': BODY_PARTS,
