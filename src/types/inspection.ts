@@ -82,6 +82,13 @@ export interface FinalVerdictData {
   finalComment?: string;
 }
 
+export interface CustomSection {
+  id: string;
+  name: string;
+  icon: string;
+  customTags: string[];
+}
+
 export interface Inspection {
   id: string;
   carInfo: CarInfo;
@@ -91,6 +98,7 @@ export interface Inspection {
   legalChecks: LegalCheckItem[];
   diagnostics: DiagnosticItem[];
   finalVerdict: FinalVerdictData;
+  customSections: CustomSection[];
   createdAt: string;
 }
 
