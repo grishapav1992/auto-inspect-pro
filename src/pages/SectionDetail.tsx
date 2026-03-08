@@ -10,6 +10,7 @@ import DiagnosticsSection from '@/components/sections/DiagnosticsSection';
 import TestDriveSection from '@/components/sections/TestDriveSection';
 import FinalVerdictSection from '@/components/sections/FinalVerdictSection';
 import MediaDetailSheet from '@/components/MediaDetailSheet';
+import PhotoViewer from '@/components/PhotoViewer';
 import { useMediaImages } from '@/hooks/useMediaImages';
 
 const SectionDetail = () => {
@@ -29,6 +30,7 @@ const SectionDetail = () => {
   const [bulkNewTag, setBulkNewTag] = useState('');
   const [showBulkNewTagInput, setShowBulkNewTagInput] = useState(false);
   const [editingMediaId, setEditingMediaId] = useState<string | null>(null);
+  const [viewerIndex, setViewerIndex] = useState<number | null>(null);
 
   const sectionTags = section ? (SECTION_DAMAGE_TAGS[section as InspectionSection] || DEFAULT_DAMAGE_TAGS) : DEFAULT_DAMAGE_TAGS;
   const visibleSectionTags = sectionTags.filter(t => !hiddenDefaultTags.includes(t));
@@ -94,7 +96,8 @@ const SectionDetail = () => {
     if (selectionMode) {
       toggleSelect(mediaId);
     } else {
-      setEditingMediaId(mediaId);
+      const idx = sectionMedia.findIndex(m => m.id === mediaId);
+      setViewerIndex(idx >= 0 ? idx : 0);
     }
   };
 
@@ -467,6 +470,19 @@ const SectionDetail = () => {
             onClose={() => setEditingMediaId(null)}
             onUpdate={updateMedia}
           />
+
+          {/* Fullscreen photo viewer */}
+          {viewerIndex !== null && (
+            <PhotoViewer
+              mediaList={sectionMedia}
+              initialIndex={viewerIndex}
+              onClose={() => setViewerIndex(null)}
+              onEdit={(mediaId) => {
+                setViewerIndex(null);
+                setEditingMediaId(mediaId);
+              }}
+            />
+          )}
         </>
       )}
     </div>
