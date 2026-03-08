@@ -2,7 +2,7 @@ import { useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useInspectionStore } from '@/store/useInspectionStore';
 import { Button } from '@/components/ui/button';
-import { SECTION_LABELS, InspectionSection } from '@/types/inspection';
+import { SECTION_LABELS, InspectionSection, REQUIRED_SECTIONS } from '@/types/inspection';
 import { ArrowLeft, ChevronRight, Car, Shield, Layers, Sofa, Wrench, Cpu, FileCheck, Gauge, Zap, Navigation } from 'lucide-react';
 
 const SECTION_ICONS: Record<InspectionSection, React.ReactNode> = {
@@ -82,18 +82,23 @@ const InspectionWorkspace = () => {
           {(Object.keys(SECTION_LABELS) as InspectionSection[]).map(section => {
             const count = getSectionPhotoCount(section);
             const complete = getSectionCompletion(section);
+            const isRequired = REQUIRED_SECTIONS.includes(section);
             return (
               <button
                 key={section}
                 className="bg-card rounded-2xl border border-border p-4 flex items-center gap-4 active:bg-secondary transition-colors text-left w-full"
                 onClick={() => navigate(`/inspection/${id}/section/${section}`)}
               >
-                <div className={`w-10 h-10 rounded-xl flex items-center justify-center shrink-0 ${complete ? 'bg-success/10 text-success' : 'bg-secondary text-muted-foreground'}`}>
+                <div className={`w-10 h-10 rounded-xl flex items-center justify-center shrink-0 ${complete ? 'bg-success/10 text-success' : isRequired && !complete ? 'bg-destructive/10 text-destructive' : 'bg-secondary text-muted-foreground'}`}>
                   {SECTION_ICONS[section]}
                 </div>
                 <div className="flex-1 min-w-0">
-                  <p className="font-medium text-foreground">{SECTION_LABELS[section]}</p>
+                  <p className="font-medium text-foreground">
+                    {SECTION_LABELS[section]}
+                    {isRequired && !complete && <span className="text-destructive ml-1">*</span>}
+                  </p>
                   {count > 0 && <p className="text-xs text-muted-foreground">{count} фото</p>}
+                  {isRequired && !complete && <p className="text-xs text-destructive">Обязательный</p>}
                 </div>
                 <div className="flex items-center gap-2">
                   {complete && <span className="w-2 h-2 rounded-full bg-success" />}

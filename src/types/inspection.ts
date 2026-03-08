@@ -138,6 +138,9 @@ export interface Inspection {
   createdAt: string;
 }
 
+export const REQUIRED_SECTIONS: InspectionSection[] = [
+  'car-info', 'body', 'interior', 'technical', 'legal-check', 'final-verdict',
+];
 
 export const SECTION_PARTS: Partial<Record<InspectionSection, readonly string[]>> = {
   'body': BODY_PARTS,
