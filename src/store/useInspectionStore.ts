@@ -31,6 +31,11 @@ export const useInspectionStore = create<InspectionStore>()(
     (set, get) => ({
       inspections: [],
       activeInspectionId: null,
+      customDamageTags: [] as string[],
+      
+      addCustomDamageTag: (tag: string) => set(state => ({
+        customDamageTags: state.customDamageTags.includes(tag) ? state.customDamageTags : [...state.customDamageTags, tag],
+      })),
       
       getActiveInspection: () => {
         const { inspections, activeInspectionId } = get();
