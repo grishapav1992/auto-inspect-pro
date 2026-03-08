@@ -96,7 +96,8 @@ const SectionDetail = () => {
     if (selectionMode) {
       toggleSelect(mediaId);
     } else {
-      setEditingMediaId(mediaId);
+      const idx = sectionMedia.findIndex(m => m.id === mediaId);
+      setViewerIndex(idx >= 0 ? idx : 0);
     }
   };
 
