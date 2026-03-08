@@ -102,11 +102,18 @@ export interface Inspection {
   createdAt: string;
 }
 
+export const AVAILABLE_ICONS = [
+  'Camera', 'Car', 'Wrench', 'Shield', 'Layers', 'Eye', 'Zap', 'Star',
+  'AlertTriangle', 'CheckCircle', 'Settings', 'Gauge', 'Thermometer',
+  'Droplets', 'Wind', 'Battery', 'Lightbulb', 'Search', 'Tag', 'Box',
+] as const;
+
 export const createNewInspection = (): Inspection => ({
   id: crypto.randomUUID(),
   carInfo: { inspectionDate: new Date().toISOString().split('T')[0] },
   media: [],
   bodyParts: {},
+  customSections: [],
   legalChecks: [
     { label: 'VIN проверен', status: 'Не проверено' },
     { label: 'Документы проверены', status: 'Не проверено' },
