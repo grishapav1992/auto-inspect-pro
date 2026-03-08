@@ -5,6 +5,7 @@ import { Button } from '@/components/ui/button';
 import { SECTION_LABELS, InspectionSection } from '@/types/inspection';
 import { ArrowLeft, Check, Tag, X, Search, Filter } from 'lucide-react';
 import { useMediaImages } from '@/hooks/useMediaImages';
+import MediaDetailSheet from '@/components/MediaDetailSheet';
 
 const MediaLibrary = () => {
   const { id } = useParams<{ id: string }>();
@@ -16,6 +17,8 @@ const MediaLibrary = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const [filterSection, setFilterSection] = useState<InspectionSection | 'all'>('all');
   const [showAssignSheet, setShowAssignSheet] = useState(false);
+  const [editingMediaId, setEditingMediaId] = useState<string | null>(null);
+  const [selectionMode, setSelectionMode] = useState(false);
 
   useEffect(() => { if (id) setActiveInspection(id); }, [id, setActiveInspection]);
 
@@ -37,6 +40,8 @@ const MediaLibrary = () => {
   const images = useMediaImages(mediaIds);
 
   if (!inspection) return null;
+
+  const editingMedia = editingMediaId ? inspection.media.find(m => m.id === editingMediaId) || null : null;
 
   const toggleSelect = (mediaId: string) => {
     setSelectedIds(prev => {
@@ -86,6 +91,20 @@ const MediaLibrary = () => {
   const handleDeleteSelected = () => {
     removeMedia(Array.from(selectedIds));
     setSelectedIds(new Set());
+    setSelectionMode(false);
+  };
+
+  const handleMediaClick = (mediaId: string) => {
+    if (selectionMode) {
+      toggleSelect(mediaId);
+    } else {
+      setEditingMediaId(mediaId);
+    }
+  };
+
+  const exitSelectionMode = () => {
+    setSelectionMode(false);
+    setSelectedIds(new Set());
   };
 
   return (
@@ -123,10 +142,21 @@ const MediaLibrary = () => {
       </div>
 
       <div className="px-4 py-3 flex items-center justify-between">
-        <button className="text-sm font-medium text-foreground" onClick={selectAll}>
-          {selectedIds.size === filteredMedia.length && filteredMedia.length > 0 ? 'Снять выделение' : 'Выбрать все'}
-        </button>
-        <Button size="sm" variant="outline" onClick={handleUpload}>Загрузить фото</Button>
+        {selectionMode ? (
+          <button className="text-sm font-medium text-foreground" onClick={selectAll}>
+            {selectedIds.size === filteredMedia.length && filteredMedia.length > 0 ? 'Снять выделение' : 'Выбрать все'}
+          </button>
+        ) : (
+          <button className="text-sm font-medium text-primary" onClick={() => setSelectionMode(true)}>
+            Выбрать
+          </button>
+        )}
+        <div className="flex gap-2">
+          {selectionMode && (
+            <Button size="sm" variant="ghost" onClick={exitSelectionMode}>Отмена</Button>
+          )}
+          <Button size="sm" variant="outline" onClick={handleUpload}>Загрузить фото</Button>
+        </div>
       </div>
 
       {filteredMedia.length === 0 ? (
@@ -146,19 +176,42 @@ const MediaLibrary = () => {
               <div
                 key={media.id}
                 className={`relative aspect-square rounded-xl overflow-hidden cursor-pointer ${selected ? 'ring-2 ring-primary ring-offset-2' : ''}`}
-                onClick={() => toggleSelect(media.id)}
+                onClick={() => handleMediaClick(media.id)}
+                onContextMenu={(e) => {
+                  e.preventDefault();
+                  if (!selectionMode) {
+                    setSelectionMode(true);
+                    setSelectedIds(new Set([media.id]));
+                  }
+                }}
               >
                 {src ? (
                   <img src={src} alt="" className="w-full h-full object-cover" />
                 ) : (
                   <div className="w-full h-full bg-secondary" />
                 )}
-                {selected && (
-                  <div className="absolute top-1.5 right-1.5 w-6 h-6 rounded-full bg-primary flex items-center justify-center">
-                    <Check className="w-3.5 h-3.5 text-primary-foreground" />
+                {selectionMode && (
+                  <div className={`absolute top-1.5 right-1.5 w-6 h-6 rounded-full border-2 flex items-center justify-center ${
+                    selected ? 'bg-primary border-primary' : 'border-muted-foreground/50 bg-background/60'
+                  }`}>
+                    {selected && <Check className="w-3.5 h-3.5 text-primary-foreground" />}
                   </div>
                 )}
                 <div className="absolute bottom-0 left-0 right-0 p-1.5 flex flex-wrap gap-0.5">
+                  {media.damageType && (
+                    <span className={`text-[9px] px-1.5 py-0.5 rounded-md ${
+                      media.damageType === 'OK' ? 'bg-success/80 text-success-foreground' :
+                      media.damageType === 'Риск' ? 'bg-destructive/80 text-destructive-foreground' :
+                      'bg-primary/80 text-primary-foreground'
+                    }`}>
+                      {media.damageType}
+                    </span>
+                  )}
+                  {media.paintThickness && (
+                    <span className="text-[9px] bg-accent/80 text-accent-foreground px-1.5 py-0.5 rounded-md">
+                      {media.paintThickness}
+                    </span>
+                  )}
                   {media.section && (
                     <span className="text-[9px] bg-primary/80 text-primary-foreground px-1.5 py-0.5 rounded-md">
                       {SECTION_LABELS[media.section]}
@@ -176,7 +229,7 @@ const MediaLibrary = () => {
         </div>
       )}
 
-      {selectedIds.size > 0 && (
+      {selectionMode && selectedIds.size > 0 && (
         <div className="fixed bottom-0 left-0 right-0 bg-card border-t border-border p-4 flex gap-2 z-20">
           <Button size="sm" className="flex-1" onClick={() => setShowAssignSheet(true)}>
             <Tag className="w-4 h-4" /> Назначить ({selectedIds.size})
@@ -206,6 +259,12 @@ const MediaLibrary = () => {
           </div>
         </div>
       )}
+
+      <MediaDetailSheet
+        media={editingMedia}
+        onClose={() => setEditingMediaId(null)}
+        onUpdate={updateMedia}
+      />
     </div>
   );
 };
