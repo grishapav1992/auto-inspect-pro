@@ -215,12 +215,15 @@ const SectionDetail = () => {
         </div>
       </div>
 
-      <div className="px-4 py-3 flex gap-2">
+      <div className="px-4 py-3 grid grid-cols-3 gap-2">
         <Button size="sm" variant="outline" className="flex-1" onClick={handleCapture}>
-          <Camera className="w-4 h-4" /> Снять фото
+          <Camera className="w-4 h-4" /> Снять
+        </Button>
+        <Button size="sm" variant="outline" className="flex-1" onClick={handleGalleryUpload}>
+          <ImagePlus className="w-4 h-4" /> Галерея
         </Button>
         <Button size="sm" variant="outline" className="flex-1" onClick={() => navigate(`/inspection/${id}/media`)}>
-          <ImagePlus className="w-4 h-4" /> Из библиотеки
+          <Images className="w-4 h-4" /> Библиотека
         </Button>
       </div>
 
