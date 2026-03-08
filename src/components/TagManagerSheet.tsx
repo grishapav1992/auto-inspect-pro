@@ -45,7 +45,7 @@ const TagManagerSheet = ({ section, onClose }: TagManagerSheetProps) => {
   const isHidden = (tag: string) => hiddenDefaultTags.includes(tag);
 
   return (
-    <div className="fixed inset-0 bg-foreground/30 z-40 flex items-end" onClick={onClose}>
+    <div className="fixed inset-0 bg-foreground/30 z-50 flex items-end" onClick={onClose}>
       <div
         className="bg-card w-full rounded-t-3xl p-5 max-h-[85vh] overflow-y-auto"
         onClick={e => e.stopPropagation()}
