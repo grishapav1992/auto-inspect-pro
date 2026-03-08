@@ -74,6 +74,7 @@ export interface MediaItem {
   section?: InspectionSection;
   carPart?: string;
   note?: string;
+  noDamage?: boolean;
   audioNoteIds?: string[];
   damageTags?: string[];
   paintThicknessMin?: number;

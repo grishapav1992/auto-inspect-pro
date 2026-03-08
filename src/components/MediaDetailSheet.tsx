@@ -29,6 +29,7 @@ interface AudioNote {
 const MediaDetailSheet = ({ media, onClose, onUpdate }: MediaDetailSheetProps) => {
   const [note, setNote] = useState('');
   const [damageTags, setDamageTags] = useState<string[]>([]);
+  const [noDamage, setNoDamage] = useState(false);
   const [paintThicknessMin, setPaintThicknessMin] = useState('');
   const [paintThicknessMax, setPaintThicknessMax] = useState('');
   const [carPart, setCarPart] = useState<string | undefined>();
@@ -52,6 +53,7 @@ const MediaDetailSheet = ({ media, onClose, onUpdate }: MediaDetailSheetProps) =
     if (media) {
       setNote(media.note || '');
       setDamageTags(media.damageTags || []);
+      setNoDamage(media.noDamage || false);
       setPaintThicknessMin(media.paintThicknessMin?.toString() || '');
       setPaintThicknessMax(media.paintThicknessMax?.toString() || '');
       setCarPart(media.carPart);
@@ -91,9 +93,10 @@ const MediaDetailSheet = ({ media, onClose, onUpdate }: MediaDetailSheetProps) =
   const handleSave = () => {
     onUpdate(media.id, {
       note,
-      damageTags: damageTags.length > 0 ? damageTags : undefined,
-      paintThicknessMin: isBodySection && paintThicknessMin ? Number(paintThicknessMin) : undefined,
-      paintThicknessMax: isBodySection && paintThicknessMax ? Number(paintThicknessMax) : undefined,
+      noDamage,
+      damageTags: !noDamage && damageTags.length > 0 ? damageTags : undefined,
+      paintThicknessMin: !noDamage && isBodySection && paintThicknessMin ? Number(paintThicknessMin) : undefined,
+      paintThicknessMax: !noDamage && isBodySection && paintThicknessMax ? Number(paintThicknessMax) : undefined,
       carPart,
       audioNoteIds: audioNotes.length > 0 ? audioNotes.map(a => a.id) : undefined,
     });
@@ -214,55 +217,80 @@ const MediaDetailSheet = ({ media, onClose, onUpdate }: MediaDetailSheetProps) =
         </div>
 
         <div className="flex flex-col gap-4">
-          {/* Damage Tags */}
+          {/* No Damage Toggle */}
           <div>
-            <label className="text-sm font-semibold text-muted-foreground uppercase tracking-wider mb-2 block">
-              Повреждения
-            </label>
-            <div className="flex flex-wrap gap-2">
-              {allTags.map(tag => (
-                <button
-                  key={tag}
-                  className={`px-3.5 py-2 rounded-xl text-sm font-medium transition-colors ${
-                    damageTags.includes(tag)
-                      ? tag === 'OK' ? 'bg-success text-success-foreground'
-                        : tag === 'Риск' ? 'bg-destructive text-destructive-foreground'
-                        : 'bg-primary text-primary-foreground'
-                      : 'bg-secondary text-secondary-foreground'
-                  }`}
-                  onClick={() => toggleTag(tag)}
-                >
-                  {tag}
-                </button>
-              ))}
-              {showNewTagInput ? (
-                <div className="flex gap-1 items-center">
-                  <input
-                    autoFocus
-                    className="bg-secondary rounded-xl px-3 py-2 text-sm text-foreground outline-none w-28"
-                    placeholder="Название..."
-                    value={newTag}
-                    onChange={e => setNewTag(e.target.value)}
-                    onKeyDown={e => { if (e.key === 'Enter') handleAddCustomTag(); if (e.key === 'Escape') setShowNewTagInput(false); }}
-                    maxLength={30}
-                  />
-                  <button onClick={handleAddCustomTag} className="p-1.5 bg-primary text-primary-foreground rounded-lg">
-                    <Plus className="w-4 h-4" />
-                  </button>
-                </div>
-              ) : (
-                <button
-                  className="px-3.5 py-2 rounded-xl text-sm font-medium bg-secondary text-secondary-foreground border border-dashed border-muted-foreground/30"
-                  onClick={() => setShowNewTagInput(true)}
-                >
-                  <Plus className="w-4 h-4 inline -mt-0.5 mr-1" />Свой тег
-                </button>
-              )}
-            </div>
+            <button
+              className={`w-full px-4 py-3 rounded-xl text-sm font-medium transition-colors ${
+                noDamage
+                  ? 'bg-success text-success-foreground'
+                  : 'bg-secondary text-secondary-foreground'
+              }`}
+              onClick={() => {
+                setNoDamage(prev => {
+                  if (!prev) {
+                    setDamageTags([]);
+                    setPaintThicknessMin('');
+                    setPaintThicknessMax('');
+                  }
+                  return !prev;
+                });
+              }}
+            >
+              ✓ Без повреждений
+            </button>
           </div>
 
-          {/* Paint Thickness Range - only for body section */}
-          {isBodySection && (
+          {/* Damage Tags - hidden when noDamage */}
+          {!noDamage && (
+            <div>
+              <label className="text-sm font-semibold text-muted-foreground uppercase tracking-wider mb-2 block">
+                Повреждения
+              </label>
+              <div className="flex flex-wrap gap-2">
+                {allTags.map(tag => (
+                  <button
+                    key={tag}
+                    className={`px-3.5 py-2 rounded-xl text-sm font-medium transition-colors ${
+                      damageTags.includes(tag)
+                        ? tag === 'OK' ? 'bg-success text-success-foreground'
+                          : tag === 'Риск' ? 'bg-destructive text-destructive-foreground'
+                          : 'bg-primary text-primary-foreground'
+                        : 'bg-secondary text-secondary-foreground'
+                    }`}
+                    onClick={() => toggleTag(tag)}
+                  >
+                    {tag}
+                  </button>
+                ))}
+                {showNewTagInput ? (
+                  <div className="flex gap-1 items-center">
+                    <input
+                      autoFocus
+                      className="bg-secondary rounded-xl px-3 py-2 text-sm text-foreground outline-none w-28"
+                      placeholder="Название..."
+                      value={newTag}
+                      onChange={e => setNewTag(e.target.value)}
+                      onKeyDown={e => { if (e.key === 'Enter') handleAddCustomTag(); if (e.key === 'Escape') setShowNewTagInput(false); }}
+                      maxLength={30}
+                    />
+                    <button onClick={handleAddCustomTag} className="p-1.5 bg-primary text-primary-foreground rounded-lg">
+                      <Plus className="w-4 h-4" />
+                    </button>
+                  </div>
+                ) : (
+                  <button
+                    className="px-3.5 py-2 rounded-xl text-sm font-medium bg-secondary text-secondary-foreground border border-dashed border-muted-foreground/30"
+                    onClick={() => setShowNewTagInput(true)}
+                  >
+                    <Plus className="w-4 h-4 inline -mt-0.5 mr-1" />Свой тег
+                  </button>
+                )}
+              </div>
+            </div>
+          )}
+
+          {/* Paint Thickness Range - only for body section and when has damage */}
+          {!noDamage && isBodySection && (
             <div>
               <label className="text-sm font-semibold text-muted-foreground uppercase tracking-wider mb-2 block">
                 Толщина ЛКП (мкм)
