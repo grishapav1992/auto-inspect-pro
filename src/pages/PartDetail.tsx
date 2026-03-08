@@ -22,23 +22,6 @@ const PartDetail = () => {
   const mediaIds = partMedia.map(m => m.id);
   const images = useMediaImages(mediaIds);
 
-  const handleCapture = () => {
-    const input = document.createElement('input');
-    input.type = 'file';
-    input.accept = 'image/*';
-    input.capture = 'environment';
-    input.onchange = (e) => {
-      const file = (e.target as HTMLInputElement).files?.[0];
-      if (!file) return;
-      const reader = new FileReader();
-      reader.onload = () => {
-        setActiveInspection(id!);
-        addMedia([{ id: crypto.randomUUID(), dataUrl: reader.result as string, section: 'body', carPart: decodedPart, createdAt: new Date().toISOString() }]);
-      };
-      reader.readAsDataURL(file);
-    };
-    input.click();
-  };
 
   const handleGalleryUpload = () => {
     const input = document.createElement('input');
