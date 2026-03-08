@@ -86,10 +86,33 @@ const MediaLibrary = () => {
     input.click();
   };
 
-  const handleBulkAssign = (section: InspectionSection) => {
-    bulkAssignMedia(Array.from(selectedIds), { section });
+  const handleBulkApply = () => {
+    const updates: Record<string, any> = {};
+    if (bulkDamageType) updates.damageType = bulkDamageType;
+    if (bulkPaintThickness) updates.paintThickness = bulkPaintThickness;
+    if (bulkSection) updates.section = bulkSection;
+    if (bulkCarPart) updates.carPart = bulkCarPart;
+    if (bulkNote) updates.note = bulkNote;
+    if (Object.keys(updates).length > 0) {
+      bulkAssignMedia(Array.from(selectedIds), updates);
+    }
     setSelectedIds(new Set());
-    setShowAssignSheet(false);
+    setShowBulkEditSheet(false);
+    setSelectionMode(false);
+    resetBulkForm();
+  };
+
+  const resetBulkForm = () => {
+    setBulkDamageType(undefined);
+    setBulkPaintThickness('');
+    setBulkSection(undefined);
+    setBulkCarPart(undefined);
+    setBulkNote('');
+  };
+
+  const openBulkEdit = () => {
+    resetBulkForm();
+    setShowBulkEditSheet(true);
   };
 
   const handleDeleteSelected = () => {
