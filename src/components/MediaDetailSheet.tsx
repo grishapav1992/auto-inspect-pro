@@ -47,8 +47,6 @@ const MediaDetailSheet = ({ media, onClose, onUpdate }: MediaDetailSheetProps) =
   const timerRef = useRef<number | null>(null);
 
   const { customDamageTags, addCustomDamageTag } = useInspectionStore();
-  const sectionTags = currentSection ? (SECTION_DAMAGE_TAGS[currentSection] || DEFAULT_DAMAGE_TAGS) : DEFAULT_DAMAGE_TAGS;
-  const allTags = [...sectionTags, ...customDamageTags.filter(t => !sectionTags.includes(t))];
 
   useEffect(() => {
     if (media) {
