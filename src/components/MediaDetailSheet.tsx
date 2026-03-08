@@ -86,6 +86,8 @@ const MediaDetailSheet = ({ media, onClose, onUpdate }: MediaDetailSheetProps) =
   if (!media) return null;
 
   const currentSection = media.section;
+  const sectionTags = currentSection ? (SECTION_DAMAGE_TAGS[currentSection] || DEFAULT_DAMAGE_TAGS) : DEFAULT_DAMAGE_TAGS;
+  const allTags = [...sectionTags, ...customDamageTags.filter(t => !sectionTags.includes(t))];
   const availableParts = currentSection ? SECTION_PARTS[currentSection] : undefined;
   const isBodySection = currentSection === 'body';
 
