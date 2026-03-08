@@ -141,15 +141,8 @@ const SectionDetail = () => {
   const handleBulkAddCustomTag = () => {
     const trimmed = bulkNewTag.trim();
     if (!trimmed) return;
-
-    if (isCustomSection && customSectionId) {
-      if (!allTags.includes(trimmed)) {
-        addCustomSectionTag(customSectionId, trimmed);
-      }
-    } else {
-      if (!allTags.includes(trimmed)) {
-        addCustomDamageTag(trimmed);
-      }
+    if (!allTags.includes(trimmed)) {
+      addCustomDamageTag(trimmed);
     }
     if (!bulkDamageTags.includes(trimmed)) {
       setBulkDamageTags(prev => [...prev, trimmed]);
