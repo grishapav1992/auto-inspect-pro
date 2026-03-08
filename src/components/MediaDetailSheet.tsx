@@ -47,7 +47,7 @@ const MediaDetailSheet = ({ media, onClose, onUpdate }: MediaDetailSheetProps) =
   const audioRef = useRef<HTMLAudioElement | null>(null);
   const timerRef = useRef<number | null>(null);
 
-  const { customDamageTags, addCustomDamageTag } = useInspectionStore();
+  const { customDamageTags, addCustomDamageTag, hiddenDefaultTags, tagPriorities } = useInspectionStore();
 
   useEffect(() => {
     if (media) {
