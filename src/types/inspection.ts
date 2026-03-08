@@ -142,7 +142,7 @@ export interface Inspection {
   diagnostics: DiagnosticItem[];
   testDrive: DiagnosticItem[];
   finalVerdict: FinalVerdictData;
-  customSections: CustomSection[];
+  
   createdAt: string;
 }
 
