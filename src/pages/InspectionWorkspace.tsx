@@ -2,7 +2,7 @@ import { useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useInspectionStore } from '@/store/useInspectionStore';
 import { Button } from '@/components/ui/button';
-import { SECTION_LABELS, InspectionSection } from '@/types/inspection';
+import { SECTION_LABELS, InspectionSection, REQUIRED_SECTIONS } from '@/types/inspection';
 import { ArrowLeft, ChevronRight, Car, Shield, Layers, Sofa, Wrench, Cpu, FileCheck, Gauge, Zap, Navigation } from 'lucide-react';
 
 const SECTION_ICONS: Record<InspectionSection, React.ReactNode> = {
