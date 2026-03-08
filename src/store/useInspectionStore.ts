@@ -23,6 +23,7 @@ interface InspectionStore {
   updateBodyPart: (part: string, data: Partial<BodyPartData>) => void;
   updateLegalCheck: (index: number, item: Partial<LegalCheckItem>) => void;
   updateDiagnostic: (index: number, item: Partial<DiagnosticItem>) => void;
+  updateBodyPaintThickness: (value: string) => void;
   updateFinalVerdict: (data: Partial<FinalVerdictData>) => void;
 }
 
