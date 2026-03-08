@@ -26,10 +26,7 @@ interface InspectionStore {
   updateTestDrive: (index: number, item: Partial<DiagnosticItem>) => void;
   updateBodyPaintThickness: (value: string) => void;
   updateFinalVerdict: (data: Partial<FinalVerdictData>) => void;
-  addCustomSection: (section: CustomSection) => void;
-  updateCustomSection: (sectionId: string, updates: Partial<CustomSection>) => void;
-  removeCustomSection: (sectionId: string) => void;
-  addCustomSectionTag: (sectionId: string, tag: string) => void;
+}
 }
 
 export const useInspectionStore = create<InspectionStore>()(
