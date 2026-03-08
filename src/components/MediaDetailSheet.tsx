@@ -1,8 +1,9 @@
-import { useState, useEffect } from 'react';
-import { MediaItem, SECTION_LABELS, InspectionSection, BODY_PARTS, DEFAULT_DAMAGE_TAGS } from '@/types/inspection';
+import { useState, useEffect, useRef } from 'react';
+import { MediaItem, SECTION_LABELS, InspectionSection, BODY_PARTS, INTERIOR_PARTS, UNDER_HOOD_PARTS, TECHNICAL_PARTS, ELECTRICAL_PARTS, DEFAULT_DAMAGE_TAGS } from '@/types/inspection';
 import { Button } from '@/components/ui/button';
-import { X, Plus } from 'lucide-react';
+import { X, Plus, Mic, Square, Play, Trash2, Pause } from 'lucide-react';
 import { useInspectionStore } from '@/store/useInspectionStore';
+import { saveImage, getImage, deleteImages } from '@/lib/mediaDB';
 
 interface MediaDetailSheetProps {
   media: MediaItem | null;
@@ -10,15 +11,33 @@ interface MediaDetailSheetProps {
   onUpdate: (mediaId: string, updates: Partial<MediaItem>) => void;
 }
 
+const SECTION_PARTS: Partial<Record<InspectionSection, readonly string[]>> = {
+  'body': BODY_PARTS,
+  'interior': INTERIOR_PARTS,
+  'under-hood': UNDER_HOOD_PARTS,
+  'technical': TECHNICAL_PARTS,
+  'electrical': ELECTRICAL_PARTS,
+};
+
 const MediaDetailSheet = ({ media, onClose, onUpdate }: MediaDetailSheetProps) => {
   const [note, setNote] = useState('');
   const [damageTags, setDamageTags] = useState<string[]>([]);
   const [paintThicknessMin, setPaintThicknessMin] = useState('');
   const [paintThicknessMax, setPaintThicknessMax] = useState('');
-  const [section, setSection] = useState<InspectionSection | undefined>();
   const [carPart, setCarPart] = useState<string | undefined>();
   const [newTag, setNewTag] = useState('');
   const [showNewTagInput, setShowNewTagInput] = useState(false);
+
+  // Audio recording state
+  const [isRecording, setIsRecording] = useState(false);
+  const [audioNoteId, setAudioNoteId] = useState<string | undefined>();
+  const [audioUrl, setAudioUrl] = useState<string | null>(null);
+  const [isPlaying, setIsPlaying] = useState(false);
+  const [recordingDuration, setRecordingDuration] = useState(0);
+  const mediaRecorderRef = useRef<MediaRecorder | null>(null);
+  const audioChunksRef = useRef<Blob[]>([]);
+  const audioRef = useRef<HTMLAudioElement | null>(null);
+  const timerRef = useRef<number | null>(null);
 
   const { customDamageTags, addCustomDamageTag } = useInspectionStore();
   const allTags = [...DEFAULT_DAMAGE_TAGS, ...customDamageTags];
@@ -29,12 +48,34 @@ const MediaDetailSheet = ({ media, onClose, onUpdate }: MediaDetailSheetProps) =
       setDamageTags(media.damageTags || []);
       setPaintThicknessMin(media.paintThicknessMin?.toString() || '');
       setPaintThicknessMax(media.paintThicknessMax?.toString() || '');
-      setSection(media.section);
       setCarPart(media.carPart);
+      setAudioNoteId(media.audioNoteId);
+      setAudioUrl(null);
+      setIsPlaying(false);
+      setRecordingDuration(0);
+
+      // Load existing audio note
+      if (media.audioNoteId) {
+        getImage(media.audioNoteId).then(dataUrl => {
+          if (dataUrl) setAudioUrl(dataUrl);
+        });
+      }
     }
   }, [media]);
 
+  useEffect(() => {
+    return () => {
+      if (timerRef.current) clearInterval(timerRef.current);
+      if (mediaRecorderRef.current && mediaRecorderRef.current.state === 'recording') {
+        mediaRecorderRef.current.stop();
+      }
+    };
+  }, []);
+
   if (!media) return null;
+
+  const currentSection = media.section;
+  const availableParts = currentSection ? SECTION_PARTS[currentSection] : undefined;
 
   const handleSave = () => {
     onUpdate(media.id, {
@@ -42,8 +83,8 @@ const MediaDetailSheet = ({ media, onClose, onUpdate }: MediaDetailSheetProps) =
       damageTags: damageTags.length > 0 ? damageTags : undefined,
       paintThicknessMin: paintThicknessMin ? Number(paintThicknessMin) : undefined,
       paintThicknessMax: paintThicknessMax ? Number(paintThicknessMax) : undefined,
-      section,
       carPart,
+      audioNoteId,
     });
     onClose();
   };
@@ -72,6 +113,87 @@ const MediaDetailSheet = ({ media, onClose, onUpdate }: MediaDetailSheetProps) =
     const cleaned = value.replace(/[^0-9]/g, '');
     setter(cleaned);
   };
+
+  const startRecording = async () => {
+    try {
+      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+      const mediaRecorder = new MediaRecorder(stream);
+      mediaRecorderRef.current = mediaRecorder;
+      audioChunksRef.current = [];
+      setRecordingDuration(0);
+
+      mediaRecorder.ondataavailable = (e) => {
+        if (e.data.size > 0) audioChunksRef.current.push(e.data);
+      };
+
+      mediaRecorder.onstop = async () => {
+        stream.getTracks().forEach(t => t.stop());
+        if (timerRef.current) { clearInterval(timerRef.current); timerRef.current = null; }
+
+        const blob = new Blob(audioChunksRef.current, { type: 'audio/webm' });
+        const reader = new FileReader();
+        reader.onloadend = async () => {
+          const dataUrl = reader.result as string;
+          const id = `audio-${media.id}-${Date.now()}`;
+
+          // Delete old audio if exists
+          if (audioNoteId) {
+            await deleteImages([audioNoteId]);
+          }
+
+          await saveImage(id, dataUrl);
+          setAudioNoteId(id);
+          setAudioUrl(dataUrl);
+        };
+        reader.readAsDataURL(blob);
+      };
+
+      mediaRecorder.start();
+      setIsRecording(true);
+      timerRef.current = window.setInterval(() => {
+        setRecordingDuration(prev => prev + 1);
+      }, 1000);
+    } catch {
+      console.error('Microphone access denied');
+    }
+  };
+
+  const stopRecording = () => {
+    if (mediaRecorderRef.current && mediaRecorderRef.current.state === 'recording') {
+      mediaRecorderRef.current.stop();
+      setIsRecording(false);
+    }
+  };
+
+  const playAudio = () => {
+    if (!audioUrl) return;
+    if (audioRef.current) {
+      audioRef.current.pause();
+      audioRef.current = null;
+      setIsPlaying(false);
+      return;
+    }
+    const audio = new Audio(audioUrl);
+    audioRef.current = audio;
+    setIsPlaying(true);
+    audio.onended = () => { setIsPlaying(false); audioRef.current = null; };
+    audio.play();
+  };
+
+  const deleteAudio = async () => {
+    if (audioNoteId) {
+      await deleteImages([audioNoteId]);
+    }
+    setAudioNoteId(undefined);
+    setAudioUrl(null);
+    if (audioRef.current) {
+      audioRef.current.pause();
+      audioRef.current = null;
+      setIsPlaying(false);
+    }
+  };
+
+  const formatTime = (s: number) => `${Math.floor(s / 60)}:${(s % 60).toString().padStart(2, '0')}`;
 
   return (
     <div className="fixed inset-0 bg-foreground/30 z-30 flex items-end" onClick={onClose}>
@@ -158,32 +280,11 @@ const MediaDetailSheet = ({ media, onClose, onUpdate }: MediaDetailSheetProps) =
             </div>
           </div>
 
-          {/* Section */}
-          <div>
-            <label className="text-sm font-semibold text-muted-foreground uppercase tracking-wider mb-2 block">
-              Раздел
-            </label>
-            <select
-              className="w-full bg-secondary text-foreground rounded-xl px-4 py-3 outline-none border-none text-sm"
-              value={section || ''}
-              onChange={e => {
-                const val = e.target.value as InspectionSection | '';
-                setSection(val || undefined);
-                if (val !== 'body') setCarPart(undefined);
-              }}
-            >
-              <option value="">Не назначен</option>
-              {(Object.keys(SECTION_LABELS) as InspectionSection[]).map(s => (
-                <option key={s} value={s}>{SECTION_LABELS[s]}</option>
-              ))}
-            </select>
-          </div>
-
-          {/* Car Part */}
-          {section === 'body' && (
+          {/* Car Part - only if section has parts */}
+          {availableParts && (
             <div>
               <label className="text-sm font-semibold text-muted-foreground uppercase tracking-wider mb-2 block">
-                Деталь кузова
+                Деталь
               </label>
               <select
                 className="w-full bg-secondary text-foreground rounded-xl px-4 py-3 outline-none border-none text-sm"
@@ -191,12 +292,69 @@ const MediaDetailSheet = ({ media, onClose, onUpdate }: MediaDetailSheetProps) =
                 onChange={e => setCarPart(e.target.value || undefined)}
               >
                 <option value="">Не указана</option>
-                {BODY_PARTS.map(p => (
+                {availableParts.map(p => (
                   <option key={p} value={p}>{p}</option>
                 ))}
               </select>
             </div>
           )}
+
+          {/* Audio Note */}
+          <div>
+            <label className="text-sm font-semibold text-muted-foreground uppercase tracking-wider mb-2 block">
+              Аудиозаметка
+            </label>
+            {isRecording ? (
+              <div className="flex items-center gap-3 bg-destructive/10 rounded-xl px-4 py-3">
+                <div className="w-3 h-3 rounded-full bg-destructive animate-pulse" />
+                <span className="text-sm text-foreground font-medium flex-1">
+                  Запись... {formatTime(recordingDuration)}
+                </span>
+                <button
+                  onClick={stopRecording}
+                  className="p-2 bg-destructive text-destructive-foreground rounded-xl"
+                >
+                  <Square className="w-4 h-4" />
+                </button>
+              </div>
+            ) : audioUrl ? (
+              <div className="flex items-center gap-2">
+                <button
+                  onClick={playAudio}
+                  className="flex-1 flex items-center gap-3 bg-secondary rounded-xl px-4 py-3"
+                >
+                  {isPlaying ? (
+                    <Pause className="w-4 h-4 text-primary" />
+                  ) : (
+                    <Play className="w-4 h-4 text-primary" />
+                  )}
+                  <span className="text-sm text-foreground">
+                    {isPlaying ? 'Воспроизводится...' : 'Аудиозаметка'}
+                  </span>
+                </button>
+                <button
+                  onClick={deleteAudio}
+                  className="p-3 bg-secondary rounded-xl text-destructive"
+                >
+                  <Trash2 className="w-4 h-4" />
+                </button>
+                <button
+                  onClick={startRecording}
+                  className="p-3 bg-secondary rounded-xl text-muted-foreground"
+                >
+                  <Mic className="w-4 h-4" />
+                </button>
+              </div>
+            ) : (
+              <button
+                onClick={startRecording}
+                className="w-full flex items-center justify-center gap-2 bg-secondary rounded-xl px-4 py-3 text-sm text-muted-foreground"
+              >
+                <Mic className="w-4 h-4" />
+                Записать аудиозаметку
+              </button>
+            )}
+          </div>
 
           {/* Note */}
           <div>
