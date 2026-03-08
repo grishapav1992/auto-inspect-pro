@@ -1,7 +1,7 @@
 import { useState, useMemo } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useInspectionStore } from '@/store/useInspectionStore';
-import { InspectionSection, SECTION_LABELS, SECTION_PARTS, DEFAULT_DAMAGE_TAGS } from '@/types/inspection';
+import { InspectionSection, SECTION_LABELS, SECTION_PARTS, SECTION_DAMAGE_TAGS, DEFAULT_DAMAGE_TAGS } from '@/types/inspection';
 import { Button } from '@/components/ui/button';
 import { ArrowLeft, ImagePlus, Check, X, Pencil, Plus, Filter } from 'lucide-react';
 import CarInfoSection from '@/components/sections/CarInfoSection';
