@@ -43,6 +43,25 @@ const SectionDetail = () => {
     input.click();
   };
 
+  const handleGalleryUpload = () => {
+    const input = document.createElement('input');
+    input.type = 'file';
+    input.accept = 'image/*';
+    input.multiple = true;
+    input.onchange = (e) => {
+      const files = Array.from((e.target as HTMLInputElement).files || []);
+      setActiveInspection(id!);
+      files.forEach(file => {
+        const reader = new FileReader();
+        reader.onload = () => {
+          addMedia([{ id: crypto.randomUUID(), dataUrl: reader.result as string, section, createdAt: new Date().toISOString() }]);
+        };
+        reader.readAsDataURL(file);
+      });
+    };
+    input.click();
+  };
+
   const unassignedBodyMedia = inspection.media.filter(m => m.section === 'body' && !m.carPart);
   const unassignedBodyIds = unassignedBodyMedia.map(m => m.id);
   const unassignedImages = useMediaImages(unassignedBodyIds);
