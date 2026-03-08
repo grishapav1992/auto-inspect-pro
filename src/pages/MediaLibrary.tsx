@@ -22,6 +22,7 @@ const MediaLibrary = () => {
   const [bulkSection, setBulkSection] = useState<InspectionSection | undefined>();
   const [bulkCarPart, setBulkCarPart] = useState<string | undefined>();
   const [bulkNote, setBulkNote] = useState('');
+  const [editingMediaId, setEditingMediaId] = useState<string | null>(null);
   const [selectionMode, setSelectionMode] = useState(false);
 
   useEffect(() => { if (id) setActiveInspection(id); }, [id, setActiveInspection]);
