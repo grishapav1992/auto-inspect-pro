@@ -2,7 +2,7 @@ import { useState, useMemo, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useInspectionStore } from '@/store/useInspectionStore';
 import { Button } from '@/components/ui/button';
-import { SECTION_LABELS, InspectionSection, BODY_PARTS, DEFAULT_DAMAGE_TAGS } from '@/types/inspection';
+import { SECTION_LABELS, InspectionSection, BODY_PARTS, SECTION_DAMAGE_TAGS, DEFAULT_DAMAGE_TAGS } from '@/types/inspection';
 import { ArrowLeft, Check, X, Search, Filter, Pencil, Plus } from 'lucide-react';
 import { useMediaImages } from '@/hooks/useMediaImages';
 import MediaDetailSheet from '@/components/MediaDetailSheet';
