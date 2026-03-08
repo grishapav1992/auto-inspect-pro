@@ -157,6 +157,38 @@ export const useInspectionStore = create<InspectionStore>()(
             : i
         ),
       })),
+
+      addCustomSection: (section) => set(state => ({
+        inspections: state.inspections.map(i =>
+          i.id === state.activeInspectionId
+            ? { ...i, customSections: [...(i.customSections || []), section] }
+            : i
+        ),
+      })),
+
+      updateCustomSection: (sectionId, updates) => set(state => ({
+        inspections: state.inspections.map(i =>
+          i.id === state.activeInspectionId
+            ? { ...i, customSections: (i.customSections || []).map(s => s.id === sectionId ? { ...s, ...updates } : s) }
+            : i
+        ),
+      })),
+
+      removeCustomSection: (sectionId) => set(state => ({
+        inspections: state.inspections.map(i =>
+          i.id === state.activeInspectionId
+            ? { ...i, customSections: (i.customSections || []).filter(s => s.id !== sectionId), media: i.media.filter(m => m.section !== `custom-${sectionId}`) }
+            : i
+        ),
+      })),
+
+      addCustomSectionTag: (sectionId, tag) => set(state => ({
+        inspections: state.inspections.map(i =>
+          i.id === state.activeInspectionId
+            ? { ...i, customSections: (i.customSections || []).map(s => s.id === sectionId ? { ...s, customTags: s.customTags.includes(tag) ? s.customTags : [...s.customTags, tag] } : s) }
+            : i
+        ),
+      })),
     }),
     { name: 'car-inspection-storage' }
   )
