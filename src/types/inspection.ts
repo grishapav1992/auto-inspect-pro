@@ -156,6 +156,7 @@ export const createNewInspection = (): Inspection => ({
   carInfo: { inspectionDate: new Date().toISOString().split('T')[0] },
   media: [],
   bodyParts: {},
+  enabledOptionalSections: [],
   
   legalChecks: [
     { label: 'Проверка VIN', status: 'Не проверено' },
