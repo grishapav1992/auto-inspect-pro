@@ -3,7 +3,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { useInspectionStore } from '@/store/useInspectionStore';
 import { InspectionSection, SECTION_LABELS, BODY_PARTS, DEFAULT_DAMAGE_TAGS } from '@/types/inspection';
 import { Button } from '@/components/ui/button';
-import { ArrowLeft, ImagePlus, Images, Check, X, Pencil, Plus, Filter } from 'lucide-react';
+import { ArrowLeft, ImagePlus, Check, X, Pencil, Plus, Filter } from 'lucide-react';
 import CarInfoSection from '@/components/sections/CarInfoSection';
 import LegalCheckSection from '@/components/sections/LegalCheckSection';
 import DiagnosticsSection from '@/components/sections/DiagnosticsSection';
@@ -12,9 +12,9 @@ import MediaDetailSheet from '@/components/MediaDetailSheet';
 import { useMediaImages } from '@/hooks/useMediaImages';
 
 const SectionDetail = () => {
-  const { id, section } = useParams<{ id: string; section: InspectionSection }>();
+  const { id, section } = useParams<{ id: string; section: string }>();
   const navigate = useNavigate();
-  const { inspections, setActiveInspection, addMedia, updateMedia, removeMedia, bulkAssignMedia, updateBodyPaintThickness, customDamageTags, addCustomDamageTag } = useInspectionStore();
+  const { inspections, setActiveInspection, addMedia, updateMedia, removeMedia, bulkAssignMedia, updateBodyPaintThickness, customDamageTags, addCustomDamageTag, addCustomSectionTag } = useInspectionStore();
   const inspection = inspections.find(i => i.id === id);
 
   const [selectionMode, setSelectionMode] = useState(false);
@@ -29,7 +29,21 @@ const SectionDetail = () => {
   const [showBulkNewTagInput, setShowBulkNewTagInput] = useState(false);
   const [editingMediaId, setEditingMediaId] = useState<string | null>(null);
 
-  const allTags = [...DEFAULT_DAMAGE_TAGS, ...customDamageTags.filter(t => !DEFAULT_DAMAGE_TAGS.includes(t))];
+  // Determine if this is a custom section
+  const isCustomSection = section?.startsWith('custom-');
+  const customSectionId = isCustomSection ? section!.replace('custom-', '') : null;
+  const customSection = isCustomSection && inspection
+    ? (inspection.customSections || []).find(s => s.id === customSectionId)
+    : null;
+
+  // For custom sections, use only custom tags; for built-in sections, use default + custom
+  const allTags = isCustomSection
+    ? (customSection?.customTags || [])
+    : [...DEFAULT_DAMAGE_TAGS, ...customDamageTags.filter(t => !DEFAULT_DAMAGE_TAGS.includes(t))];
+
+  const sectionLabel = isCustomSection
+    ? (customSection?.name || 'Раздел')
+    : (section ? SECTION_LABELS[section as InspectionSection] : '');
 
   if (!inspection || !section) return null;
 
@@ -51,7 +65,7 @@ const SectionDetail = () => {
       files.forEach(file => {
         const reader = new FileReader();
         reader.onload = () => {
-          addMedia([{ id: crypto.randomUUID(), dataUrl: reader.result as string, section, createdAt: new Date().toISOString() }]);
+          addMedia([{ id: crypto.randomUUID(), dataUrl: reader.result as string, section: section as InspectionSection, createdAt: new Date().toISOString() }]);
         };
         reader.readAsDataURL(file);
       });
@@ -134,10 +148,20 @@ const SectionDetail = () => {
 
   const handleBulkAddCustomTag = () => {
     const trimmed = bulkNewTag.trim();
-    if (trimmed && !allTags.includes(trimmed)) {
-      addCustomDamageTag(trimmed);
-      setBulkDamageTags(prev => [...prev, trimmed]);
-    } else if (trimmed && allTags.includes(trimmed) && !bulkDamageTags.includes(trimmed)) {
+    if (!trimmed) return;
+
+    if (isCustomSection && customSectionId) {
+      // Add to custom section's tags
+      if (!allTags.includes(trimmed)) {
+        addCustomSectionTag(customSectionId, trimmed);
+      }
+    } else {
+      // Add to global custom tags
+      if (!allTags.includes(trimmed)) {
+        addCustomDamageTag(trimmed);
+      }
+    }
+    if (!bulkDamageTags.includes(trimmed)) {
       setBulkDamageTags(prev => [...prev, trimmed]);
     }
     setBulkNewTag('');
@@ -156,7 +180,7 @@ const SectionDetail = () => {
   };
 
   // Non-media sections render their own content
-  const isMediaSection = !['car-info', 'legal-check', 'diagnostics', 'final-verdict'].includes(section);
+  const isMediaSection = isCustomSection || !['car-info', 'legal-check', 'diagnostics', 'final-verdict'].includes(section);
 
   const renderSpecialSection = () => {
     switch (section) {
@@ -176,7 +200,7 @@ const SectionDetail = () => {
           <button onClick={() => navigate(`/inspection/${id}`)} className="p-2 -ml-2 text-foreground">
             <ArrowLeft className="w-5 h-5" />
           </button>
-          <h1 className="font-semibold text-foreground flex-1">{SECTION_LABELS[section]}</h1>
+          <h1 className="font-semibold text-foreground flex-1">{sectionLabel}</h1>
           {isMediaSection && (
             <span className="text-sm text-muted-foreground">{sectionMedia.length} фото</span>
           )}
@@ -221,10 +245,7 @@ const SectionDetail = () => {
                 <Button size="sm" variant="ghost" onClick={exitSelectionMode}>Отмена</Button>
               )}
               <Button size="sm" variant="outline" onClick={handleGalleryUpload}>
-                <ImagePlus className="w-4 h-4" /> Галерея
-              </Button>
-              <Button size="sm" variant="outline" onClick={() => navigate(`/inspection/${id}/media`)}>
-                <Images className="w-4 h-4" /> Библиотека
+                <ImagePlus className="w-4 h-4" /> Из галереи
               </Button>
             </div>
           </div>
@@ -235,7 +256,7 @@ const SectionDetail = () => {
               <div className="w-16 h-16 rounded-2xl bg-secondary flex items-center justify-center">
                 <Filter className="w-8 h-8 text-muted-foreground" />
               </div>
-              <p className="text-muted-foreground">Фото пока нет. Загрузите из галереи или библиотеки.</p>
+              <p className="text-muted-foreground">Фото пока нет. Загрузите из галереи.</p>
               <Button onClick={handleGalleryUpload}>Загрузить фото</Button>
             </div>
           ) : (
@@ -318,9 +339,11 @@ const SectionDetail = () => {
                 </div>
 
                 <div className="flex flex-col gap-4">
-                  {/* Damage tags */}
+                  {/* Tags */}
                   <div>
-                    <label className="text-sm font-semibold text-muted-foreground uppercase tracking-wider mb-2 block">Повреждения</label>
+                    <label className="text-sm font-semibold text-muted-foreground uppercase tracking-wider mb-2 block">
+                      {isCustomSection ? 'Теги' : 'Повреждения'}
+                    </label>
                     <div className="flex flex-wrap gap-2">
                       {allTags.map(tag => (
                         <button
@@ -357,27 +380,29 @@ const SectionDetail = () => {
                     </div>
                   </div>
 
-                  {/* Paint thickness */}
-                  <div>
-                    <label className="text-sm font-semibold text-muted-foreground uppercase tracking-wider mb-2 block">Толщина ЛКП (мкм)</label>
-                    <div className="flex gap-2 items-center">
-                      <input
-                        className="flex-1 bg-secondary border-none rounded-xl px-4 py-3 text-foreground placeholder:text-muted-foreground outline-none"
-                        placeholder="От"
-                        inputMode="numeric"
-                        value={bulkPaintMin}
-                        onChange={e => handleNumericInput(e.target.value, setBulkPaintMin)}
-                      />
-                      <span className="text-muted-foreground">—</span>
-                      <input
-                        className="flex-1 bg-secondary border-none rounded-xl px-4 py-3 text-foreground placeholder:text-muted-foreground outline-none"
-                        placeholder="До"
-                        inputMode="numeric"
-                        value={bulkPaintMax}
-                        onChange={e => handleNumericInput(e.target.value, setBulkPaintMax)}
-                      />
+                  {/* Paint thickness - only for non-custom sections */}
+                  {!isCustomSection && (
+                    <div>
+                      <label className="text-sm font-semibold text-muted-foreground uppercase tracking-wider mb-2 block">Толщина ЛКП (мкм)</label>
+                      <div className="flex gap-2 items-center">
+                        <input
+                          className="flex-1 bg-secondary border-none rounded-xl px-4 py-3 text-foreground placeholder:text-muted-foreground outline-none"
+                          placeholder="От"
+                          inputMode="numeric"
+                          value={bulkPaintMin}
+                          onChange={e => handleNumericInput(e.target.value, setBulkPaintMin)}
+                        />
+                        <span className="text-muted-foreground">—</span>
+                        <input
+                          className="flex-1 bg-secondary border-none rounded-xl px-4 py-3 text-foreground placeholder:text-muted-foreground outline-none"
+                          placeholder="До"
+                          inputMode="numeric"
+                          value={bulkPaintMax}
+                          onChange={e => handleNumericInput(e.target.value, setBulkPaintMax)}
+                        />
+                      </div>
                     </div>
-                  </div>
+                  )}
 
                   {/* Car part (for body section) */}
                   {section === 'body' && (
