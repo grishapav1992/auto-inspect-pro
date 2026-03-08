@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef } from 'react';
 import { MediaItem, InspectionSection, BODY_PARTS, INTERIOR_PARTS, UNDER_HOOD_PARTS, TECHNICAL_PARTS, ELECTRICAL_PARTS, SECTION_DAMAGE_TAGS, DEFAULT_DAMAGE_TAGS } from '@/types/inspection';
 import { Button } from '@/components/ui/button';
-import { X, Plus, Mic, Square, Play, Trash2, Pause } from 'lucide-react';
+import { X, Plus, Mic, Square, Play, Trash2, Pause, Settings } from 'lucide-react';
 import { useInspectionStore } from '@/store/useInspectionStore';
 import { saveImage, getImage, deleteImages } from '@/lib/mediaDB';
 
