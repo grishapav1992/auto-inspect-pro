@@ -97,10 +97,7 @@ const PartDetail = () => {
 
         <div>
           <label className="text-sm font-semibold text-muted-foreground uppercase tracking-wider mb-2 block">Фото ({partMedia.length})</label>
-          <div className="grid grid-cols-3 gap-2 mb-3">
-            <Button size="sm" variant="outline" onClick={handleCapture}>
-              <Camera className="w-4 h-4" /> Снять
-            </Button>
+          <div className="grid grid-cols-2 gap-2 mb-3">
             <Button size="sm" variant="outline" onClick={handleGalleryUpload}>
               <ImagePlus className="w-4 h-4" /> Галерея
             </Button>

@@ -228,10 +228,7 @@ const SectionDetail = () => {
         </div>
       </div>
 
-      <div className="px-4 py-3 grid grid-cols-3 gap-2">
-        <Button size="sm" variant="outline" className="flex-1" onClick={handleCapture}>
-          <Camera className="w-4 h-4" /> Снять
-        </Button>
+      <div className="px-4 py-3 grid grid-cols-2 gap-2">
         <Button size="sm" variant="outline" className="flex-1" onClick={handleGalleryUpload}>
           <ImagePlus className="w-4 h-4" /> Галерея
         </Button>
