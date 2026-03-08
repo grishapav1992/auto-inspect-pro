@@ -28,6 +28,8 @@ export type BodyPart = typeof BODY_PARTS[number];
 
 export type PartStatus = 'OK' | 'Перекрашено' | 'Шпаклёвка' | 'Замена' | 'Риск';
 
+export const DEFAULT_DAMAGE_TAGS: string[] = ['OK', 'Перекрашено', 'Шпаклёвка', 'Замена', 'Риск'];
+
 export type CheckStatus = 'OK' | 'Проблема' | 'Не проверено';
 
 export type Verdict = 'Рекомендован' | 'Сомнительно' | 'Не рекомендован';
@@ -39,8 +41,9 @@ export interface MediaItem {
   section?: InspectionSection;
   carPart?: string;
   note?: string;
-  damageType?: PartStatus;
-  paintThickness?: string;
+  damageTags?: string[];
+  paintThicknessMin?: number;
+  paintThicknessMax?: number;
   createdAt: string;
 }
 

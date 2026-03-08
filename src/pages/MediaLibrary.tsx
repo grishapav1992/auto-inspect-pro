@@ -2,28 +2,33 @@ import { useState, useMemo, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useInspectionStore } from '@/store/useInspectionStore';
 import { Button } from '@/components/ui/button';
-import { SECTION_LABELS, InspectionSection, PartStatus, BODY_PARTS } from '@/types/inspection';
-import { ArrowLeft, Check, Tag, X, Search, Filter, Pencil } from 'lucide-react';
+import { SECTION_LABELS, InspectionSection, BODY_PARTS, DEFAULT_DAMAGE_TAGS } from '@/types/inspection';
+import { ArrowLeft, Check, X, Search, Filter, Pencil, Plus } from 'lucide-react';
 import { useMediaImages } from '@/hooks/useMediaImages';
 import MediaDetailSheet from '@/components/MediaDetailSheet';
 
 const MediaLibrary = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
-  const { inspections, updateMedia, removeMedia, bulkAssignMedia, addMedia, setActiveInspection } = useInspectionStore();
+  const { inspections, updateMedia, removeMedia, bulkAssignMedia, addMedia, setActiveInspection, customDamageTags, addCustomDamageTag } = useInspectionStore();
   const inspection = inspections.find(i => i.id === id);
 
   const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
   const [searchQuery, setSearchQuery] = useState('');
   const [filterSection, setFilterSection] = useState<InspectionSection | 'all'>('all');
   const [showBulkEditSheet, setShowBulkEditSheet] = useState(false);
-  const [bulkDamageType, setBulkDamageType] = useState<PartStatus | undefined>();
-  const [bulkPaintThickness, setBulkPaintThickness] = useState('');
+  const [bulkDamageTags, setBulkDamageTags] = useState<string[]>([]);
+  const [bulkPaintMin, setBulkPaintMin] = useState('');
+  const [bulkPaintMax, setBulkPaintMax] = useState('');
   const [bulkSection, setBulkSection] = useState<InspectionSection | undefined>();
   const [bulkCarPart, setBulkCarPart] = useState<string | undefined>();
   const [bulkNote, setBulkNote] = useState('');
+  const [bulkNewTag, setBulkNewTag] = useState('');
+  const [showBulkNewTagInput, setShowBulkNewTagInput] = useState(false);
   const [editingMediaId, setEditingMediaId] = useState<string | null>(null);
   const [selectionMode, setSelectionMode] = useState(false);
+
+  const allTags = [...DEFAULT_DAMAGE_TAGS, ...customDamageTags];
 
   useEffect(() => { if (id) setActiveInspection(id); }, [id, setActiveInspection]);
 
@@ -89,8 +94,9 @@ const MediaLibrary = () => {
 
   const handleBulkApply = () => {
     const updates: Record<string, any> = {};
-    if (bulkDamageType) updates.damageType = bulkDamageType;
-    if (bulkPaintThickness) updates.paintThickness = bulkPaintThickness;
+    if (bulkDamageTags.length > 0) updates.damageTags = bulkDamageTags;
+    if (bulkPaintMin) updates.paintThicknessMin = Number(bulkPaintMin);
+    if (bulkPaintMax) updates.paintThicknessMax = Number(bulkPaintMax);
     if (bulkSection) updates.section = bulkSection;
     if (bulkCarPart) updates.carPart = bulkCarPart;
     if (bulkNote) updates.note = bulkNote;
@@ -104,11 +110,14 @@ const MediaLibrary = () => {
   };
 
   const resetBulkForm = () => {
-    setBulkDamageType(undefined);
-    setBulkPaintThickness('');
+    setBulkDamageTags([]);
+    setBulkPaintMin('');
+    setBulkPaintMax('');
     setBulkSection(undefined);
     setBulkCarPart(undefined);
     setBulkNote('');
+    setBulkNewTag('');
+    setShowBulkNewTagInput(false);
   };
 
   const openBulkEdit = () => {
@@ -133,6 +142,35 @@ const MediaLibrary = () => {
   const exitSelectionMode = () => {
     setSelectionMode(false);
     setSelectedIds(new Set());
+  };
+
+  const toggleBulkTag = (tag: string) => {
+    setBulkDamageTags(prev =>
+      prev.includes(tag) ? prev.filter(t => t !== tag) : [...prev, tag]
+    );
+  };
+
+  const handleBulkAddCustomTag = () => {
+    const trimmed = bulkNewTag.trim();
+    if (trimmed && !allTags.includes(trimmed)) {
+      addCustomDamageTag(trimmed);
+      setBulkDamageTags(prev => [...prev, trimmed]);
+    } else if (trimmed && allTags.includes(trimmed) && !bulkDamageTags.includes(trimmed)) {
+      setBulkDamageTags(prev => [...prev, trimmed]);
+    }
+    setBulkNewTag('');
+    setShowBulkNewTagInput(false);
+  };
+
+  const handleNumericInput = (value: string, setter: (v: string) => void) => {
+    setter(value.replace(/[^0-9]/g, ''));
+  };
+
+  const getTagColor = (tag: string, active: boolean) => {
+    if (!active) return 'bg-secondary text-secondary-foreground';
+    if (tag === 'OK') return 'bg-success text-success-foreground';
+    if (tag === 'Риск') return 'bg-destructive text-destructive-foreground';
+    return 'bg-primary text-primary-foreground';
   };
 
   return (
@@ -226,18 +264,17 @@ const MediaLibrary = () => {
                   </div>
                 )}
                 <div className="absolute bottom-0 left-0 right-0 p-1.5 flex flex-wrap gap-0.5">
-                  {media.damageType && (
-                    <span className={`text-[9px] px-1.5 py-0.5 rounded-md ${
-                      media.damageType === 'OK' ? 'bg-success/80 text-success-foreground' :
-                      media.damageType === 'Риск' ? 'bg-destructive/80 text-destructive-foreground' :
-                      'bg-primary/80 text-primary-foreground'
-                    }`}>
-                      {media.damageType}
+                  {media.damageTags?.map(tag => (
+                    <span key={tag} className={`text-[9px] px-1.5 py-0.5 rounded-md ${getTagColor(tag, true)}`}>
+                      {tag}
                     </span>
-                  )}
-                  {media.paintThickness && (
+                  ))}
+                  {(media.paintThicknessMin || media.paintThicknessMax) && (
                     <span className="text-[9px] bg-accent/80 text-accent-foreground px-1.5 py-0.5 rounded-md">
-                      {media.paintThickness}
+                      {media.paintThicknessMin && media.paintThicknessMax
+                        ? `${media.paintThicknessMin}–${media.paintThicknessMax} мкм`
+                        : media.paintThicknessMin ? `от ${media.paintThicknessMin} мкм`
+                        : `до ${media.paintThicknessMax} мкм`}
                     </span>
                   )}
                   {media.section && (
@@ -280,34 +317,62 @@ const MediaLibrary = () => {
 
             <div className="flex flex-col gap-4">
               <div>
-                <label className="text-sm font-semibold text-muted-foreground uppercase tracking-wider mb-2 block">Повреждение</label>
+                <label className="text-sm font-semibold text-muted-foreground uppercase tracking-wider mb-2 block">Повреждения</label>
                 <div className="flex flex-wrap gap-2">
-                  {(['OK', 'Перекрашено', 'Шпаклёвка', 'Замена', 'Риск'] as PartStatus[]).map(s => (
+                  {allTags.map(tag => (
                     <button
-                      key={s}
-                      className={`px-3.5 py-2 rounded-xl text-sm font-medium transition-colors ${
-                        bulkDamageType === s
-                          ? s === 'OK' ? 'bg-success text-success-foreground'
-                            : s === 'Риск' ? 'bg-destructive text-destructive-foreground'
-                            : 'bg-primary text-primary-foreground'
-                          : 'bg-secondary text-secondary-foreground'
-                      }`}
-                      onClick={() => setBulkDamageType(bulkDamageType === s ? undefined : s)}
+                      key={tag}
+                      className={`px-3.5 py-2 rounded-xl text-sm font-medium transition-colors ${getTagColor(tag, bulkDamageTags.includes(tag))}`}
+                      onClick={() => toggleBulkTag(tag)}
                     >
-                      {s}
+                      {tag}
                     </button>
                   ))}
+                  {showBulkNewTagInput ? (
+                    <div className="flex gap-1 items-center">
+                      <input
+                        autoFocus
+                        className="bg-secondary rounded-xl px-3 py-2 text-sm text-foreground outline-none w-28"
+                        placeholder="Название..."
+                        value={bulkNewTag}
+                        onChange={e => setBulkNewTag(e.target.value)}
+                        onKeyDown={e => { if (e.key === 'Enter') handleBulkAddCustomTag(); if (e.key === 'Escape') setShowBulkNewTagInput(false); }}
+                        maxLength={30}
+                      />
+                      <button onClick={handleBulkAddCustomTag} className="p-1.5 bg-primary text-primary-foreground rounded-lg">
+                        <Plus className="w-4 h-4" />
+                      </button>
+                    </div>
+                  ) : (
+                    <button
+                      className="px-3.5 py-2 rounded-xl text-sm font-medium bg-secondary text-secondary-foreground border border-dashed border-muted-foreground/30"
+                      onClick={() => setShowBulkNewTagInput(true)}
+                    >
+                      <Plus className="w-4 h-4 inline -mt-0.5 mr-1" />Свой тег
+                    </button>
+                  )}
                 </div>
               </div>
 
               <div>
-                <label className="text-sm font-semibold text-muted-foreground uppercase tracking-wider mb-2 block">Толщина ЛКП</label>
-                <input
-                  className="w-full bg-secondary border-none rounded-xl px-4 py-3 text-foreground placeholder:text-muted-foreground outline-none"
-                  placeholder="напр. 120 мкм"
-                  value={bulkPaintThickness}
-                  onChange={e => setBulkPaintThickness(e.target.value)}
-                />
+                <label className="text-sm font-semibold text-muted-foreground uppercase tracking-wider mb-2 block">Толщина ЛКП (мкм)</label>
+                <div className="flex gap-2 items-center">
+                  <input
+                    className="flex-1 bg-secondary border-none rounded-xl px-4 py-3 text-foreground placeholder:text-muted-foreground outline-none"
+                    placeholder="От"
+                    inputMode="numeric"
+                    value={bulkPaintMin}
+                    onChange={e => handleNumericInput(e.target.value, setBulkPaintMin)}
+                  />
+                  <span className="text-muted-foreground">—</span>
+                  <input
+                    className="flex-1 bg-secondary border-none rounded-xl px-4 py-3 text-foreground placeholder:text-muted-foreground outline-none"
+                    placeholder="До"
+                    inputMode="numeric"
+                    value={bulkPaintMax}
+                    onChange={e => handleNumericInput(e.target.value, setBulkPaintMax)}
+                  />
+                </div>
               </div>
 
               <div>

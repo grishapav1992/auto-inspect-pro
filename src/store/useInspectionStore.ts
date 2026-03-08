@@ -6,6 +6,8 @@ import { saveImage, deleteImages as deleteImagesFromDB } from '@/lib/mediaDB';
 interface InspectionStore {
   inspections: Inspection[];
   activeInspectionId: string | null;
+  customDamageTags: string[];
+  addCustomDamageTag: (tag: string) => void;
   
   getActiveInspection: () => Inspection | undefined;
   createInspection: () => string;
@@ -29,6 +31,11 @@ export const useInspectionStore = create<InspectionStore>()(
     (set, get) => ({
       inspections: [],
       activeInspectionId: null,
+      customDamageTags: [] as string[],
+      
+      addCustomDamageTag: (tag: string) => set(state => ({
+        customDamageTags: state.customDamageTags.includes(tag) ? state.customDamageTags : [...state.customDamageTags, tag],
+      })),
       
       getActiveInspection: () => {
         const { inspections, activeInspectionId } = get();
