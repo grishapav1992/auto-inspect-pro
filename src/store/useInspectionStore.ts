@@ -1,6 +1,6 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
-import { Inspection, MediaItem, CarInfo, BodyPartData, LegalCheckItem, DiagnosticItem, FinalVerdictData, createNewInspection, InspectionSection, CustomSection } from '@/types/inspection';
+import { Inspection, MediaItem, CarInfo, BodyPartData, LegalCheckItem, DiagnosticItem, FinalVerdictData, createNewInspection, InspectionSection } from '@/types/inspection';
 import { saveImage, deleteImages as deleteImagesFromDB } from '@/lib/mediaDB';
 
 interface InspectionStore {
