@@ -23,6 +23,7 @@ interface InspectionStore {
   updateBodyPart: (part: string, data: Partial<BodyPartData>) => void;
   updateLegalCheck: (index: number, item: Partial<LegalCheckItem>) => void;
   updateDiagnostic: (index: number, item: Partial<DiagnosticItem>) => void;
+  updateTestDrive: (index: number, item: Partial<DiagnosticItem>) => void;
   updateBodyPaintThickness: (value: string) => void;
   updateFinalVerdict: (data: Partial<FinalVerdictData>) => void;
   addCustomSection: (section: CustomSection) => void;
@@ -70,9 +71,7 @@ export const useInspectionStore = create<InspectionStore>()(
       setActiveInspection: (id) => set({ activeInspectionId: id }),
       
       addMedia: async (items) => {
-        // Save images to IndexedDB first
         await Promise.all(items.map(item => saveImage(item.id, item.dataUrl)));
-        // Store metadata only (no dataUrl) in zustand
         const metaItems: MediaItem[] = items.map(({ dataUrl, ...meta }) => meta);
         set(state => ({
           inspections: state.inspections.map(i =>
@@ -138,6 +137,14 @@ export const useInspectionStore = create<InspectionStore>()(
         inspections: state.inspections.map(i =>
           i.id === state.activeInspectionId
             ? { ...i, diagnostics: i.diagnostics.map((d, idx) => idx === index ? { ...d, ...item } : d) }
+            : i
+        ),
+      })),
+
+      updateTestDrive: (index, item) => set(state => ({
+        inspections: state.inspections.map(i =>
+          i.id === state.activeInspectionId
+            ? { ...i, testDrive: (i.testDrive || []).map((d, idx) => idx === index ? { ...d, ...item } : d) }
             : i
         ),
       })),

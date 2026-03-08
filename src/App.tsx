@@ -24,7 +24,7 @@ const App = () => (
           <Route path="/inspection/:id" element={<InspectionWorkspace />} />
           <Route path="/inspection/:id/media" element={<MediaLibrary />} />
           <Route path="/inspection/:id/section/:section" element={<SectionDetail />} />
-          <Route path="/inspection/:id/section/body/part/:part" element={<PartDetail />} />
+          <Route path="/inspection/:id/section/:section/part/:part" element={<PartDetail />} />
           <Route path="/inspection/:id/report" element={<ReportPreview />} />
           <Route path="*" element={<NotFound />} />
         </Routes>

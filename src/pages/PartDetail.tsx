@@ -1,7 +1,6 @@
-import { useMemo } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useInspectionStore } from '@/store/useInspectionStore';
-import { PartStatus } from '@/types/inspection';
+import { PartStatus, InspectionSection } from '@/types/inspection';
 import { Button } from '@/components/ui/button';
 import { ArrowLeft, ImagePlus } from 'lucide-react';
 import { useMediaImages } from '@/hooks/useMediaImages';
@@ -9,19 +8,18 @@ import { useMediaImages } from '@/hooks/useMediaImages';
 const STATUSES: PartStatus[] = ['OK', 'Перекрашено', 'Шпаклёвка', 'Замена', 'Риск'];
 
 const PartDetail = () => {
-  const { id, part } = useParams<{ id: string; part: string }>();
+  const { id, section, part } = useParams<{ id: string; section: string; part: string }>();
   const navigate = useNavigate();
   const { inspections, updateBodyPart, addMedia, setActiveInspection } = useInspectionStore();
   const inspection = inspections.find(i => i.id === id);
   const decodedPart = decodeURIComponent(part || '');
 
-  if (!inspection) return null;
+  if (!inspection || !section) return null;
 
   const partData = inspection.bodyParts[decodedPart] || {};
-  const partMedia = inspection.media.filter(m => m.section === 'body' && m.carPart === decodedPart);
+  const partMedia = inspection.media.filter(m => m.section === section && m.carPart === decodedPart);
   const mediaIds = partMedia.map(m => m.id);
   const images = useMediaImages(mediaIds);
-
 
   const handleGalleryUpload = () => {
     const input = document.createElement('input');
@@ -34,7 +32,7 @@ const PartDetail = () => {
       files.forEach(file => {
         const reader = new FileReader();
         reader.onload = () => {
-          addMedia([{ id: crypto.randomUUID(), dataUrl: reader.result as string, section: 'body', carPart: decodedPart, createdAt: new Date().toISOString() }]);
+          addMedia([{ id: crypto.randomUUID(), dataUrl: reader.result as string, section: section as InspectionSection, carPart: decodedPart, createdAt: new Date().toISOString() }]);
         };
         reader.readAsDataURL(file);
       });
@@ -46,7 +44,7 @@ const PartDetail = () => {
     <div className="min-h-screen bg-background pb-6">
       <div className="sticky top-0 bg-background/95 backdrop-blur-sm border-b border-border z-10 px-4 py-3">
         <div className="flex items-center gap-3">
-          <button onClick={() => navigate(`/inspection/${id}/section/body`)} className="p-2 -ml-2 text-foreground">
+          <button onClick={() => navigate(`/inspection/${id}/section/${section}`)} className="p-2 -ml-2 text-foreground">
             <ArrowLeft className="w-5 h-5" />
           </button>
           <h1 className="font-semibold text-foreground">{decodedPart}</h1>

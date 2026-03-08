@@ -3,25 +3,58 @@ export type InspectionSection =
   | 'legal-check' 
   | 'body' 
   | 'interior' 
+  | 'under-hood'
   | 'technical' 
+  | 'electrical'
   | 'diagnostics' 
+  | 'test-drive'
   | 'final-verdict';
 
 export const SECTION_LABELS: Record<InspectionSection, string> = {
-  'car-info': 'Информация об авто',
+  'car-info': 'Автомобиль',
   'legal-check': 'Юридическая проверка',
   'body': 'Кузов',
   'interior': 'Салон',
-  'technical': 'Техническая часть',
+  'under-hood': 'Под капотом',
+  'technical': 'Техника',
+  'electrical': 'Электрика',
   'diagnostics': 'Диагностика',
-  'final-verdict': 'Итоговый вердикт',
+  'test-drive': 'Тест-драйв',
+  'final-verdict': 'Итог',
 };
 
 export const BODY_PARTS = [
-  'Общий вид', 'Капот', 'Переднее левое крыло', 'Переднее правое крыло',
-  'Передняя левая дверь', 'Передняя правая дверь', 'Задняя левая дверь', 'Задняя правая дверь',
-  'Заднее левое крыло', 'Заднее правое крыло', 'Крыша', 'Багажник',
-  'Передний бампер', 'Задний бампер',
+  'Общий вид', 'Капот', 'Крыло переднее левое', 'Крыло переднее правое',
+  'Дверь передняя левая', 'Дверь передняя правая', 'Дверь задняя левая', 'Дверь задняя правая',
+  'Крыло заднее левое', 'Крыло заднее правое', 'Крыша',
+  'Стойка A левая', 'Стойка A правая', 'Стойка B левая', 'Стойка B правая',
+  'Стойка C левая', 'Стойка C правая',
+  'Крышка багажника', 'Передний бампер', 'Задний бампер',
+  'Пороги', 'Колесные арки', 'Зазоры кузова', 'Следы ремонта', 'Следы ДТП',
+] as const;
+
+export const INTERIOR_PARTS = [
+  'Общий вид салона', 'Сиденье водителя', 'Сиденье переднего пассажира',
+  'Задний ряд сидений', 'Потолок', 'Ковры', 'Панель приборов', 'Руль',
+  'Кнопки управления', 'Мультимедиа', 'Климат контроль', 'Обшивки дверей',
+  'Багажник', 'Запах в салоне', 'Следы износа',
+] as const;
+
+export const UNDER_HOOD_PARTS = [
+  'Общий вид подкапотного пространства', 'Двигатель', 'Подтеки масла',
+  'Подтеки антифриза', 'Ремни', 'Патрубки', 'Крепления двигателя',
+  'Аккумулятор', 'Следы ремонта', 'Следы демонтажа',
+] as const;
+
+export const TECHNICAL_PARTS = [
+  'Коробка передач', 'Сцепление', 'Раздаточная коробка', 'Кардан',
+  'Приводы', 'Передняя подвеска', 'Задняя подвеска', 'Амортизаторы',
+  'Тормозные диски', 'Тормозные колодки', 'Рулевая рейка',
+] as const;
+
+export const ELECTRICAL_PARTS = [
+  'Фары', 'Задние фонари', 'Поворотники', 'Стеклоподъемники',
+  'Зеркала', 'Подогревы', 'Датчики', 'Работа электроники',
 ] as const;
 
 export type BodyPart = typeof BODY_PARTS[number];
@@ -56,10 +89,16 @@ export interface BodyPartData {
 export interface CarInfo {
   make?: string;
   model?: string;
+  generation?: string;
   year?: string;
   vin?: string;
   licensePlate?: string;
   mileage?: string;
+  engine?: string;
+  transmission?: string;
+  drivetrain?: string;
+  trim?: string;
+  ownerCount?: string;
   city?: string;
   inspectionDate?: string;
 }
@@ -80,6 +119,10 @@ export interface FinalVerdictData {
   riskLevel?: RiskLevel;
   estimatedRepairCost?: string;
   finalComment?: string;
+  pros?: string;
+  cons?: string;
+  recommendations?: string;
+  overallRating?: string;
 }
 
 export interface CustomSection {
@@ -97,6 +140,7 @@ export interface Inspection {
   bodyPaintThickness?: string;
   legalChecks: LegalCheckItem[];
   diagnostics: DiagnosticItem[];
+  testDrive: DiagnosticItem[];
   finalVerdict: FinalVerdictData;
   customSections: CustomSection[];
   createdAt: string;
@@ -108,6 +152,14 @@ export const AVAILABLE_ICONS = [
   'Droplets', 'Wind', 'Battery', 'Lightbulb', 'Search', 'Tag', 'Box',
 ] as const;
 
+export const SECTION_PARTS: Partial<Record<InspectionSection, readonly string[]>> = {
+  'body': BODY_PARTS,
+  'interior': INTERIOR_PARTS,
+  'under-hood': UNDER_HOOD_PARTS,
+  'technical': TECHNICAL_PARTS,
+  'electrical': ELECTRICAL_PARTS,
+};
+
 export const createNewInspection = (): Inspection => ({
   id: crypto.randomUUID(),
   carInfo: { inspectionDate: new Date().toISOString().split('T')[0] },
@@ -115,17 +167,36 @@ export const createNewInspection = (): Inspection => ({
   bodyParts: {},
   customSections: [],
   legalChecks: [
-    { label: 'VIN проверен', status: 'Не проверено' },
-    { label: 'Документы проверены', status: 'Не проверено' },
-    { label: 'Ограничения', status: 'Не проверено' },
+    { label: 'Проверка VIN', status: 'Не проверено' },
+    { label: 'Совпадение VIN на кузове', status: 'Не проверено' },
+    { label: 'Совпадение VIN в документах', status: 'Не проверено' },
+    { label: 'Ограничения на регистрацию', status: 'Не проверено' },
     { label: 'Залог / кредит', status: 'Не проверено' },
-    { label: 'История такси', status: 'Не проверено' },
+    { label: 'История регистраций', status: 'Не проверено' },
+    { label: 'Работа в такси', status: 'Не проверено' },
+    { label: 'Лизинг', status: 'Не проверено' },
+    { label: 'ДТП по базам', status: 'Не проверено' },
+    { label: 'История страховых выплат', status: 'Не проверено' },
+    { label: 'Пробег по базам', status: 'Не проверено' },
   ],
   diagnostics: [
-    { label: 'OBD-сканирование', status: 'Не проверено' },
-    { label: 'Коды ошибок', status: 'Не проверено' },
-    { label: 'Электроника', status: 'Не проверено' },
-    { label: 'Комплектация', status: 'Не проверено' },
+    { label: 'OBD диагностика', status: 'Не проверено' },
+    { label: 'Ошибки двигателя', status: 'Не проверено' },
+    { label: 'Ошибки коробки передач', status: 'Не проверено' },
+    { label: 'Ошибки ABS', status: 'Не проверено' },
+    { label: 'Ошибки электроники', status: 'Не проверено' },
+    { label: 'Пробег по электронным блокам', status: 'Не проверено' },
+    { label: 'Работа систем безопасности', status: 'Не проверено' },
+  ],
+  testDrive: [
+    { label: 'Запуск двигателя', status: 'Не проверено' },
+    { label: 'Работа двигателя', status: 'Не проверено' },
+    { label: 'Работа коробки передач', status: 'Не проверено' },
+    { label: 'Работа подвески на ходу', status: 'Не проверено' },
+    { label: 'Работа тормозов', status: 'Не проверено' },
+    { label: 'Рулевое управление', status: 'Не проверено' },
+    { label: 'Посторонние шумы', status: 'Не проверено' },
+    { label: 'Вибрации', status: 'Не проверено' },
   ],
   finalVerdict: {},
   createdAt: new Date().toISOString(),
