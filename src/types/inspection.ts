@@ -39,6 +39,8 @@ export interface MediaItem {
   section?: InspectionSection;
   carPart?: string;
   note?: string;
+  damageType?: PartStatus;
+  paintThickness?: string;
   createdAt: string;
 }
 
