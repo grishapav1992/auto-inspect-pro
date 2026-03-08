@@ -153,8 +153,14 @@ export const useInspectionStore = create<InspectionStore>()(
             : i
         ),
       })),
-      
-    }),
+
+      updateFinalVerdict: (data) => set(state => ({
+        inspections: state.inspections.map(i =>
+          i.id === state.activeInspectionId
+            ? { ...i, finalVerdict: { ...i.finalVerdict, ...data } }
+            : i
+        ),
+      })),
     }),
     { name: 'car-inspection-storage' }
   )
