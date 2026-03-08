@@ -45,7 +45,7 @@ const TagManagerSheet = ({ section, onClose }: TagManagerSheetProps) => {
   const isHidden = (tag: string) => hiddenDefaultTags.includes(tag);
 
   return (
-    <div className="fixed inset-0 bg-foreground/30 z-40 flex items-end" onClick={onClose}>
+    <div className="fixed inset-0 bg-foreground/30 z-50 flex items-end" onClick={onClose}>
       <div
         className="bg-card w-full rounded-t-3xl p-5 max-h-[85vh] overflow-y-auto"
         onClick={e => e.stopPropagation()}
@@ -141,10 +141,17 @@ const TagManagerSheet = ({ section, onClose }: TagManagerSheetProps) => {
           </button>
         </div>
 
-        <p className="text-xs text-muted-foreground mt-3">
+        <p className="text-xs text-muted-foreground mt-3 mb-4">
           <Star className="w-3 h-3 inline text-amber-500 fill-amber-500 -mt-0.5 mr-1" />
           Приоритетные теги отображаются первыми
         </p>
+
+        <button
+          onClick={onClose}
+          className="w-full py-3 bg-primary text-primary-foreground rounded-xl text-sm font-medium"
+        >
+          Готово
+        </button>
       </div>
     </div>
   );
