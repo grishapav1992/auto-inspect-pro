@@ -2,8 +2,8 @@ import { useState, useMemo, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useInspectionStore } from '@/store/useInspectionStore';
 import { Button } from '@/components/ui/button';
-import { SECTION_LABELS, InspectionSection } from '@/types/inspection';
-import { ArrowLeft, Check, Tag, X, Search, Filter } from 'lucide-react';
+import { SECTION_LABELS, InspectionSection, PartStatus, BODY_PARTS } from '@/types/inspection';
+import { ArrowLeft, Check, Tag, X, Search, Filter, Pencil } from 'lucide-react';
 import { useMediaImages } from '@/hooks/useMediaImages';
 import MediaDetailSheet from '@/components/MediaDetailSheet';
 
@@ -16,7 +16,12 @@ const MediaLibrary = () => {
   const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
   const [searchQuery, setSearchQuery] = useState('');
   const [filterSection, setFilterSection] = useState<InspectionSection | 'all'>('all');
-  const [showAssignSheet, setShowAssignSheet] = useState(false);
+  const [showBulkEditSheet, setShowBulkEditSheet] = useState(false);
+  const [bulkDamageType, setBulkDamageType] = useState<PartStatus | undefined>();
+  const [bulkPaintThickness, setBulkPaintThickness] = useState('');
+  const [bulkSection, setBulkSection] = useState<InspectionSection | undefined>();
+  const [bulkCarPart, setBulkCarPart] = useState<string | undefined>();
+  const [bulkNote, setBulkNote] = useState('');
   const [editingMediaId, setEditingMediaId] = useState<string | null>(null);
   const [selectionMode, setSelectionMode] = useState(false);
 
@@ -82,10 +87,33 @@ const MediaLibrary = () => {
     input.click();
   };
 
-  const handleBulkAssign = (section: InspectionSection) => {
-    bulkAssignMedia(Array.from(selectedIds), { section });
+  const handleBulkApply = () => {
+    const updates: Record<string, any> = {};
+    if (bulkDamageType) updates.damageType = bulkDamageType;
+    if (bulkPaintThickness) updates.paintThickness = bulkPaintThickness;
+    if (bulkSection) updates.section = bulkSection;
+    if (bulkCarPart) updates.carPart = bulkCarPart;
+    if (bulkNote) updates.note = bulkNote;
+    if (Object.keys(updates).length > 0) {
+      bulkAssignMedia(Array.from(selectedIds), updates);
+    }
     setSelectedIds(new Set());
-    setShowAssignSheet(false);
+    setShowBulkEditSheet(false);
+    setSelectionMode(false);
+    resetBulkForm();
+  };
+
+  const resetBulkForm = () => {
+    setBulkDamageType(undefined);
+    setBulkPaintThickness('');
+    setBulkSection(undefined);
+    setBulkCarPart(undefined);
+    setBulkNote('');
+  };
+
+  const openBulkEdit = () => {
+    resetBulkForm();
+    setShowBulkEditSheet(true);
   };
 
   const handleDeleteSelected = () => {
@@ -231,8 +259,8 @@ const MediaLibrary = () => {
 
       {selectionMode && selectedIds.size > 0 && (
         <div className="fixed bottom-0 left-0 right-0 bg-card border-t border-border p-4 flex gap-2 z-20">
-          <Button size="sm" className="flex-1" onClick={() => setShowAssignSheet(true)}>
-            <Tag className="w-4 h-4" /> Назначить ({selectedIds.size})
+          <Button size="sm" className="flex-1" onClick={openBulkEdit}>
+            <Pencil className="w-4 h-4" /> Заключение ({selectedIds.size})
           </Button>
           <Button size="sm" variant="destructive" onClick={handleDeleteSelected}>
             <X className="w-4 h-4" /> Удалить
@@ -240,22 +268,96 @@ const MediaLibrary = () => {
         </div>
       )}
 
-      {showAssignSheet && (
-        <div className="fixed inset-0 bg-foreground/30 z-30 flex items-end" onClick={() => setShowAssignSheet(false)}>
-          <div className="bg-card w-full rounded-t-3xl p-6 max-h-[70vh] overflow-y-auto" onClick={e => e.stopPropagation()}>
-            <h3 className="font-semibold text-foreground text-lg mb-4">Назначить раздел</h3>
-            <div className="flex flex-col gap-2">
-              {(Object.keys(SECTION_LABELS) as InspectionSection[]).map(s => (
-                <button
-                  key={s}
-                  className="p-4 rounded-xl bg-secondary text-foreground text-left font-medium active:bg-border transition-colors"
-                  onClick={() => handleBulkAssign(s)}
-                >
-                  {SECTION_LABELS[s]}
-                </button>
-              ))}
+      {showBulkEditSheet && (
+        <div className="fixed inset-0 bg-foreground/30 z-30 flex items-end" onClick={() => setShowBulkEditSheet(false)}>
+          <div className="bg-card w-full rounded-t-3xl p-5 max-h-[85vh] overflow-y-auto" onClick={e => e.stopPropagation()}>
+            <div className="flex items-center justify-between mb-4">
+              <h3 className="font-semibold text-foreground text-lg">Заключение для {selectedIds.size} фото</h3>
+              <button onClick={() => setShowBulkEditSheet(false)} className="p-1 text-muted-foreground">
+                <X className="w-5 h-5" />
+              </button>
             </div>
-            <Button variant="ghost" className="w-full mt-4" onClick={() => setShowAssignSheet(false)}>Отмена</Button>
+
+            <div className="flex flex-col gap-4">
+              <div>
+                <label className="text-sm font-semibold text-muted-foreground uppercase tracking-wider mb-2 block">Повреждение</label>
+                <div className="flex flex-wrap gap-2">
+                  {(['OK', 'Перекрашено', 'Шпаклёвка', 'Замена', 'Риск'] as PartStatus[]).map(s => (
+                    <button
+                      key={s}
+                      className={`px-3.5 py-2 rounded-xl text-sm font-medium transition-colors ${
+                        bulkDamageType === s
+                          ? s === 'OK' ? 'bg-success text-success-foreground'
+                            : s === 'Риск' ? 'bg-destructive text-destructive-foreground'
+                            : 'bg-primary text-primary-foreground'
+                          : 'bg-secondary text-secondary-foreground'
+                      }`}
+                      onClick={() => setBulkDamageType(bulkDamageType === s ? undefined : s)}
+                    >
+                      {s}
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              <div>
+                <label className="text-sm font-semibold text-muted-foreground uppercase tracking-wider mb-2 block">Толщина ЛКП</label>
+                <input
+                  className="w-full bg-secondary border-none rounded-xl px-4 py-3 text-foreground placeholder:text-muted-foreground outline-none"
+                  placeholder="напр. 120 мкм"
+                  value={bulkPaintThickness}
+                  onChange={e => setBulkPaintThickness(e.target.value)}
+                />
+              </div>
+
+              <div>
+                <label className="text-sm font-semibold text-muted-foreground uppercase tracking-wider mb-2 block">Раздел</label>
+                <select
+                  className="w-full bg-secondary text-foreground rounded-xl px-4 py-3 outline-none border-none text-sm"
+                  value={bulkSection || ''}
+                  onChange={e => {
+                    const val = e.target.value as InspectionSection | '';
+                    setBulkSection(val || undefined);
+                    if (val !== 'body') setBulkCarPart(undefined);
+                  }}
+                >
+                  <option value="">Не менять</option>
+                  {(Object.keys(SECTION_LABELS) as InspectionSection[]).map(s => (
+                    <option key={s} value={s}>{SECTION_LABELS[s]}</option>
+                  ))}
+                </select>
+              </div>
+
+              {bulkSection === 'body' && (
+                <div>
+                  <label className="text-sm font-semibold text-muted-foreground uppercase tracking-wider mb-2 block">Деталь кузова</label>
+                  <select
+                    className="w-full bg-secondary text-foreground rounded-xl px-4 py-3 outline-none border-none text-sm"
+                    value={bulkCarPart || ''}
+                    onChange={e => setBulkCarPart(e.target.value || undefined)}
+                  >
+                    <option value="">Не указана</option>
+                    {BODY_PARTS.map(p => (
+                      <option key={p} value={p}>{p}</option>
+                    ))}
+                  </select>
+                </div>
+              )}
+
+              <div>
+                <label className="text-sm font-semibold text-muted-foreground uppercase tracking-wider mb-2 block">Заметка</label>
+                <textarea
+                  className="w-full bg-secondary border-none rounded-xl px-4 py-3 text-foreground placeholder:text-muted-foreground outline-none resize-none min-h-[80px]"
+                  placeholder="Общий комментарий..."
+                  value={bulkNote}
+                  onChange={e => setBulkNote(e.target.value)}
+                />
+              </div>
+
+              <Button className="w-full" onClick={handleBulkApply}>
+                Применить ко всем ({selectedIds.size})
+              </Button>
+            </div>
           </div>
         </div>
       )}
