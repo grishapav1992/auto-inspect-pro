@@ -3,7 +3,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { useInspectionStore } from '@/store/useInspectionStore';
 import { Button } from '@/components/ui/button';
 import { SECTION_LABELS, InspectionSection, AVAILABLE_ICONS, CustomSection } from '@/types/inspection';
-import { ArrowLeft, ChevronRight, Car, Shield, Layers, Sofa, Wrench, Cpu, FileCheck, Plus, X, Trash2 } from 'lucide-react';
+import { ArrowLeft, ChevronRight, Car, Shield, Layers, Sofa, Wrench, Cpu, FileCheck, Plus, X, Trash2, Gauge, Zap, Navigation } from 'lucide-react';
 import { icons } from 'lucide-react';
 
 const SECTION_ICONS: Record<InspectionSection, React.ReactNode> = {
@@ -11,8 +11,11 @@ const SECTION_ICONS: Record<InspectionSection, React.ReactNode> = {
   'legal-check': <Shield className="w-5 h-5" />,
   'body': <Layers className="w-5 h-5" />,
   'interior': <Sofa className="w-5 h-5" />,
+  'under-hood': <Gauge className="w-5 h-5" />,
   'technical': <Wrench className="w-5 h-5" />,
+  'electrical': <Zap className="w-5 h-5" />,
   'diagnostics': <Cpu className="w-5 h-5" />,
+  'test-drive': <Navigation className="w-5 h-5" />,
   'final-verdict': <FileCheck className="w-5 h-5" />,
 };
 
@@ -57,6 +60,10 @@ const InspectionWorkspace = () => {
         return !!(inspection.carInfo.make && inspection.carInfo.model);
       case 'legal-check':
         return inspection.legalChecks.every(c => c.status !== 'Не проверено');
+      case 'diagnostics':
+        return inspection.diagnostics.every(d => d.status !== 'Не проверено');
+      case 'test-drive':
+        return (inspection.testDrive || []).every(d => d.status !== 'Не проверено');
       case 'final-verdict':
         return !!inspection.finalVerdict.verdict;
       default:

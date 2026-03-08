@@ -1,12 +1,13 @@
 import { useState, useMemo } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useInspectionStore } from '@/store/useInspectionStore';
-import { InspectionSection, SECTION_LABELS, BODY_PARTS, DEFAULT_DAMAGE_TAGS } from '@/types/inspection';
+import { InspectionSection, SECTION_LABELS, SECTION_PARTS, DEFAULT_DAMAGE_TAGS } from '@/types/inspection';
 import { Button } from '@/components/ui/button';
 import { ArrowLeft, ImagePlus, Check, X, Pencil, Plus, Filter } from 'lucide-react';
 import CarInfoSection from '@/components/sections/CarInfoSection';
 import LegalCheckSection from '@/components/sections/LegalCheckSection';
 import DiagnosticsSection from '@/components/sections/DiagnosticsSection';
+import TestDriveSection from '@/components/sections/TestDriveSection';
 import FinalVerdictSection from '@/components/sections/FinalVerdictSection';
 import MediaDetailSheet from '@/components/MediaDetailSheet';
 import { useMediaImages } from '@/hooks/useMediaImages';
@@ -29,14 +30,12 @@ const SectionDetail = () => {
   const [showBulkNewTagInput, setShowBulkNewTagInput] = useState(false);
   const [editingMediaId, setEditingMediaId] = useState<string | null>(null);
 
-  // Determine if this is a custom section
   const isCustomSection = section?.startsWith('custom-');
   const customSectionId = isCustomSection ? section!.replace('custom-', '') : null;
   const customSection = isCustomSection && inspection
     ? (inspection.customSections || []).find(s => s.id === customSectionId)
     : null;
 
-  // For custom sections, use only custom tags; for built-in sections, use default + custom
   const allTags = isCustomSection
     ? (customSection?.customTags || [])
     : [...DEFAULT_DAMAGE_TAGS, ...customDamageTags.filter(t => !DEFAULT_DAMAGE_TAGS.includes(t))];
@@ -44,6 +43,9 @@ const SectionDetail = () => {
   const sectionLabel = isCustomSection
     ? (customSection?.name || 'Раздел')
     : (section ? SECTION_LABELS[section as InspectionSection] : '');
+
+  // Get parts list for sections that have sub-parts
+  const sectionParts = section ? SECTION_PARTS[section as InspectionSection] : undefined;
 
   if (!inspection || !section) return null;
 
@@ -151,12 +153,10 @@ const SectionDetail = () => {
     if (!trimmed) return;
 
     if (isCustomSection && customSectionId) {
-      // Add to custom section's tags
       if (!allTags.includes(trimmed)) {
         addCustomSectionTag(customSectionId, trimmed);
       }
     } else {
-      // Add to global custom tags
       if (!allTags.includes(trimmed)) {
         addCustomDamageTag(trimmed);
       }
@@ -179,14 +179,16 @@ const SectionDetail = () => {
     return 'bg-primary text-primary-foreground';
   };
 
-  // Non-media sections render their own content
-  const isMediaSection = isCustomSection || !['car-info', 'legal-check', 'diagnostics', 'final-verdict'].includes(section);
+  // Sections that render forms (not media grids)
+  const formSections = ['car-info', 'legal-check', 'diagnostics', 'test-drive', 'final-verdict'];
+  const isMediaSection = isCustomSection || !formSections.includes(section);
 
   const renderSpecialSection = () => {
     switch (section) {
       case 'car-info': return <CarInfoSection inspection={inspection} />;
       case 'legal-check': return <LegalCheckSection inspection={inspection} />;
       case 'diagnostics': return <DiagnosticsSection inspection={inspection} />;
+      case 'test-drive': return <TestDriveSection inspection={inspection} />;
       case 'final-verdict': return <FinalVerdictSection inspection={inspection} />;
       default: return null;
     }
@@ -226,6 +228,42 @@ const SectionDetail = () => {
                   updateBodyPaintThickness(e.target.value);
                 }}
               />
+            </div>
+          )}
+
+          {/* Sub-parts navigation for sections with parts */}
+          {sectionParts && (
+            <div className="px-4 pt-3">
+              <label className="text-sm font-semibold text-muted-foreground uppercase tracking-wider mb-2 block">
+                Подразделы
+              </label>
+              <div className="flex flex-col gap-1.5">
+                {sectionParts.map(part => {
+                  const partPhotos = sectionMedia.filter(m => m.carPart === part).length;
+                  const partData = inspection.bodyParts[part];
+                  return (
+                    <button
+                      key={part}
+                      className="bg-card border border-border rounded-xl px-4 py-3 flex items-center justify-between text-left active:bg-secondary transition-colors"
+                      onClick={() => navigate(`/inspection/${id}/section/${section}/part/${encodeURIComponent(part)}`)}
+                    >
+                      <div>
+                        <p className="text-sm font-medium text-foreground">{part}</p>
+                        {partPhotos > 0 && <p className="text-xs text-muted-foreground">{partPhotos} фото</p>}
+                      </div>
+                      <div className="flex items-center gap-2">
+                        {partData?.status && (
+                          <span className={`text-xs font-medium px-2 py-0.5 rounded-md ${
+                            partData.status === 'OK' ? 'bg-success/10 text-success' :
+                            partData.status === 'Риск' ? 'bg-destructive/10 text-destructive' :
+                            'bg-warning/10 text-warning'
+                          }`}>{partData.status}</span>
+                        )}
+                      </div>
+                    </button>
+                  );
+                })}
+              </div>
             </div>
           )}
 
@@ -404,17 +442,17 @@ const SectionDetail = () => {
                     </div>
                   )}
 
-                  {/* Car part (for body section) */}
-                  {section === 'body' && (
+                  {/* Car part selector for sections with parts */}
+                  {sectionParts && (
                     <div>
-                      <label className="text-sm font-semibold text-muted-foreground uppercase tracking-wider mb-2 block">Деталь кузова</label>
+                      <label className="text-sm font-semibold text-muted-foreground uppercase tracking-wider mb-2 block">Подраздел</label>
                       <select
                         className="w-full bg-secondary text-foreground rounded-xl px-4 py-3 outline-none border-none text-sm"
                         value={bulkCarPart || ''}
                         onChange={e => setBulkCarPart(e.target.value || undefined)}
                       >
-                        <option value="">Не указана</option>
-                        {BODY_PARTS.map(p => (
+                        <option value="">Не указан</option>
+                        {sectionParts.map(p => (
                           <option key={p} value={p}>{p}</option>
                         ))}
                       </select>
