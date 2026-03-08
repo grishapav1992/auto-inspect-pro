@@ -298,18 +298,20 @@ const SectionDetail = () => {
                         {selected && <Check className="w-3.5 h-3.5 text-primary-foreground" />}
                       </div>
                     )}
+                    {/* No damage indicator */}
+                    {media.noDamage && (
+                      <div className="absolute top-1.5 left-1.5 w-6 h-6 rounded-full bg-success flex items-center justify-center shadow-sm">
+                        <Check className="w-3.5 h-3.5 text-success-foreground" />
+                      </div>
+                    )}
                     {/* Compact tag indicators */}
-                    {(media.damageTags?.length || media.carPart || media.paintThicknessMin || media.paintThicknessMax) && (
+                    {!media.noDamage && (media.damageTags?.length || media.carPart) && (
                       <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/60 to-transparent p-1.5">
                         <div className="flex items-center gap-1">
                           {media.damageTags?.map(tag => (
                             <div
                               key={tag}
-                              className={`w-2.5 h-2.5 rounded-full ${
-                                tag === 'OK' ? 'bg-success'
-                                : tag === 'Риск' ? 'bg-destructive'
-                                : 'bg-primary'
-                              }`}
+                              className="w-2.5 h-2.5 rounded-full bg-destructive"
                               title={tag}
                             />
                           ))}
