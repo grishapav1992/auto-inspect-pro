@@ -4,6 +4,7 @@ import { Button } from '@/components/ui/button';
 import { X, Plus, Mic, Square, Play, Trash2, Pause, Settings } from 'lucide-react';
 import { useInspectionStore } from '@/store/useInspectionStore';
 import { saveImage, getImage, deleteImages } from '@/lib/mediaDB';
+import TagManagerSheet from '@/components/TagManagerSheet';
 
 const MAX_AUDIO_NOTES = 3;
 
