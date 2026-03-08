@@ -1,9 +1,11 @@
 import { useState, useEffect, useRef } from 'react';
-import { MediaItem, SECTION_LABELS, InspectionSection, BODY_PARTS, INTERIOR_PARTS, UNDER_HOOD_PARTS, TECHNICAL_PARTS, ELECTRICAL_PARTS, DEFAULT_DAMAGE_TAGS } from '@/types/inspection';
+import { MediaItem, InspectionSection, BODY_PARTS, INTERIOR_PARTS, UNDER_HOOD_PARTS, TECHNICAL_PARTS, ELECTRICAL_PARTS, DEFAULT_DAMAGE_TAGS } from '@/types/inspection';
 import { Button } from '@/components/ui/button';
 import { X, Plus, Mic, Square, Play, Trash2, Pause } from 'lucide-react';
 import { useInspectionStore } from '@/store/useInspectionStore';
 import { saveImage, getImage, deleteImages } from '@/lib/mediaDB';
+
+const MAX_AUDIO_NOTES = 3;
 
 interface MediaDetailSheetProps {
   media: MediaItem | null;
@@ -19,6 +21,11 @@ const SECTION_PARTS: Partial<Record<InspectionSection, readonly string[]>> = {
   'electrical': ELECTRICAL_PARTS,
 };
 
+interface AudioNote {
+  id: string;
+  url: string;
+}
+
 const MediaDetailSheet = ({ media, onClose, onUpdate }: MediaDetailSheetProps) => {
   const [note, setNote] = useState('');
   const [damageTags, setDamageTags] = useState<string[]>([]);
@@ -28,11 +35,10 @@ const MediaDetailSheet = ({ media, onClose, onUpdate }: MediaDetailSheetProps) =
   const [newTag, setNewTag] = useState('');
   const [showNewTagInput, setShowNewTagInput] = useState(false);
 
-  // Audio recording state
+  // Audio state - multiple notes
   const [isRecording, setIsRecording] = useState(false);
-  const [audioNoteId, setAudioNoteId] = useState<string | undefined>();
-  const [audioUrl, setAudioUrl] = useState<string | null>(null);
-  const [isPlaying, setIsPlaying] = useState(false);
+  const [audioNotes, setAudioNotes] = useState<AudioNote[]>([]);
+  const [playingId, setPlayingId] = useState<string | null>(null);
   const [recordingDuration, setRecordingDuration] = useState(0);
   const mediaRecorderRef = useRef<MediaRecorder | null>(null);
   const audioChunksRef = useRef<Blob[]>([]);
@@ -49,16 +55,20 @@ const MediaDetailSheet = ({ media, onClose, onUpdate }: MediaDetailSheetProps) =
       setPaintThicknessMin(media.paintThicknessMin?.toString() || '');
       setPaintThicknessMax(media.paintThicknessMax?.toString() || '');
       setCarPart(media.carPart);
-      setAudioNoteId(media.audioNoteId);
-      setAudioUrl(null);
-      setIsPlaying(false);
+      setPlayingId(null);
       setRecordingDuration(0);
 
-      // Load existing audio note
-      if (media.audioNoteId) {
-        getImage(media.audioNoteId).then(dataUrl => {
-          if (dataUrl) setAudioUrl(dataUrl);
+      // Load existing audio notes
+      const ids = media.audioNoteIds || [];
+      if (ids.length > 0) {
+        Promise.all(ids.map(async (id) => {
+          const url = await getImage(id);
+          return url ? { id, url } : null;
+        })).then(results => {
+          setAudioNotes(results.filter(Boolean) as AudioNote[]);
         });
+      } else {
+        setAudioNotes([]);
       }
     }
   }, [media]);
@@ -76,15 +86,16 @@ const MediaDetailSheet = ({ media, onClose, onUpdate }: MediaDetailSheetProps) =
 
   const currentSection = media.section;
   const availableParts = currentSection ? SECTION_PARTS[currentSection] : undefined;
+  const isBodySection = currentSection === 'body';
 
   const handleSave = () => {
     onUpdate(media.id, {
       note,
       damageTags: damageTags.length > 0 ? damageTags : undefined,
-      paintThicknessMin: paintThicknessMin ? Number(paintThicknessMin) : undefined,
-      paintThicknessMax: paintThicknessMax ? Number(paintThicknessMax) : undefined,
+      paintThicknessMin: isBodySection && paintThicknessMin ? Number(paintThicknessMin) : undefined,
+      paintThicknessMax: isBodySection && paintThicknessMax ? Number(paintThicknessMax) : undefined,
       carPart,
-      audioNoteId,
+      audioNoteIds: audioNotes.length > 0 ? audioNotes.map(a => a.id) : undefined,
     });
     onClose();
   };
@@ -115,6 +126,7 @@ const MediaDetailSheet = ({ media, onClose, onUpdate }: MediaDetailSheetProps) =
   };
 
   const startRecording = async () => {
+    if (audioNotes.length >= MAX_AUDIO_NOTES) return;
     try {
       const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
       const mediaRecorder = new MediaRecorder(stream);
@@ -135,15 +147,8 @@ const MediaDetailSheet = ({ media, onClose, onUpdate }: MediaDetailSheetProps) =
         reader.onloadend = async () => {
           const dataUrl = reader.result as string;
           const id = `audio-${media.id}-${Date.now()}`;
-
-          // Delete old audio if exists
-          if (audioNoteId) {
-            await deleteImages([audioNoteId]);
-          }
-
           await saveImage(id, dataUrl);
-          setAudioNoteId(id);
-          setAudioUrl(dataUrl);
+          setAudioNotes(prev => [...prev, { id, url: dataUrl }]);
         };
         reader.readAsDataURL(blob);
       };
@@ -165,31 +170,31 @@ const MediaDetailSheet = ({ media, onClose, onUpdate }: MediaDetailSheetProps) =
     }
   };
 
-  const playAudio = () => {
-    if (!audioUrl) return;
+  const playAudio = (audioNote: AudioNote) => {
+    if (playingId === audioNote.id) {
+      audioRef.current?.pause();
+      audioRef.current = null;
+      setPlayingId(null);
+      return;
+    }
     if (audioRef.current) {
       audioRef.current.pause();
       audioRef.current = null;
-      setIsPlaying(false);
-      return;
     }
-    const audio = new Audio(audioUrl);
+    const audio = new Audio(audioNote.url);
     audioRef.current = audio;
-    setIsPlaying(true);
-    audio.onended = () => { setIsPlaying(false); audioRef.current = null; };
+    setPlayingId(audioNote.id);
+    audio.onended = () => { setPlayingId(null); audioRef.current = null; };
     audio.play();
   };
 
-  const deleteAudio = async () => {
-    if (audioNoteId) {
-      await deleteImages([audioNoteId]);
-    }
-    setAudioNoteId(undefined);
-    setAudioUrl(null);
-    if (audioRef.current) {
-      audioRef.current.pause();
+  const deleteAudioNote = async (audioNote: AudioNote) => {
+    await deleteImages([audioNote.id]);
+    setAudioNotes(prev => prev.filter(a => a.id !== audioNote.id));
+    if (playingId === audioNote.id) {
+      audioRef.current?.pause();
       audioRef.current = null;
-      setIsPlaying(false);
+      setPlayingId(null);
     }
   };
 
@@ -256,29 +261,31 @@ const MediaDetailSheet = ({ media, onClose, onUpdate }: MediaDetailSheetProps) =
             </div>
           </div>
 
-          {/* Paint Thickness Range */}
-          <div>
-            <label className="text-sm font-semibold text-muted-foreground uppercase tracking-wider mb-2 block">
-              Толщина ЛКП (мкм)
-            </label>
-            <div className="flex gap-2 items-center">
-              <input
-                className="flex-1 bg-secondary border-none rounded-xl px-4 py-3 text-foreground placeholder:text-muted-foreground outline-none"
-                placeholder="От"
-                inputMode="numeric"
-                value={paintThicknessMin}
-                onChange={e => handleNumericInput(e.target.value, setPaintThicknessMin)}
-              />
-              <span className="text-muted-foreground">—</span>
-              <input
-                className="flex-1 bg-secondary border-none rounded-xl px-4 py-3 text-foreground placeholder:text-muted-foreground outline-none"
-                placeholder="До"
-                inputMode="numeric"
-                value={paintThicknessMax}
-                onChange={e => handleNumericInput(e.target.value, setPaintThicknessMax)}
-              />
+          {/* Paint Thickness Range - only for body section */}
+          {isBodySection && (
+            <div>
+              <label className="text-sm font-semibold text-muted-foreground uppercase tracking-wider mb-2 block">
+                Толщина ЛКП (мкм)
+              </label>
+              <div className="flex gap-2 items-center">
+                <input
+                  className="flex-1 bg-secondary border-none rounded-xl px-4 py-3 text-foreground placeholder:text-muted-foreground outline-none"
+                  placeholder="От"
+                  inputMode="numeric"
+                  value={paintThicknessMin}
+                  onChange={e => handleNumericInput(e.target.value, setPaintThicknessMin)}
+                />
+                <span className="text-muted-foreground">—</span>
+                <input
+                  className="flex-1 bg-secondary border-none rounded-xl px-4 py-3 text-foreground placeholder:text-muted-foreground outline-none"
+                  placeholder="До"
+                  inputMode="numeric"
+                  value={paintThicknessMax}
+                  onChange={e => handleNumericInput(e.target.value, setPaintThicknessMax)}
+                />
+              </div>
             </div>
-          </div>
+          )}
 
           {/* Car Part - only if section has parts */}
           {availableParts && (
@@ -299,61 +306,64 @@ const MediaDetailSheet = ({ media, onClose, onUpdate }: MediaDetailSheetProps) =
             </div>
           )}
 
-          {/* Audio Note */}
+          {/* Audio Notes (up to 3) */}
           <div>
             <label className="text-sm font-semibold text-muted-foreground uppercase tracking-wider mb-2 block">
-              Аудиозаметка
+              Аудиозаметки ({audioNotes.length}/{MAX_AUDIO_NOTES})
             </label>
-            {isRecording ? (
-              <div className="flex items-center gap-3 bg-destructive/10 rounded-xl px-4 py-3">
-                <div className="w-3 h-3 rounded-full bg-destructive animate-pulse" />
-                <span className="text-sm text-foreground font-medium flex-1">
-                  Запись... {formatTime(recordingDuration)}
-                </span>
-                <button
-                  onClick={stopRecording}
-                  className="p-2 bg-destructive text-destructive-foreground rounded-xl"
-                >
-                  <Square className="w-4 h-4" />
-                </button>
-              </div>
-            ) : audioUrl ? (
-              <div className="flex items-center gap-2">
-                <button
-                  onClick={playAudio}
-                  className="flex-1 flex items-center gap-3 bg-secondary rounded-xl px-4 py-3"
-                >
-                  {isPlaying ? (
-                    <Pause className="w-4 h-4 text-primary" />
-                  ) : (
-                    <Play className="w-4 h-4 text-primary" />
-                  )}
-                  <span className="text-sm text-foreground">
-                    {isPlaying ? 'Воспроизводится...' : 'Аудиозаметка'}
+            <div className="flex flex-col gap-2">
+              {/* Existing audio notes */}
+              {audioNotes.map((audioNote, idx) => (
+                <div key={audioNote.id} className="flex items-center gap-2">
+                  <button
+                    onClick={() => playAudio(audioNote)}
+                    className="flex-1 flex items-center gap-3 bg-secondary rounded-xl px-4 py-3"
+                  >
+                    {playingId === audioNote.id ? (
+                      <Pause className="w-4 h-4 text-primary" />
+                    ) : (
+                      <Play className="w-4 h-4 text-primary" />
+                    )}
+                    <span className="text-sm text-foreground">
+                      {playingId === audioNote.id ? 'Воспроизводится...' : `Запись ${idx + 1}`}
+                    </span>
+                  </button>
+                  <button
+                    onClick={() => deleteAudioNote(audioNote)}
+                    className="p-3 bg-secondary rounded-xl text-destructive"
+                  >
+                    <Trash2 className="w-4 h-4" />
+                  </button>
+                </div>
+              ))}
+
+              {/* Recording indicator */}
+              {isRecording && (
+                <div className="flex items-center gap-3 bg-destructive/10 rounded-xl px-4 py-3">
+                  <div className="w-3 h-3 rounded-full bg-destructive animate-pulse" />
+                  <span className="text-sm text-foreground font-medium flex-1">
+                    Запись... {formatTime(recordingDuration)}
                   </span>
-                </button>
-                <button
-                  onClick={deleteAudio}
-                  className="p-3 bg-secondary rounded-xl text-destructive"
-                >
-                  <Trash2 className="w-4 h-4" />
-                </button>
+                  <button
+                    onClick={stopRecording}
+                    className="p-2 bg-destructive text-destructive-foreground rounded-xl"
+                  >
+                    <Square className="w-4 h-4" />
+                  </button>
+                </div>
+              )}
+
+              {/* Add recording button */}
+              {!isRecording && audioNotes.length < MAX_AUDIO_NOTES && (
                 <button
                   onClick={startRecording}
-                  className="p-3 bg-secondary rounded-xl text-muted-foreground"
+                  className="w-full flex items-center justify-center gap-2 bg-secondary rounded-xl px-4 py-3 text-sm text-muted-foreground"
                 >
                   <Mic className="w-4 h-4" />
+                  {audioNotes.length === 0 ? 'Записать аудиозаметку' : 'Добавить ещё запись'}
                 </button>
-              </div>
-            ) : (
-              <button
-                onClick={startRecording}
-                className="w-full flex items-center justify-center gap-2 bg-secondary rounded-xl px-4 py-3 text-sm text-muted-foreground"
-              >
-                <Mic className="w-4 h-4" />
-                Записать аудиозаметку
-              </button>
-            )}
+              )}
+            </div>
           </div>
 
           {/* Note */}
