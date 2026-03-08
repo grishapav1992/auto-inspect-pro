@@ -254,9 +254,18 @@ const MediaDetailSheet = ({ media, onClose, onUpdate }: MediaDetailSheetProps) =
           {/* Damage Tags - hidden when noDamage */}
           {!noDamage && (
             <div>
-              <label className="text-sm font-semibold text-muted-foreground uppercase tracking-wider mb-2 block">
-                Повреждения
-              </label>
+              <div className="flex items-center justify-between mb-2">
+                <label className="text-sm font-semibold text-muted-foreground uppercase tracking-wider">
+                  Повреждения
+                </label>
+                <button
+                  onClick={() => setShowTagManager(true)}
+                  className="p-1 text-muted-foreground"
+                  title="Настройки тегов"
+                >
+                  <Settings className="w-4 h-4" />
+                </button>
+              </div>
               <div className="flex flex-wrap gap-2">
                 {allTags.map(tag => (
                   <button
