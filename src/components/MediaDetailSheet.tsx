@@ -53,6 +53,7 @@ const MediaDetailSheet = ({ media, onClose, onUpdate }: MediaDetailSheetProps) =
     if (media) {
       setNote(media.note || '');
       setDamageTags(media.damageTags || []);
+      setNoDamage(media.noDamage || false);
       setPaintThicknessMin(media.paintThicknessMin?.toString() || '');
       setPaintThicknessMax(media.paintThicknessMax?.toString() || '');
       setCarPart(media.carPart);
