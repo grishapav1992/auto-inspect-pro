@@ -6,6 +6,8 @@ import { saveImage, deleteImages as deleteImagesFromDB } from '@/lib/mediaDB';
 interface InspectionStore {
   inspections: Inspection[];
   activeInspectionId: string | null;
+  customDamageTags: string[];
+  addCustomDamageTag: (tag: string) => void;
   
   getActiveInspection: () => Inspection | undefined;
   createInspection: () => string;
