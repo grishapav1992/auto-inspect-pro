@@ -1,9 +1,9 @@
-import { useState, useMemo } from 'react';
+import { useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useInspectionStore } from '@/store/useInspectionStore';
-import { InspectionSection, SECTION_LABELS, BODY_PARTS } from '@/types/inspection';
+import { InspectionSection, SECTION_LABELS, DEFAULT_DAMAGE_TAGS } from '@/types/inspection';
 import { Button } from '@/components/ui/button';
-import { ArrowLeft, ChevronRight, Camera, ImagePlus, Images, Check, MapPin, Save } from 'lucide-react';
+import { ArrowLeft, Camera, ImagePlus, Images, Check, Tag, Save } from 'lucide-react';
 import CarInfoSection from '@/components/sections/CarInfoSection';
 import LegalCheckSection from '@/components/sections/LegalCheckSection';
 import DiagnosticsSection from '@/components/sections/DiagnosticsSection';
@@ -13,11 +13,11 @@ import { useMediaImages } from '@/hooks/useMediaImages';
 const SectionDetail = () => {
   const { id, section } = useParams<{ id: string; section: InspectionSection }>();
   const navigate = useNavigate();
-  const { inspections, setActiveInspection, addMedia, updateMedia } = useInspectionStore();
+  const { inspections, setActiveInspection, addMedia, updateMedia, updateBodyPaintThickness, customDamageTags, addCustomDamageTag } = useInspectionStore();
   const inspection = inspections.find(i => i.id === id);
 
-  const [selectedUnassigned, setSelectedUnassigned] = useState<Set<string>>(new Set());
-  const [showPartPicker, setShowPartPicker] = useState(false);
+  const [selectedPhotos, setSelectedPhotos] = useState<Set<string>>(new Set());
+  const [showTagPicker, setShowTagPicker] = useState(false);
 
   if (!inspection || !section) return null;
 
@@ -62,12 +62,8 @@ const SectionDetail = () => {
     input.click();
   };
 
-  const unassignedBodyMedia = inspection.media.filter(m => m.section === 'body' && !m.carPart);
-  const unassignedBodyIds = unassignedBodyMedia.map(m => m.id);
-  const unassignedImages = useMediaImages(unassignedBodyIds);
-
-  const toggleUnassigned = (mediaId: string) => {
-    setSelectedUnassigned(prev => {
+  const togglePhoto = (mediaId: string) => {
+    setSelectedPhotos(prev => {
       const next = new Set(prev);
       if (next.has(mediaId)) next.delete(mediaId);
       else next.add(mediaId);
@@ -75,105 +71,139 @@ const SectionDetail = () => {
     });
   };
 
-  const handleAssignToPart = (part: string) => {
-    selectedUnassigned.forEach(mediaId => {
-      updateMedia(mediaId, { carPart: part });
+  const allTags = [...DEFAULT_DAMAGE_TAGS, ...customDamageTags.filter(t => !DEFAULT_DAMAGE_TAGS.includes(t))];
+
+  const handleApplyTag = (tag: string) => {
+    selectedPhotos.forEach(mediaId => {
+      const media = sectionMedia.find(m => m.id === mediaId);
+      const currentTags = media?.damageTags || [];
+      const newTags = currentTags.includes(tag)
+        ? currentTags.filter(t => t !== tag)
+        : [...currentTags, tag];
+      updateMedia(mediaId, { damageTags: newTags });
     });
-    setSelectedUnassigned(new Set());
-    setShowPartPicker(false);
   };
 
-  const renderBodySection = () => (
-    <div className="flex flex-col gap-2">
-      {unassignedBodyMedia.length > 0 && (
-        <div className="bg-card border border-border rounded-xl p-4 mb-2">
-          <div className="flex items-center justify-between mb-2">
-            <p className="font-medium text-foreground text-sm">Неназначенные фото ({unassignedBodyMedia.length})</p>
-            {selectedUnassigned.size > 0 && (
-              <Button size="sm" variant="default" className="h-7 text-xs" onClick={() => setShowPartPicker(true)}>
-                <MapPin className="w-3 h-3" /> Назначить ({selectedUnassigned.size})
-              </Button>
-            )}
-          </div>
-          <div className="grid grid-cols-4 gap-1.5">
-            {unassignedBodyMedia.map(m => {
-              const selected = selectedUnassigned.has(m.id);
-              return (
-                <div
-                  key={m.id}
-                  className={`relative aspect-square rounded-lg overflow-hidden cursor-pointer ${selected ? 'ring-2 ring-primary ring-offset-1' : ''}`}
-                  onClick={() => toggleUnassigned(m.id)}
-                >
-                  {unassignedImages[m.id] ? (
-                    <img src={unassignedImages[m.id]} alt="" className="w-full h-full object-cover" />
-                  ) : (
-                    <div className="w-full h-full bg-secondary" />
-                  )}
-                  {selected && (
-                    <div className="absolute top-1 right-1 w-5 h-5 rounded-full bg-primary flex items-center justify-center">
-                      <Check className="w-3 h-3 text-primary-foreground" />
-                    </div>
-                  )}
-                </div>
-              );
-            })}
-          </div>
-          <p className="text-xs text-muted-foreground mt-2">
-            {selectedUnassigned.size > 0
-              ? 'Нажмите «Назначить», чтобы привязать к детали кузова'
-              : 'Нажмите на фото, чтобы выбрать и назначить на деталь'}
-          </p>
-        </div>
-      )}
-      {BODY_PARTS.map(part => {
-        const partPhotos = inspection.media.filter(m => m.section === 'body' && m.carPart === part).length;
-        const partData = inspection.bodyParts[part];
-        return (
-          <button
-            key={part}
-            className="bg-card rounded-xl border border-border p-4 flex items-center gap-3 active:bg-secondary transition-colors text-left w-full"
-            onClick={() => navigate(`/inspection/${id}/section/body/part/${encodeURIComponent(part)}`)}
-          >
-            <div className="flex-1">
-              <p className="font-medium text-foreground text-sm">{part}</p>
-              <div className="flex gap-2 mt-1">
-                {partPhotos > 0 && <span className="text-xs text-muted-foreground">{partPhotos} фото</span>}
-                {partData?.status && (
-                  <span className={`text-xs px-2 py-0.5 rounded-md font-medium ${
-                    partData.status === 'OK' ? 'bg-success/10 text-success' :
-                    partData.status === 'Риск' ? 'bg-destructive/10 text-destructive' :
-                    'bg-warning/10 text-warning'
-                  }`}>{partData.status}</span>
-                )}
-              </div>
-            </div>
-            <ChevronRight className="w-4 h-4 text-muted-foreground" />
-          </button>
-        );
-      })}
+  const getSelectedTags = (): string[] => {
+    if (selectedPhotos.size === 0) return [];
+    const selected = Array.from(selectedPhotos);
+    const firstMedia = sectionMedia.find(m => m.id === selected[0]);
+    return firstMedia?.damageTags || [];
+  };
 
-      {/* Part picker sheet */}
-      {showPartPicker && (
-        <div className="fixed inset-0 bg-foreground/30 z-30 flex items-end" onClick={() => setShowPartPicker(false)}>
-          <div className="bg-card w-full rounded-t-3xl p-6 max-h-[70vh] overflow-y-auto" onClick={e => e.stopPropagation()}>
-            <h3 className="font-semibold text-foreground text-lg mb-4">Назначить на деталь</h3>
-            <div className="flex flex-col gap-2">
-              {BODY_PARTS.map(part => (
-                <button
-                  key={part}
-                  className="p-4 rounded-xl bg-secondary text-foreground text-left font-medium active:bg-border transition-colors"
-                  onClick={() => handleAssignToPart(part)}
-                >
-                  {part}
-                </button>
-              ))}
-            </div>
-            <Button variant="ghost" className="w-full mt-4" onClick={() => setShowPartPicker(false)}>Отмена</Button>
-          </div>
+  const renderBodySection = () => {
+    const bodyMedia = inspection.media.filter(m => m.section === 'body');
+    const bodyMediaIds = bodyMedia.map(m => m.id);
+
+    return (
+      <div className="flex flex-col gap-4">
+        {/* General paint thickness */}
+        <div>
+          <label className="text-sm font-semibold text-muted-foreground uppercase tracking-wider mb-2 block">
+            Общая толщина ЛКП
+          </label>
+          <input
+            className="w-full bg-card border border-border rounded-xl px-4 py-3 text-foreground placeholder:text-muted-foreground outline-none focus:ring-2 focus:ring-ring"
+            placeholder="напр. 100–150 мкм"
+            value={inspection.bodyPaintThickness || ''}
+            onChange={e => {
+              setActiveInspection(id!);
+              updateBodyPaintThickness(e.target.value);
+            }}
+          />
         </div>
-      )}
-    </div>
-  );
+
+        {/* Photo grid */}
+        {bodyMedia.length > 0 && (
+          <div>
+            <div className="flex items-center justify-between mb-2">
+              <label className="text-sm font-semibold text-muted-foreground uppercase tracking-wider">
+                Фото ({bodyMedia.length})
+              </label>
+              {selectedPhotos.size > 0 && (
+                <Button size="sm" variant="default" className="h-7 text-xs" onClick={() => setShowTagPicker(true)}>
+                  <Tag className="w-3 h-3" /> Теги ({selectedPhotos.size})
+                </Button>
+              )}
+            </div>
+            <p className="text-xs text-muted-foreground mb-2">
+              {selectedPhotos.size > 0
+                ? 'Нажмите «Теги», чтобы отметить дефекты'
+                : 'Нажмите на фото, чтобы выбрать и назначить теги'}
+            </p>
+            <div className="grid grid-cols-3 gap-1.5">
+              {bodyMedia.map(m => {
+                const selected = selectedPhotos.has(m.id);
+                const tags = m.damageTags || [];
+                return (
+                  <div
+                    key={m.id}
+                    className={`relative aspect-square rounded-xl overflow-hidden cursor-pointer transition-all ${
+                      selected ? 'ring-2 ring-primary ring-offset-2 ring-offset-background' : ''
+                    }`}
+                    onClick={() => togglePhoto(m.id)}
+                  >
+                    {images[m.id] ? (
+                      <img src={images[m.id]} alt="" className="w-full h-full object-cover" />
+                    ) : (
+                      <div className="w-full h-full bg-secondary" />
+                    )}
+                    {selected && (
+                      <div className="absolute top-1 right-1 w-5 h-5 rounded-full bg-primary flex items-center justify-center">
+                        <Check className="w-3 h-3 text-primary-foreground" />
+                      </div>
+                    )}
+                    {tags.length > 0 && (
+                      <div className="absolute bottom-0 left-0 right-0 bg-foreground/60 px-1.5 py-0.5">
+                        <p className="text-[10px] text-primary-foreground truncate">{tags.join(', ')}</p>
+                      </div>
+                    )}
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+        )}
+
+        {bodyMedia.length === 0 && (
+          <p className="text-muted-foreground text-center py-10">
+            Добавьте фото кузова, чтобы отметить дефекты
+          </p>
+        )}
+
+        {/* Tag picker sheet */}
+        {showTagPicker && (
+          <div className="fixed inset-0 bg-foreground/30 z-30 flex items-end" onClick={() => setShowTagPicker(false)}>
+            <div className="bg-card w-full rounded-t-3xl p-6 max-h-[70vh] overflow-y-auto" onClick={e => e.stopPropagation()}>
+              <h3 className="font-semibold text-foreground text-lg mb-4">Отметить дефекты</h3>
+              <div className="flex flex-wrap gap-2 mb-4">
+                {allTags.map(tag => {
+                  const selectedTags = getSelectedTags();
+                  const active = selectedTags.includes(tag);
+                  return (
+                    <button
+                      key={tag}
+                      className={`px-4 py-2.5 rounded-xl text-sm font-medium transition-colors ${
+                        active
+                          ? tag === 'OK' ? 'bg-success text-success-foreground' :
+                            tag === 'Риск' ? 'bg-destructive text-destructive-foreground' :
+                            'bg-primary text-primary-foreground'
+                          : 'bg-secondary text-secondary-foreground'
+                      }`}
+                      onClick={() => handleApplyTag(tag)}
+                    >
+                      {tag}
+                    </button>
+                  );
+                })}
+              </div>
+              <Button variant="ghost" className="w-full" onClick={() => setShowTagPicker(false)}>Готово</Button>
+            </div>
+          </div>
+        )}
+      </div>
+    );
+  };
 
   const renderContent = () => {
     switch (section) {
