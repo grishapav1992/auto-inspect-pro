@@ -35,6 +35,7 @@ const MediaDetailSheet = ({ media, onClose, onUpdate }: MediaDetailSheetProps) =
   const [carPart, setCarPart] = useState<string | undefined>();
   const [newTag, setNewTag] = useState('');
   const [showNewTagInput, setShowNewTagInput] = useState(false);
+  const [showTagManager, setShowTagManager] = useState(false);
 
   // Audio state - multiple notes
   const [isRecording, setIsRecording] = useState(false);
