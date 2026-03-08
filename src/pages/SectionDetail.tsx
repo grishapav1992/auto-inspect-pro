@@ -470,6 +470,19 @@ const SectionDetail = () => {
             onClose={() => setEditingMediaId(null)}
             onUpdate={updateMedia}
           />
+
+          {/* Fullscreen photo viewer */}
+          {viewerIndex !== null && (
+            <PhotoViewer
+              mediaList={sectionMedia}
+              initialIndex={viewerIndex}
+              onClose={() => setViewerIndex(null)}
+              onEdit={(mediaId) => {
+                setViewerIndex(null);
+                setEditingMediaId(mediaId);
+              }}
+            />
+          )}
         </>
       )}
     </div>
