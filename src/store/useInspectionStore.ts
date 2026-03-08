@@ -161,6 +161,19 @@ export const useInspectionStore = create<InspectionStore>()(
             : i
         ),
       })),
+
+      toggleOptionalSection: (section) => set(state => ({
+        inspections: state.inspections.map(i =>
+          i.id === state.activeInspectionId
+            ? {
+                ...i,
+                enabledOptionalSections: (i.enabledOptionalSections || []).includes(section)
+                  ? (i.enabledOptionalSections || []).filter(s => s !== section)
+                  : [...(i.enabledOptionalSections || []), section],
+              }
+            : i
+        ),
+      })),
     }),
     { name: 'car-inspection-storage' }
   )
