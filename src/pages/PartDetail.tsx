@@ -3,7 +3,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { useInspectionStore } from '@/store/useInspectionStore';
 import { PartStatus } from '@/types/inspection';
 import { Button } from '@/components/ui/button';
-import { ArrowLeft, Camera, ImagePlus, Images } from 'lucide-react';
+import { ArrowLeft, ImagePlus, Images } from 'lucide-react';
 import { useMediaImages } from '@/hooks/useMediaImages';
 
 const STATUSES: PartStatus[] = ['OK', 'Перекрашено', 'Шпаклёвка', 'Замена', 'Риск'];
@@ -22,23 +22,6 @@ const PartDetail = () => {
   const mediaIds = partMedia.map(m => m.id);
   const images = useMediaImages(mediaIds);
 
-  const handleCapture = () => {
-    const input = document.createElement('input');
-    input.type = 'file';
-    input.accept = 'image/*';
-    input.capture = 'environment';
-    input.onchange = (e) => {
-      const file = (e.target as HTMLInputElement).files?.[0];
-      if (!file) return;
-      const reader = new FileReader();
-      reader.onload = () => {
-        setActiveInspection(id!);
-        addMedia([{ id: crypto.randomUUID(), dataUrl: reader.result as string, section: 'body', carPart: decodedPart, createdAt: new Date().toISOString() }]);
-      };
-      reader.readAsDataURL(file);
-    };
-    input.click();
-  };
 
   const handleGalleryUpload = () => {
     const input = document.createElement('input');
@@ -114,10 +97,7 @@ const PartDetail = () => {
 
         <div>
           <label className="text-sm font-semibold text-muted-foreground uppercase tracking-wider mb-2 block">Фото ({partMedia.length})</label>
-          <div className="grid grid-cols-3 gap-2 mb-3">
-            <Button size="sm" variant="outline" onClick={handleCapture}>
-              <Camera className="w-4 h-4" /> Снять
-            </Button>
+          <div className="grid grid-cols-2 gap-2 mb-3">
             <Button size="sm" variant="outline" onClick={handleGalleryUpload}>
               <ImagePlus className="w-4 h-4" /> Галерея
             </Button>

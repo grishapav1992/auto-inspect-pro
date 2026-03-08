@@ -3,7 +3,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { useInspectionStore } from '@/store/useInspectionStore';
 import { InspectionSection, SECTION_LABELS, DEFAULT_DAMAGE_TAGS } from '@/types/inspection';
 import { Button } from '@/components/ui/button';
-import { ArrowLeft, Camera, ImagePlus, Images, Check, Tag, Save } from 'lucide-react';
+import { ArrowLeft, ImagePlus, Images, Check, Tag, Save } from 'lucide-react';
 import CarInfoSection from '@/components/sections/CarInfoSection';
 import LegalCheckSection from '@/components/sections/LegalCheckSection';
 import DiagnosticsSection from '@/components/sections/DiagnosticsSection';
@@ -25,23 +25,6 @@ const SectionDetail = () => {
   const mediaIds = sectionMedia.map(m => m.id);
   const images = useMediaImages(mediaIds);
 
-  const handleCapture = () => {
-    const input = document.createElement('input');
-    input.type = 'file';
-    input.accept = 'image/*';
-    input.capture = 'environment';
-    input.onchange = (e) => {
-      const file = (e.target as HTMLInputElement).files?.[0];
-      if (!file) return;
-      const reader = new FileReader();
-      reader.onload = () => {
-        setActiveInspection(id!);
-        addMedia([{ id: crypto.randomUUID(), dataUrl: reader.result as string, section, createdAt: new Date().toISOString() }]);
-      };
-      reader.readAsDataURL(file);
-    };
-    input.click();
-  };
 
   const handleGalleryUpload = () => {
     const input = document.createElement('input');
@@ -245,10 +228,7 @@ const SectionDetail = () => {
         </div>
       </div>
 
-      <div className="px-4 py-3 grid grid-cols-3 gap-2">
-        <Button size="sm" variant="outline" className="flex-1" onClick={handleCapture}>
-          <Camera className="w-4 h-4" /> Снять
-        </Button>
+      <div className="px-4 py-3 grid grid-cols-2 gap-2">
         <Button size="sm" variant="outline" className="flex-1" onClick={handleGalleryUpload}>
           <ImagePlus className="w-4 h-4" /> Галерея
         </Button>
