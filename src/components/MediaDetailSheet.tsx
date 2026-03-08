@@ -29,6 +29,7 @@ interface AudioNote {
 const MediaDetailSheet = ({ media, onClose, onUpdate }: MediaDetailSheetProps) => {
   const [note, setNote] = useState('');
   const [damageTags, setDamageTags] = useState<string[]>([]);
+  const [noDamage, setNoDamage] = useState(false);
   const [paintThicknessMin, setPaintThicknessMin] = useState('');
   const [paintThicknessMax, setPaintThicknessMax] = useState('');
   const [carPart, setCarPart] = useState<string | undefined>();
