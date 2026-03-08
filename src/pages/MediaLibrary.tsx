@@ -89,8 +89,9 @@ const MediaLibrary = () => {
 
   const handleBulkApply = () => {
     const updates: Record<string, any> = {};
-    if (bulkDamageType) updates.damageType = bulkDamageType;
-    if (bulkPaintThickness) updates.paintThickness = bulkPaintThickness;
+    if (bulkDamageTags.length > 0) updates.damageTags = bulkDamageTags;
+    if (bulkPaintMin) updates.paintThicknessMin = Number(bulkPaintMin);
+    if (bulkPaintMax) updates.paintThicknessMax = Number(bulkPaintMax);
     if (bulkSection) updates.section = bulkSection;
     if (bulkCarPart) updates.carPart = bulkCarPart;
     if (bulkNote) updates.note = bulkNote;
