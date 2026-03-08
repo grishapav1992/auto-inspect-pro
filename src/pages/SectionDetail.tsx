@@ -10,6 +10,7 @@ import DiagnosticsSection from '@/components/sections/DiagnosticsSection';
 import TestDriveSection from '@/components/sections/TestDriveSection';
 import FinalVerdictSection from '@/components/sections/FinalVerdictSection';
 import MediaDetailSheet from '@/components/MediaDetailSheet';
+import PhotoViewer from '@/components/PhotoViewer';
 import { useMediaImages } from '@/hooks/useMediaImages';
 
 const SectionDetail = () => {
