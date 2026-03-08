@@ -7,7 +7,12 @@ interface InspectionStore {
   inspections: Inspection[];
   activeInspectionId: string | null;
   customDamageTags: string[];
+  hiddenDefaultTags: string[];
+  tagPriorities: string[]; // ordered list of prioritized tags (shown first)
   addCustomDamageTag: (tag: string) => void;
+  removeCustomDamageTag: (tag: string) => void;
+  toggleHiddenDefaultTag: (tag: string) => void;
+  setTagPriorities: (tags: string[]) => void;
   
   getActiveInspection: () => Inspection | undefined;
   createInspection: () => string;
@@ -35,10 +40,25 @@ export const useInspectionStore = create<InspectionStore>()(
       inspections: [],
       activeInspectionId: null,
       customDamageTags: [] as string[],
+      hiddenDefaultTags: [] as string[],
+      tagPriorities: [] as string[],
       
       addCustomDamageTag: (tag: string) => set(state => ({
         customDamageTags: state.customDamageTags.includes(tag) ? state.customDamageTags : [...state.customDamageTags, tag],
       })),
+
+      removeCustomDamageTag: (tag: string) => set(state => ({
+        customDamageTags: state.customDamageTags.filter(t => t !== tag),
+        tagPriorities: state.tagPriorities.filter(t => t !== tag),
+      })),
+
+      toggleHiddenDefaultTag: (tag: string) => set(state => ({
+        hiddenDefaultTags: state.hiddenDefaultTags.includes(tag)
+          ? state.hiddenDefaultTags.filter(t => t !== tag)
+          : [...state.hiddenDefaultTags, tag],
+      })),
+
+      setTagPriorities: (tags: string[]) => set({ tagPriorities: tags }),
       
       getActiveInspection: () => {
         const { inspections, activeInspectionId } = get();
