@@ -87,6 +87,7 @@ export interface Inspection {
   carInfo: CarInfo;
   media: MediaItem[];
   bodyParts: Record<string, BodyPartData>;
+  bodyPaintThickness?: string;
   legalChecks: LegalCheckItem[];
   diagnostics: DiagnosticItem[];
   finalVerdict: FinalVerdictData;

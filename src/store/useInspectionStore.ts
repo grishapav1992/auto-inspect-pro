@@ -138,6 +138,14 @@ export const useInspectionStore = create<InspectionStore>()(
         ),
       })),
       
+      updateBodyPaintThickness: (value) => set(state => ({
+        inspections: state.inspections.map(i =>
+          i.id === state.activeInspectionId
+            ? { ...i, bodyPaintThickness: value }
+            : i
+        ),
+      })),
+      
       updateFinalVerdict: (data) => set(state => ({
         inspections: state.inspections.map(i =>
           i.id === state.activeInspectionId
