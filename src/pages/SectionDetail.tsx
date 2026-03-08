@@ -307,8 +307,8 @@ const SectionDetail = () => {
                     )}
                     {/* No damage indicator */}
                     {media.noDamage && (
-                      <div className="absolute top-1.5 left-1.5 w-6 h-6 rounded-full bg-success flex items-center justify-center shadow-sm">
-                        <Check className="w-3.5 h-3.5 text-success-foreground" />
+                      <div className="absolute top-1.5 left-1.5 bg-emerald-500 text-white text-[10px] font-bold px-1.5 py-0.5 rounded-md shadow-sm leading-tight tracking-wide">
+                        ОК
                       </div>
                     )}
                     {/* Compact tag indicators */}
