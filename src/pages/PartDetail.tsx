@@ -3,7 +3,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { useInspectionStore } from '@/store/useInspectionStore';
 import { PartStatus } from '@/types/inspection';
 import { Button } from '@/components/ui/button';
-import { ArrowLeft, Camera, ImagePlus } from 'lucide-react';
+import { ArrowLeft, Camera, ImagePlus, Images } from 'lucide-react';
 import { useMediaImages } from '@/hooks/useMediaImages';
 
 const STATUSES: PartStatus[] = ['OK', 'Перекрашено', 'Шпаклёвка', 'Замена', 'Риск'];
@@ -36,6 +36,25 @@ const PartDetail = () => {
         addMedia([{ id: crypto.randomUUID(), dataUrl: reader.result as string, section: 'body', carPart: decodedPart, createdAt: new Date().toISOString() }]);
       };
       reader.readAsDataURL(file);
+    };
+    input.click();
+  };
+
+  const handleGalleryUpload = () => {
+    const input = document.createElement('input');
+    input.type = 'file';
+    input.accept = 'image/*';
+    input.multiple = true;
+    input.onchange = (e) => {
+      const files = Array.from((e.target as HTMLInputElement).files || []);
+      setActiveInspection(id!);
+      files.forEach(file => {
+        const reader = new FileReader();
+        reader.onload = () => {
+          addMedia([{ id: crypto.randomUUID(), dataUrl: reader.result as string, section: 'body', carPart: decodedPart, createdAt: new Date().toISOString() }]);
+        };
+        reader.readAsDataURL(file);
+      });
     };
     input.click();
   };
@@ -95,12 +114,15 @@ const PartDetail = () => {
 
         <div>
           <label className="text-sm font-semibold text-muted-foreground uppercase tracking-wider mb-2 block">Фото ({partMedia.length})</label>
-          <div className="flex gap-2 mb-3">
+          <div className="grid grid-cols-3 gap-2 mb-3">
             <Button size="sm" variant="outline" onClick={handleCapture}>
-              <Camera className="w-4 h-4" /> Сделать фото
+              <Camera className="w-4 h-4" /> Снять
+            </Button>
+            <Button size="sm" variant="outline" onClick={handleGalleryUpload}>
+              <ImagePlus className="w-4 h-4" /> Галерея
             </Button>
             <Button size="sm" variant="outline" onClick={() => navigate(`/inspection/${id}/media`)}>
-              <ImagePlus className="w-4 h-4" /> Из библиотеки
+              <Images className="w-4 h-4" /> Библиотека
             </Button>
           </div>
           <div className="grid grid-cols-3 gap-1.5">
