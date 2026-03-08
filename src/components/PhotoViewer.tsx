@@ -20,6 +20,16 @@ const PhotoViewer = ({ mediaList, initialIndex, onClose, onEdit }: PhotoViewerPr
   const mediaIds = mediaList.map(m => m.id);
   const images = useMediaImages(mediaIds);
 
+  useEffect(() => {
+    const handleKey = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') onClose();
+      if (e.key === 'ArrowRight') setCurrentIndex(i => Math.min(i + 1, mediaList.length - 1));
+      if (e.key === 'ArrowLeft') setCurrentIndex(i => Math.max(i - 1, 0));
+    };
+    window.addEventListener('keydown', handleKey);
+    return () => window.removeEventListener('keydown', handleKey);
+  }, [onClose, mediaList.length]);
+
   const current = mediaList[currentIndex];
   if (!current) return null;
 
