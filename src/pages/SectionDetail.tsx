@@ -214,41 +214,28 @@ const SectionDetail = () => {
             </div>
           )}
 
-          {/* Sub-parts navigation for sections with parts */}
-          {sectionParts && (
-            <div className="px-4 pt-3">
-              <label className="text-sm font-semibold text-muted-foreground uppercase tracking-wider mb-2 block">
-                Подразделы
-              </label>
-              <div className="flex flex-col gap-1.5">
-                {sectionParts.map(part => {
-                  const partPhotos = sectionMedia.filter(m => m.carPart === part).length;
-                  const partData = inspection.bodyParts[part];
-                  return (
-                    <button
-                      key={part}
-                      className="bg-card border border-border rounded-xl px-4 py-3 flex items-center justify-between text-left active:bg-secondary transition-colors"
-                      onClick={() => navigate(`/inspection/${id}/section/${section}/part/${encodeURIComponent(part)}`)}
-                    >
-                      <div>
-                        <p className="text-sm font-medium text-foreground">{part}</p>
-                        {partPhotos > 0 && <p className="text-xs text-muted-foreground">{partPhotos} фото</p>}
-                      </div>
-                      <div className="flex items-center gap-2">
-                        {partData?.status && (
-                          <span className={`text-xs font-medium px-2 py-0.5 rounded-md ${
-                            partData.status === 'OK' ? 'bg-success/10 text-success' :
-                            partData.status === 'Риск' ? 'bg-destructive/10 text-destructive' :
-                            'bg-warning/10 text-warning'
-                          }`}>{partData.status}</span>
-                        )}
-                      </div>
-                    </button>
-                  );
-                })}
+          {/* Sub-part filter chips - show only parts that have photos assigned */}
+          {sectionParts && (() => {
+            const usedParts = [...new Set(sectionMedia.map(m => m.carPart).filter(Boolean))] as string[];
+            if (usedParts.length === 0) return null;
+            return (
+              <div className="px-4 pt-3">
+                <label className="text-sm font-semibold text-muted-foreground uppercase tracking-wider mb-2 block">
+                  Подразделы
+                </label>
+                <div className="flex flex-wrap gap-1.5">
+                  {usedParts.map(part => {
+                    const count = sectionMedia.filter(m => m.carPart === part).length;
+                    return (
+                      <span key={part} className="text-xs bg-accent/80 text-accent-foreground px-2.5 py-1.5 rounded-lg font-medium">
+                        {part} ({count})
+                      </span>
+                    );
+                  })}
+                </div>
               </div>
-            </div>
-          )}
+            );
+          })()}
 
           {/* Action bar */}
           <div className="px-4 py-3 flex items-center justify-between">
