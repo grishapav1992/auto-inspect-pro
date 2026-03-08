@@ -114,12 +114,15 @@ const PartDetail = () => {
 
         <div>
           <label className="text-sm font-semibold text-muted-foreground uppercase tracking-wider mb-2 block">Фото ({partMedia.length})</label>
-          <div className="flex gap-2 mb-3">
+          <div className="grid grid-cols-3 gap-2 mb-3">
             <Button size="sm" variant="outline" onClick={handleCapture}>
-              <Camera className="w-4 h-4" /> Сделать фото
+              <Camera className="w-4 h-4" /> Снять
+            </Button>
+            <Button size="sm" variant="outline" onClick={handleGalleryUpload}>
+              <ImagePlus className="w-4 h-4" /> Галерея
             </Button>
             <Button size="sm" variant="outline" onClick={() => navigate(`/inspection/${id}/media`)}>
-              <ImagePlus className="w-4 h-4" /> Из библиотеки
+              <Images className="w-4 h-4" /> Библиотека
             </Button>
           </div>
           <div className="grid grid-cols-3 gap-1.5">
