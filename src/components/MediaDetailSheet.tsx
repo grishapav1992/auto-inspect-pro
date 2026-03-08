@@ -431,6 +431,10 @@ const MediaDetailSheet = ({ media, onClose, onUpdate }: MediaDetailSheetProps) =
             Сохранить
           </Button>
         </div>
+
+        {showTagManager && (
+          <TagManagerSheet section={currentSection} onClose={() => setShowTagManager(false)} />
+        )}
       </div>
     </div>
   );
