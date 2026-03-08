@@ -93,9 +93,10 @@ const MediaDetailSheet = ({ media, onClose, onUpdate }: MediaDetailSheetProps) =
   const handleSave = () => {
     onUpdate(media.id, {
       note,
-      damageTags: damageTags.length > 0 ? damageTags : undefined,
-      paintThicknessMin: isBodySection && paintThicknessMin ? Number(paintThicknessMin) : undefined,
-      paintThicknessMax: isBodySection && paintThicknessMax ? Number(paintThicknessMax) : undefined,
+      noDamage,
+      damageTags: !noDamage && damageTags.length > 0 ? damageTags : undefined,
+      paintThicknessMin: !noDamage && isBodySection && paintThicknessMin ? Number(paintThicknessMin) : undefined,
+      paintThicknessMax: !noDamage && isBodySection && paintThicknessMax ? Number(paintThicknessMax) : undefined,
       carPart,
       audioNoteIds: audioNotes.length > 0 ? audioNotes.map(a => a.id) : undefined,
     });
