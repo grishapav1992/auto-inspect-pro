@@ -3,7 +3,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { useInspectionStore } from '@/store/useInspectionStore';
 import { PartStatus } from '@/types/inspection';
 import { Button } from '@/components/ui/button';
-import { ArrowLeft, ImagePlus, Images } from 'lucide-react';
+import { ArrowLeft, ImagePlus } from 'lucide-react';
 import { useMediaImages } from '@/hooks/useMediaImages';
 
 const STATUSES: PartStatus[] = ['OK', 'Перекрашено', 'Шпаклёвка', 'Замена', 'Риск'];
