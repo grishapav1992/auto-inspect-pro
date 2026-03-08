@@ -15,7 +15,7 @@ import { useMediaImages } from '@/hooks/useMediaImages';
 const SectionDetail = () => {
   const { id, section } = useParams<{ id: string; section: string }>();
   const navigate = useNavigate();
-  const { inspections, setActiveInspection, addMedia, updateMedia, removeMedia, bulkAssignMedia, updateBodyPaintThickness, customDamageTags, addCustomDamageTag, addCustomSectionTag } = useInspectionStore();
+  const { inspections, setActiveInspection, addMedia, updateMedia, removeMedia, bulkAssignMedia, updateBodyPaintThickness, customDamageTags, addCustomDamageTag } = useInspectionStore();
   const inspection = inspections.find(i => i.id === id);
 
   const [selectionMode, setSelectionMode] = useState(false);
@@ -30,19 +30,9 @@ const SectionDetail = () => {
   const [showBulkNewTagInput, setShowBulkNewTagInput] = useState(false);
   const [editingMediaId, setEditingMediaId] = useState<string | null>(null);
 
-  const isCustomSection = section?.startsWith('custom-');
-  const customSectionId = isCustomSection ? section!.replace('custom-', '') : null;
-  const customSection = isCustomSection && inspection
-    ? (inspection.customSections || []).find(s => s.id === customSectionId)
-    : null;
+  const allTags = [...DEFAULT_DAMAGE_TAGS, ...customDamageTags.filter(t => !DEFAULT_DAMAGE_TAGS.includes(t))];
 
-  const allTags = isCustomSection
-    ? (customSection?.customTags || [])
-    : [...DEFAULT_DAMAGE_TAGS, ...customDamageTags.filter(t => !DEFAULT_DAMAGE_TAGS.includes(t))];
-
-  const sectionLabel = isCustomSection
-    ? (customSection?.name || 'Раздел')
-    : (section ? SECTION_LABELS[section as InspectionSection] : '');
+  const sectionLabel = section ? SECTION_LABELS[section as InspectionSection] : '';
 
   // Get parts list for sections that have sub-parts
   const sectionParts = section ? SECTION_PARTS[section as InspectionSection] : undefined;
@@ -151,15 +141,8 @@ const SectionDetail = () => {
   const handleBulkAddCustomTag = () => {
     const trimmed = bulkNewTag.trim();
     if (!trimmed) return;
-
-    if (isCustomSection && customSectionId) {
-      if (!allTags.includes(trimmed)) {
-        addCustomSectionTag(customSectionId, trimmed);
-      }
-    } else {
-      if (!allTags.includes(trimmed)) {
-        addCustomDamageTag(trimmed);
-      }
+    if (!allTags.includes(trimmed)) {
+      addCustomDamageTag(trimmed);
     }
     if (!bulkDamageTags.includes(trimmed)) {
       setBulkDamageTags(prev => [...prev, trimmed]);
@@ -181,7 +164,7 @@ const SectionDetail = () => {
 
   // Sections that render forms (not media grids)
   const formSections = ['car-info', 'legal-check', 'diagnostics', 'test-drive', 'final-verdict'];
-  const isMediaSection = isCustomSection || !formSections.includes(section);
+  const isMediaSection = !formSections.includes(section);
 
   const renderSpecialSection = () => {
     switch (section) {
@@ -380,7 +363,7 @@ const SectionDetail = () => {
                   {/* Tags */}
                   <div>
                     <label className="text-sm font-semibold text-muted-foreground uppercase tracking-wider mb-2 block">
-                      {isCustomSection ? 'Теги' : 'Повреждения'}
+                      Повреждения
                     </label>
                     <div className="flex flex-wrap gap-2">
                       {allTags.map(tag => (
@@ -419,7 +402,7 @@ const SectionDetail = () => {
                   </div>
 
                   {/* Paint thickness - only for non-custom sections */}
-                  {!isCustomSection && (
+                  {(
                     <div>
                       <label className="text-sm font-semibold text-muted-foreground uppercase tracking-wider mb-2 block">Толщина ЛКП (мкм)</label>
                       <div className="flex gap-2 items-center">

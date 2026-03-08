@@ -1,6 +1,6 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
-import { Inspection, MediaItem, CarInfo, BodyPartData, LegalCheckItem, DiagnosticItem, FinalVerdictData, createNewInspection, InspectionSection, CustomSection } from '@/types/inspection';
+import { Inspection, MediaItem, CarInfo, BodyPartData, LegalCheckItem, DiagnosticItem, FinalVerdictData, createNewInspection, InspectionSection } from '@/types/inspection';
 import { saveImage, deleteImages as deleteImagesFromDB } from '@/lib/mediaDB';
 
 interface InspectionStore {
@@ -26,10 +26,6 @@ interface InspectionStore {
   updateTestDrive: (index: number, item: Partial<DiagnosticItem>) => void;
   updateBodyPaintThickness: (value: string) => void;
   updateFinalVerdict: (data: Partial<FinalVerdictData>) => void;
-  addCustomSection: (section: CustomSection) => void;
-  updateCustomSection: (sectionId: string, updates: Partial<CustomSection>) => void;
-  removeCustomSection: (sectionId: string) => void;
-  addCustomSectionTag: (sectionId: string, tag: string) => void;
 }
 
 export const useInspectionStore = create<InspectionStore>()(
@@ -156,43 +152,11 @@ export const useInspectionStore = create<InspectionStore>()(
             : i
         ),
       })),
-      
+
       updateFinalVerdict: (data) => set(state => ({
         inspections: state.inspections.map(i =>
           i.id === state.activeInspectionId
             ? { ...i, finalVerdict: { ...i.finalVerdict, ...data } }
-            : i
-        ),
-      })),
-
-      addCustomSection: (section) => set(state => ({
-        inspections: state.inspections.map(i =>
-          i.id === state.activeInspectionId
-            ? { ...i, customSections: [...(i.customSections || []), section] }
-            : i
-        ),
-      })),
-
-      updateCustomSection: (sectionId, updates) => set(state => ({
-        inspections: state.inspections.map(i =>
-          i.id === state.activeInspectionId
-            ? { ...i, customSections: (i.customSections || []).map(s => s.id === sectionId ? { ...s, ...updates } : s) }
-            : i
-        ),
-      })),
-
-      removeCustomSection: (sectionId) => set(state => ({
-        inspections: state.inspections.map(i =>
-          i.id === state.activeInspectionId
-            ? { ...i, customSections: (i.customSections || []).filter(s => s.id !== sectionId), media: i.media.filter(m => m.section !== `custom-${sectionId}`) }
-            : i
-        ),
-      })),
-
-      addCustomSectionTag: (sectionId, tag) => set(state => ({
-        inspections: state.inspections.map(i =>
-          i.id === state.activeInspectionId
-            ? { ...i, customSections: (i.customSections || []).map(s => s.id === sectionId ? { ...s, customTags: s.customTags.includes(tag) ? s.customTags : [...s.customTags, tag] } : s) }
             : i
         ),
       })),
