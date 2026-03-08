@@ -402,7 +402,7 @@ const SectionDetail = () => {
                   </div>
 
                   {/* Paint thickness - only for non-custom sections */}
-                  {!isCustomSection && (
+                  {(
                     <div>
                       <label className="text-sm font-semibold text-muted-foreground uppercase tracking-wider mb-2 block">Толщина ЛКП (мкм)</label>
                       <div className="flex gap-2 items-center">
