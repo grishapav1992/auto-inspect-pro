@@ -10,6 +10,61 @@ const FinalVerdictSection = ({ inspection }: { inspection: Inspection }) => {
 
   return (
     <div className="flex flex-col gap-5">
+      {/* Плюсы */}
+      <div>
+        <label className="text-sm font-semibold text-muted-foreground uppercase tracking-wider mb-2 block">Плюсы автомобиля</label>
+        <textarea
+          className="w-full bg-card border border-border rounded-xl px-4 py-3 text-foreground placeholder:text-muted-foreground outline-none focus:ring-2 focus:ring-ring min-h-[80px] resize-none"
+          placeholder="Перечислите плюсы..."
+          value={fv.pros || ''}
+          onChange={e => updateFinalVerdict({ pros: e.target.value })}
+        />
+      </div>
+
+      {/* Минусы */}
+      <div>
+        <label className="text-sm font-semibold text-muted-foreground uppercase tracking-wider mb-2 block">Минусы автомобиля</label>
+        <textarea
+          className="w-full bg-card border border-border rounded-xl px-4 py-3 text-foreground placeholder:text-muted-foreground outline-none focus:ring-2 focus:ring-ring min-h-[80px] resize-none"
+          placeholder="Перечислите минусы..."
+          value={fv.cons || ''}
+          onChange={e => updateFinalVerdict({ cons: e.target.value })}
+        />
+      </div>
+
+      {/* Рекомендации */}
+      <div>
+        <label className="text-sm font-semibold text-muted-foreground uppercase tracking-wider mb-2 block">Рекомендации</label>
+        <textarea
+          className="w-full bg-card border border-border rounded-xl px-4 py-3 text-foreground placeholder:text-muted-foreground outline-none focus:ring-2 focus:ring-ring min-h-[80px] resize-none"
+          placeholder="Ваши рекомендации..."
+          value={fv.recommendations || ''}
+          onChange={e => updateFinalVerdict({ recommendations: e.target.value })}
+        />
+      </div>
+
+      {/* Предполагаемые вложения */}
+      <div>
+        <label className="text-sm font-semibold text-muted-foreground uppercase tracking-wider mb-2 block">Предполагаемые вложения</label>
+        <input
+          className="w-full bg-card border border-border rounded-xl px-4 py-3 text-foreground placeholder:text-muted-foreground outline-none focus:ring-2 focus:ring-ring"
+          placeholder="напр. 50 000 ₽"
+          value={fv.estimatedRepairCost || ''}
+          onChange={e => updateFinalVerdict({ estimatedRepairCost: e.target.value })}
+        />
+      </div>
+
+      {/* Общая оценка */}
+      <div>
+        <label className="text-sm font-semibold text-muted-foreground uppercase tracking-wider mb-2 block">Общая оценка состояния</label>
+        <textarea
+          className="w-full bg-card border border-border rounded-xl px-4 py-3 text-foreground placeholder:text-muted-foreground outline-none focus:ring-2 focus:ring-ring min-h-[80px] resize-none"
+          placeholder="Общая оценка состояния автомобиля..."
+          value={fv.overallRating || ''}
+          onChange={e => updateFinalVerdict({ overallRating: e.target.value })}
+        />
+      </div>
+
       {/* Вердикт */}
       <div>
         <label className="text-sm font-semibold text-muted-foreground uppercase tracking-wider mb-2 block">Вердикт</label>
@@ -30,50 +85,6 @@ const FinalVerdictSection = ({ inspection }: { inspection: Inspection }) => {
             </button>
           ))}
         </div>
-      </div>
-
-      {/* Уровень риска */}
-      <div>
-        <label className="text-sm font-semibold text-muted-foreground uppercase tracking-wider mb-2 block">Уровень риска</label>
-        <div className="flex gap-2">
-          {RISK_LEVELS.map(r => (
-            <button
-              key={r}
-              className={`flex-1 py-3 rounded-xl text-sm font-medium transition-colors ${
-                fv.riskLevel === r
-                  ? r === 'Низкий' ? 'bg-success text-success-foreground' :
-                    r === 'Высокий' ? 'bg-destructive text-destructive-foreground' :
-                    'bg-warning text-warning-foreground'
-                  : 'bg-secondary text-secondary-foreground'
-              }`}
-              onClick={() => updateFinalVerdict({ riskLevel: r })}
-            >
-              {r}
-            </button>
-          ))}
-        </div>
-      </div>
-
-      {/* Стоимость ремонта */}
-      <div>
-        <label className="text-sm font-semibold text-muted-foreground uppercase tracking-wider mb-2 block">Ориентировочная стоимость ремонта</label>
-        <input
-          className="w-full bg-card border border-border rounded-xl px-4 py-3 text-foreground placeholder:text-muted-foreground outline-none focus:ring-2 focus:ring-ring"
-          placeholder="напр. 50 000 ₽"
-          value={fv.estimatedRepairCost || ''}
-          onChange={e => updateFinalVerdict({ estimatedRepairCost: e.target.value })}
-        />
-      </div>
-
-      {/* Итоговый комментарий */}
-      <div>
-        <label className="text-sm font-semibold text-muted-foreground uppercase tracking-wider mb-2 block">Итоговый комментарий</label>
-        <textarea
-          className="w-full bg-card border border-border rounded-xl px-4 py-3 text-foreground placeholder:text-muted-foreground outline-none focus:ring-2 focus:ring-ring min-h-[120px] resize-none"
-          placeholder="Напишите итоговую оценку..."
-          value={fv.finalComment || ''}
-          onChange={e => updateFinalVerdict({ finalComment: e.target.value })}
-        />
       </div>
     </div>
   );

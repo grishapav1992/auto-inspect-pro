@@ -12,11 +12,17 @@ const CarInfoSection = ({ inspection }: { inspection: Inspection }) => {
   const fields = [
     { key: 'make', label: 'Марка', placeholder: 'напр. Toyota' },
     { key: 'model', label: 'Модель', placeholder: 'напр. Camry' },
+    { key: 'generation', label: 'Поколение', placeholder: 'напр. XV70' },
     { key: 'year', label: 'Год выпуска', placeholder: 'напр. 2020' },
     { key: 'vin', label: 'VIN', placeholder: 'Идентификационный номер' },
-    { key: 'licensePlate', label: 'Гос. номер', placeholder: 'напр. А123БВ777' },
+    { key: 'licensePlate', label: 'Госномер', placeholder: 'напр. А123БВ777' },
     { key: 'mileage', label: 'Пробег', placeholder: 'напр. 45000 км' },
-    { key: 'city', label: 'Город', placeholder: 'напр. Москва' },
+    { key: 'engine', label: 'Двигатель', placeholder: 'напр. 2.5 бензин' },
+    { key: 'transmission', label: 'Коробка передач', placeholder: 'напр. АКПП' },
+    { key: 'drivetrain', label: 'Привод', placeholder: 'напр. Передний' },
+    { key: 'trim', label: 'Комплектация', placeholder: 'напр. Престиж' },
+    { key: 'ownerCount', label: 'Количество владельцев', placeholder: 'напр. 2' },
+    { key: 'city', label: 'Город осмотра', placeholder: 'напр. Москва' },
     { key: 'inspectionDate', label: 'Дата осмотра', placeholder: 'ГГГГ-ММ-ДД', type: 'date' },
   ] as const;
 
