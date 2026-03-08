@@ -28,7 +28,7 @@ const MediaLibrary = () => {
   const [editingMediaId, setEditingMediaId] = useState<string | null>(null);
   const [selectionMode, setSelectionMode] = useState(false);
 
-  const allTags = [...DEFAULT_DAMAGE_TAGS, ...customDamageTags];
+  const allTags = [...DEFAULT_DAMAGE_TAGS, ...Object.values(SECTION_DAMAGE_TAGS).flat().filter((t, i, a) => a.indexOf(t) === i && !DEFAULT_DAMAGE_TAGS.includes(t)), ...customDamageTags.filter(t => !DEFAULT_DAMAGE_TAGS.includes(t))];
 
   useEffect(() => { if (id) setActiveInspection(id); }, [id, setActiveInspection]);
 

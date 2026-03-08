@@ -30,7 +30,8 @@ const SectionDetail = () => {
   const [showBulkNewTagInput, setShowBulkNewTagInput] = useState(false);
   const [editingMediaId, setEditingMediaId] = useState<string | null>(null);
 
-  const allTags = [...DEFAULT_DAMAGE_TAGS, ...customDamageTags.filter(t => !DEFAULT_DAMAGE_TAGS.includes(t))];
+  const sectionTags = section ? (SECTION_DAMAGE_TAGS[section as InspectionSection] || DEFAULT_DAMAGE_TAGS) : DEFAULT_DAMAGE_TAGS;
+  const allTags = [...sectionTags, ...customDamageTags.filter(t => !sectionTags.includes(t))];
 
   const sectionLabel = section ? SECTION_LABELS[section as InspectionSection] : '';
 
