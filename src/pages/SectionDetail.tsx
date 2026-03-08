@@ -164,7 +164,7 @@ const SectionDetail = () => {
 
   // Sections that render forms (not media grids)
   const formSections = ['car-info', 'legal-check', 'diagnostics', 'test-drive', 'final-verdict'];
-  const isMediaSection = isCustomSection || !formSections.includes(section);
+  const isMediaSection = !formSections.includes(section);
 
   const renderSpecialSection = () => {
     switch (section) {
