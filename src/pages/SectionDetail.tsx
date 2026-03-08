@@ -297,26 +297,29 @@ const SectionDetail = () => {
                         {selected && <Check className="w-3.5 h-3.5 text-primary-foreground" />}
                       </div>
                     )}
-                    <div className="absolute bottom-0 left-0 right-0 p-1.5 flex flex-wrap gap-0.5">
-                      {media.damageTags?.map(tag => (
-                        <span key={tag} className={`text-[9px] px-1.5 py-0.5 rounded-md ${getTagColor(tag, true)}`}>
-                          {tag}
-                        </span>
-                      ))}
-                      {(media.paintThicknessMin || media.paintThicknessMax) && (
-                        <span className="text-[9px] bg-accent/80 text-accent-foreground px-1.5 py-0.5 rounded-md">
-                          {media.paintThicknessMin && media.paintThicknessMax
-                            ? `${media.paintThicknessMin}–${media.paintThicknessMax} мкм`
-                            : media.paintThicknessMin ? `от ${media.paintThicknessMin} мкм`
-                            : `до ${media.paintThicknessMax} мкм`}
-                        </span>
-                      )}
-                      {media.carPart && (
-                        <span className="text-[9px] bg-accent/80 text-accent-foreground px-1.5 py-0.5 rounded-md">
-                          {media.carPart}
-                        </span>
-                      )}
-                    </div>
+                    {/* Compact tag indicators */}
+                    {(media.damageTags?.length || media.carPart || media.paintThicknessMin || media.paintThicknessMax) && (
+                      <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/60 to-transparent p-1.5">
+                        <div className="flex items-center gap-1">
+                          {media.damageTags?.map(tag => (
+                            <div
+                              key={tag}
+                              className={`w-2.5 h-2.5 rounded-full ${
+                                tag === 'OK' ? 'bg-success'
+                                : tag === 'Риск' ? 'bg-destructive'
+                                : 'bg-primary'
+                              }`}
+                              title={tag}
+                            />
+                          ))}
+                          {media.carPart && (
+                            <span className="text-[9px] text-white/90 ml-auto truncate max-w-[60%]">
+                              {media.carPart}
+                            </span>
+                          )}
+                        </div>
+                      </div>
+                    )}
                   </div>
                 );
               })}
