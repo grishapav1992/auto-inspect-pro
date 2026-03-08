@@ -30,19 +30,9 @@ const SectionDetail = () => {
   const [showBulkNewTagInput, setShowBulkNewTagInput] = useState(false);
   const [editingMediaId, setEditingMediaId] = useState<string | null>(null);
 
-  const isCustomSection = section?.startsWith('custom-');
-  const customSectionId = isCustomSection ? section!.replace('custom-', '') : null;
-  const customSection = isCustomSection && inspection
-    ? (inspection.customSections || []).find(s => s.id === customSectionId)
-    : null;
+  const allTags = [...DEFAULT_DAMAGE_TAGS, ...customDamageTags.filter(t => !DEFAULT_DAMAGE_TAGS.includes(t))];
 
-  const allTags = isCustomSection
-    ? (customSection?.customTags || [])
-    : [...DEFAULT_DAMAGE_TAGS, ...customDamageTags.filter(t => !DEFAULT_DAMAGE_TAGS.includes(t))];
-
-  const sectionLabel = isCustomSection
-    ? (customSection?.name || 'Раздел')
-    : (section ? SECTION_LABELS[section as InspectionSection] : '');
+  const sectionLabel = section ? SECTION_LABELS[section as InspectionSection] : '';
 
   // Get parts list for sections that have sub-parts
   const sectionParts = section ? SECTION_PARTS[section as InspectionSection] : undefined;
