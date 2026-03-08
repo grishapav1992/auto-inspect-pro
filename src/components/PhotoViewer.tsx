@@ -55,16 +55,6 @@ const PhotoViewer = ({ mediaList, initialIndex, onClose, onEdit }: PhotoViewerPr
     setOffsetX(0);
   };
 
-  useEffect(() => {
-    const handleKey = (e: KeyboardEvent) => {
-      if (e.key === 'Escape') onClose();
-      if (e.key === 'ArrowRight') goNext();
-      if (e.key === 'ArrowLeft') goPrev();
-    };
-    window.addEventListener('keydown', handleKey);
-    return () => window.removeEventListener('keydown', handleKey);
-  }, []);
-
   const src = images[current.id];
 
   return (
