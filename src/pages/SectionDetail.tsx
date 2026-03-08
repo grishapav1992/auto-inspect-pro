@@ -31,7 +31,14 @@ const SectionDetail = () => {
   const [editingMediaId, setEditingMediaId] = useState<string | null>(null);
 
   const sectionTags = section ? (SECTION_DAMAGE_TAGS[section as InspectionSection] || DEFAULT_DAMAGE_TAGS) : DEFAULT_DAMAGE_TAGS;
-  const allTags = [...sectionTags, ...customDamageTags.filter(t => !sectionTags.includes(t))];
+  const visibleSectionTags = sectionTags.filter(t => !hiddenDefaultTags.includes(t));
+  const visibleCustomTags = customDamageTags.filter(t => !sectionTags.includes(t));
+  const sortTags = (tags: string[]) => {
+    const prioritized = tags.filter(t => tagPriorities.includes(t));
+    const rest = tags.filter(t => !tagPriorities.includes(t));
+    return [...prioritized, ...rest];
+  };
+  const allTags = sortTags([...visibleSectionTags, ...visibleCustomTags]);
 
   const sectionLabel = section ? SECTION_LABELS[section as InspectionSection] : '';
 
