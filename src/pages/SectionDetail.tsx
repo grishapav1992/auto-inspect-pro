@@ -30,6 +30,7 @@ const SectionDetail = () => {
   const [bulkNewTag, setBulkNewTag] = useState('');
   const [showBulkNewTagInput, setShowBulkNewTagInput] = useState(false);
   const [editingMediaId, setEditingMediaId] = useState<string | null>(null);
+  const [viewerIndex, setViewerIndex] = useState<number | null>(null);
 
   const sectionTags = section ? (SECTION_DAMAGE_TAGS[section as InspectionSection] || DEFAULT_DAMAGE_TAGS) : DEFAULT_DAMAGE_TAGS;
   const visibleSectionTags = sectionTags.filter(t => !hiddenDefaultTags.includes(t));
