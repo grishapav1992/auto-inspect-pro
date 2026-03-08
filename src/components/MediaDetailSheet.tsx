@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from 'react';
-import { MediaItem, InspectionSection, BODY_PARTS, INTERIOR_PARTS, UNDER_HOOD_PARTS, TECHNICAL_PARTS, ELECTRICAL_PARTS, DEFAULT_DAMAGE_TAGS } from '@/types/inspection';
+import { MediaItem, InspectionSection, BODY_PARTS, INTERIOR_PARTS, UNDER_HOOD_PARTS, TECHNICAL_PARTS, ELECTRICAL_PARTS, SECTION_DAMAGE_TAGS, DEFAULT_DAMAGE_TAGS } from '@/types/inspection';
 import { Button } from '@/components/ui/button';
 import { X, Plus, Mic, Square, Play, Trash2, Pause } from 'lucide-react';
 import { useInspectionStore } from '@/store/useInspectionStore';
@@ -47,7 +47,6 @@ const MediaDetailSheet = ({ media, onClose, onUpdate }: MediaDetailSheetProps) =
   const timerRef = useRef<number | null>(null);
 
   const { customDamageTags, addCustomDamageTag } = useInspectionStore();
-  const allTags = [...DEFAULT_DAMAGE_TAGS, ...customDamageTags];
 
   useEffect(() => {
     if (media) {
@@ -87,6 +86,8 @@ const MediaDetailSheet = ({ media, onClose, onUpdate }: MediaDetailSheetProps) =
   if (!media) return null;
 
   const currentSection = media.section;
+  const sectionTags = currentSection ? (SECTION_DAMAGE_TAGS[currentSection] || DEFAULT_DAMAGE_TAGS) : DEFAULT_DAMAGE_TAGS;
+  const allTags = [...sectionTags, ...customDamageTags.filter(t => !sectionTags.includes(t))];
   const availableParts = currentSection ? SECTION_PARTS[currentSection] : undefined;
   const isBodySection = currentSection === 'body';
 
