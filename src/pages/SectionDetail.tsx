@@ -3,7 +3,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { useInspectionStore } from '@/store/useInspectionStore';
 import { InspectionSection, SECTION_LABELS, BODY_PARTS } from '@/types/inspection';
 import { Button } from '@/components/ui/button';
-import { ArrowLeft, ChevronRight, Camera, ImagePlus, Check, MapPin, Save } from 'lucide-react';
+import { ArrowLeft, ChevronRight, Camera, ImagePlus, Images, Check, MapPin, Save } from 'lucide-react';
 import CarInfoSection from '@/components/sections/CarInfoSection';
 import LegalCheckSection from '@/components/sections/LegalCheckSection';
 import DiagnosticsSection from '@/components/sections/DiagnosticsSection';
@@ -39,6 +39,25 @@ const SectionDetail = () => {
         addMedia([{ id: crypto.randomUUID(), dataUrl: reader.result as string, section, createdAt: new Date().toISOString() }]);
       };
       reader.readAsDataURL(file);
+    };
+    input.click();
+  };
+
+  const handleGalleryUpload = () => {
+    const input = document.createElement('input');
+    input.type = 'file';
+    input.accept = 'image/*';
+    input.multiple = true;
+    input.onchange = (e) => {
+      const files = Array.from((e.target as HTMLInputElement).files || []);
+      setActiveInspection(id!);
+      files.forEach(file => {
+        const reader = new FileReader();
+        reader.onload = () => {
+          addMedia([{ id: crypto.randomUUID(), dataUrl: reader.result as string, section, createdAt: new Date().toISOString() }]);
+        };
+        reader.readAsDataURL(file);
+      });
     };
     input.click();
   };
@@ -196,12 +215,15 @@ const SectionDetail = () => {
         </div>
       </div>
 
-      <div className="px-4 py-3 flex gap-2">
+      <div className="px-4 py-3 grid grid-cols-3 gap-2">
         <Button size="sm" variant="outline" className="flex-1" onClick={handleCapture}>
-          <Camera className="w-4 h-4" /> Снять фото
+          <Camera className="w-4 h-4" /> Снять
+        </Button>
+        <Button size="sm" variant="outline" className="flex-1" onClick={handleGalleryUpload}>
+          <ImagePlus className="w-4 h-4" /> Галерея
         </Button>
         <Button size="sm" variant="outline" className="flex-1" onClick={() => navigate(`/inspection/${id}/media`)}>
-          <ImagePlus className="w-4 h-4" /> Из библиотеки
+          <Images className="w-4 h-4" /> Библиотека
         </Button>
       </div>
 

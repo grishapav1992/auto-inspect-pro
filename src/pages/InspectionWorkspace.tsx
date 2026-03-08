@@ -114,20 +114,24 @@ const InspectionWorkspace = () => {
       </div>
 
       {/* Action buttons */}
-      <div className="px-4 py-4 grid grid-cols-2 gap-3">
-        <Button variant="action" className="flex-col h-auto py-4 gap-2" onClick={handleUpload}>
-          <ImagePlus className="w-6 h-6" />
-          <span className="text-xs">Загрузить</span>
+      <div className="px-4 py-4 grid grid-cols-3 gap-2">
+        <Button variant="action" className="flex-col h-auto py-3 gap-1.5" onClick={handleCapture}>
+          <Camera className="w-5 h-5" />
+          <span className="text-[11px]">Снять фото</span>
+        </Button>
+        <Button variant="action" className="flex-col h-auto py-3 gap-1.5" onClick={handleUpload}>
+          <ImagePlus className="w-5 h-5" />
+          <span className="text-[11px]">Из галереи</span>
         </Button>
         <Button
           variant="action"
-          className="flex-col h-auto py-4 gap-2 relative"
+          className="flex-col h-auto py-3 gap-1.5 relative"
           onClick={() => navigate(`/inspection/${id}/media`)}
         >
-          <Images className="w-6 h-6" />
-          <span className="text-xs">Библиотека</span>
+          <Images className="w-5 h-5" />
+          <span className="text-[11px]">Библиотека</span>
           {inspection.media.length > 0 && (
-            <span className="absolute top-2 right-2 bg-primary text-primary-foreground text-[10px] font-bold rounded-full w-5 h-5 flex items-center justify-center">
+            <span className="absolute top-1.5 right-1.5 bg-primary text-primary-foreground text-[10px] font-bold rounded-full w-5 h-5 flex items-center justify-center">
               {inspection.media.length}
             </span>
           )}
