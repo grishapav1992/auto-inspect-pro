@@ -40,6 +40,25 @@ const PartDetail = () => {
     input.click();
   };
 
+  const handleGalleryUpload = () => {
+    const input = document.createElement('input');
+    input.type = 'file';
+    input.accept = 'image/*';
+    input.multiple = true;
+    input.onchange = (e) => {
+      const files = Array.from((e.target as HTMLInputElement).files || []);
+      setActiveInspection(id!);
+      files.forEach(file => {
+        const reader = new FileReader();
+        reader.onload = () => {
+          addMedia([{ id: crypto.randomUUID(), dataUrl: reader.result as string, section: 'body', carPart: decodedPart, createdAt: new Date().toISOString() }]);
+        };
+        reader.readAsDataURL(file);
+      });
+    };
+    input.click();
+  };
+
   return (
     <div className="min-h-screen bg-background pb-6">
       <div className="sticky top-0 bg-background/95 backdrop-blur-sm border-b border-border z-10 px-4 py-3">
