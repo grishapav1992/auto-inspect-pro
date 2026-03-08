@@ -10,7 +10,7 @@ import MediaDetailSheet from '@/components/MediaDetailSheet';
 const MediaLibrary = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
-  const { inspections, updateMedia, removeMedia, bulkAssignMedia, addMedia, setActiveInspection } = useInspectionStore();
+  const { inspections, updateMedia, removeMedia, bulkAssignMedia, addMedia, setActiveInspection, customDamageTags, addCustomDamageTag } = useInspectionStore();
   const inspection = inspections.find(i => i.id === id);
 
   const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
