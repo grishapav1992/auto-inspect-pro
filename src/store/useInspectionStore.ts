@@ -27,7 +27,6 @@ interface InspectionStore {
   updateBodyPaintThickness: (value: string) => void;
   updateFinalVerdict: (data: Partial<FinalVerdictData>) => void;
 }
-}
 
 export const useInspectionStore = create<InspectionStore>()(
   persist(
