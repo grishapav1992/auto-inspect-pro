@@ -467,7 +467,7 @@ export function generateSummary(input: SummaryInput): SummaryResult {
 
       penalty += seriousCount * 10 + minorCount * 5;
       const status = seriousCount > 0 ? "bad" : minorCount > 0 ? "warn" : "ok";
-      sections.push({ title: "Силовые элементы кузова", emoji: "🏗️", status, required: false, details });
+      sections.push({ title: "Силовые элементы кузова", emoji: "•", status, required: false, details });
     }
   }
 
