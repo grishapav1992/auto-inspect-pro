@@ -477,7 +477,7 @@ function SortableMediaCard({
 
 function MediaOverlayCard({ item }: { item: MediaItem }) {
   return (
-    <div className="rounded-xl overflow-hidden border-2 border-primary/60 bg-card shadow-2xl w-40">
+    <div className="rounded-lg overflow-hidden border border-primary/40 bg-card shadow-card-hover w-40">
       {item.type === "video" ? (
         <video src={item.url} className="w-full rounded-xl" muted playsInline />
       ) : (
