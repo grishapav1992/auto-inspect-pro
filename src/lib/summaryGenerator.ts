@@ -593,7 +593,7 @@ export function generateSummary(input: SummaryInput): SummaryResult {
         details.push({ label: "Салон", value: "без повреждений", severity: "ok" });
       }
 
-      if (input.interiorNote) details.push({ label: "📝 Раздел", value: input.interiorNote.slice(0, 60), mediaRefs: getGroupMediaRefs(mediaIndex, "interior") });
+      if (input.interiorNote) details.push({ label: "Заметка", value: input.interiorNote.slice(0, 60), mediaRefs: getGroupMediaRefs(mediaIndex, "interior") });
       appendGroupNote(details, "interior", input.mediaGroupInspections, INTERIOR_ALL_TAGS as { id: string; label: string; emoji: string }[], mediaIndex, input.customTags);
 
       penalty += seriousCount * 6 + minorCount * 3;
