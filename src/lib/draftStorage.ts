@@ -310,11 +310,31 @@ function convertDraftUrlsToKeys(draft: ReportDraft): ReportDraft {
     bodyStructuralInspections: convertInspectionUrlsToKeys(draft.bodyStructuralInspections),
     bodyUndercarriageInspections: convertInspectionUrlsToKeys(draft.bodyUndercarriageInspections),
     glassInspections: convertInspectionUrlsToKeys(draft.glassInspections),
-    mediaFiles: draft.mediaFiles.map((m) => ({
-      ...m,
-      url: getIdbKey(m.url),
-      ...(m.children ? { children: m.children.map((c: any) => ({ ...c, url: getIdbKey(c.url) })) } : {}),
-    })),
+    mediaFiles: draft.mediaFiles.map((m) => {
+      const convertMediaInspection = (insp?: PartInspection) => {
+        if (!insp) return insp;
+        const result: PartInspection = { ...insp, photos: convertUrlsToKeys(insp.photos ?? []) };
+        if (insp.tagPhotos) {
+          result.tagPhotos = Object.fromEntries(
+            Object.entries(insp.tagPhotos).map(([tag, urls]) => [tag, convertUrlsToKeys(urls)]),
+          );
+        }
+        return result;
+      };
+      return {
+        ...m,
+        url: getIdbKey(m.url),
+        inspection: convertMediaInspection(m.inspection),
+        groupInspection: convertMediaInspection(m.groupInspection),
+        ...(m.children ? {
+          children: m.children.map((c) => ({
+            ...c,
+            url: getIdbKey(c.url),
+            inspection: convertMediaInspection(c.inspection),
+          })),
+        } : {}),
+      };
+    }),
   };
 }
 
