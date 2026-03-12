@@ -1,4 +1,4 @@
-import heic2any from "heic2any";
+// Dynamic import to keep heic2any out of main bundle
 
 const HEIC_MIME_TYPES = new Set([
   "image/heic",
