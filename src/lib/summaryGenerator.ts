@@ -732,7 +732,7 @@ export function generateSummary(input: SummaryInput): SummaryResult {
   const score = Math.max(0, Math.min(100, 100 - penalty));
   const verdict: SummaryResult["verdict"] = score >= 70 ? "recommended" : score >= 40 ? "with_reservations" : "not_recommended";
   const verdictLabel = verdict === "recommended" ? "Рекомендуется к покупке" : verdict === "with_reservations" ? "С оговорками" : "Не рекомендуется";
-  const verdictEmoji = verdict === "recommended" ? "✅" : verdict === "with_reservations" ? "⚠️" : "🚫";
+  const verdictEmoji = verdict === "recommended" ? "✓" : verdict === "with_reservations" ? "!" : "✗";
 
   return { verdict, verdictLabel, verdictEmoji, score, sections };
 }
