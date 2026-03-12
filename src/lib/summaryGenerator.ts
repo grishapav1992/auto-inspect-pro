@@ -380,7 +380,7 @@ export function generateSummary(input: SummaryInput): SummaryResult {
     if (!input.hasGlassPhotos && Object.keys(input.glassInspections).length === 0) {
       details.push({ label: "Остекление", value: "не осмотрено", severity: "minor" });
       penalty += 5;
-      sections.push({ title: "Остекление", emoji: "🪟", status: "warn", required: true, details });
+      sections.push({ title: "Остекление", emoji: "•", status: "warn", required: true, details });
     } else {
       const glassInspected = input.glassInspections;
       const glassSeriousIds = new Set(
