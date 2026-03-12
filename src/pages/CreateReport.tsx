@@ -1581,7 +1581,7 @@ const CreateReport = () => {
                           {/* Progress bar */}
                           <div className="h-1.5 rounded-full bg-muted overflow-hidden">
                             <motion.div
-                              className={`h-full rounded-full ${isDone ? "bg-green-500" : "bg-primary"}`}
+                              className={`h-full rounded-full ${isDone ? "bg-[hsl(var(--success))]" : "bg-primary"}`}
                               initial={{ width: 0 }}
                               animate={{ width: `${pct}%` }}
                               transition={{ duration: 0.4, ease: "easeOut" }}
