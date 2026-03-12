@@ -427,7 +427,7 @@ export function generateSummary(input: SummaryInput): SummaryResult {
     if (!input.hasStructuralPhotos && allInspected.length === 0) {
       details.push({ label: "Силовые элементы кузова", value: "не осмотрены", severity: "minor" });
       penalty += 5;
-      sections.push({ title: "Силовые элементы кузова", emoji: "🏗️", status: "warn", required: false, details });
+      sections.push({ title: "Силовые элементы кузова", emoji: "•", status: "warn", required: false, details });
     } else {
       const elements = MEDIA_GROUP_ELEMENTS.structural;
       const allStructTags = [...DAMAGE_TAGS] as { id: string; label: string; emoji: string }[];
