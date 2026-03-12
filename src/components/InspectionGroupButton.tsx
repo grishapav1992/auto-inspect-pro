@@ -54,12 +54,12 @@ const InspectionGroupButton = ({
       transition={{ delay }}
       whileTap={{ scale: 0.98 }}
       onClick={onClick}
-      className={`flex w-full items-start gap-3 rounded-xl border bg-card px-4 py-3.5 transition-all ${
+      className={`flex w-full items-start gap-3 rounded-lg border bg-card px-4 py-3 transition-all ${
         allDone
           ? hasDamage
             ? "border-destructive/30 bg-destructive/5"
-            : "border-[hsl(var(--success)/0.3)] bg-[hsl(var(--success)/0.05)]"
-          : "border-border hover:border-primary/40"
+            : "border-[hsl(var(--success)/0.3)] bg-[hsl(var(--success)/0.04)]"
+          : "border-border/70 hover:border-primary/40"
       }`}
     >
       <span className="text-xl mt-0.5 w-7 h-7 flex items-center justify-center flex-shrink-0">{group.icon}</span>

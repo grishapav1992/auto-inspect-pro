@@ -62,23 +62,23 @@ const ReportsList = () => {
 
   return (
     <div className="min-h-screen pb-24">
-      <header className="sticky top-0 z-40 bg-background/80 backdrop-blur-xl px-4 pb-3 pt-12">
+      <header className="sticky top-0 z-40 bg-background/90 backdrop-blur-lg px-4 pb-3 pt-12 border-b border-border/50">
         <div className="flex items-center justify-between">
           <div>
             <motion.h1
-              initial={{ opacity: 0, y: -10 }}
+              initial={{ opacity: 0, y: -6 }}
               animate={{ opacity: 1, y: 0 }}
-              className="text-2xl font-extrabold text-foreground"
+              className="text-xl font-bold text-foreground tracking-tight"
             >
               Мои отчёты
             </motion.h1>
-            <p className="text-sm text-muted-foreground">Автоподбор</p>
+            <p className="text-xs text-muted-foreground font-medium uppercase tracking-wider mt-0.5">Автоподбор</p>
           </div>
           <button
             onClick={() => navigate("/create")}
-            className="flex h-10 w-10 items-center justify-center rounded-full bg-primary text-primary-foreground shadow-md transition-all active:scale-95 hover:shadow-lg"
+            className="flex h-9 w-9 items-center justify-center rounded-lg bg-primary text-primary-foreground transition-all active:scale-95 shadow-sm"
           >
-            <Plus className="h-5 w-5" />
+            <Plus className="h-4.5 w-4.5" />
           </button>
         </div>
         <div className="relative mt-3">
@@ -87,7 +87,7 @@ const ReportsList = () => {
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             placeholder="Поиск по марке или модели..."
-            className="pl-9 bg-card border-border/60"
+            className="pl-9 bg-card border-border/70 h-9 text-sm"
           />
         </div>
       </header>
