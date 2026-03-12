@@ -6,7 +6,7 @@ import { loadCompletedReports, finalizeDraftToReport } from "@/lib/completedRepo
 import type { MediaRef } from "@/lib/summaryGenerator";
 import type { MediaItem } from "@/components/SortableMediaGallery";
 import type { MediaGroupName } from "@/components/SortableMediaGallery";
-import { SummarySections, SummaryNoteCard, ExpertConclusionCard } from "@/components/SummarySections";
+import { SummarySections, SummaryNoteCard, ExpertConclusionCard, NoDamageMediaCard } from "@/components/SummarySections";
 import { MediaLightbox, type LightboxState } from "@/components/MediaLightbox";
 
 /** Build MediaItem arrays per group from draft.mediaFiles for collages & lightbox */
@@ -102,6 +102,13 @@ const ReportDetail = () => {
           sections={report.sections}
           mediaGroups={mediaGroups}
           onOpenMediaRef={openMediaRef}
+          onOpenCollage={(items, index, groupName) =>
+            setLightbox({ items, index, groupName })
+          }
+        />
+
+        <NoDamageMediaCard
+          mediaGroups={mediaGroups}
           onOpenCollage={(items, index, groupName) =>
             setLightbox({ items, index, groupName })
           }
