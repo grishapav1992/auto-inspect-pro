@@ -549,7 +549,7 @@ export function generateSummary(input: SummaryInput): SummaryResult {
         details.push({ label: "Подкапотное", value: "без замечаний", severity: "ok" });
       }
 
-      if (input.underhoodNote) details.push({ label: "📝 Раздел", value: input.underhoodNote.slice(0, 60), mediaRefs: getGroupMediaRefs(mediaIndex, "underhood") });
+      if (input.underhoodNote) details.push({ label: "Заметка", value: input.underhoodNote.slice(0, 60), mediaRefs: getGroupMediaRefs(mediaIndex, "underhood") });
       appendGroupNote(details, "underhood", input.mediaGroupInspections, UNDERHOOD_DAMAGE_TAGS as readonly { id: string; label: string; emoji: string }[], mediaIndex, input.customTags);
 
       penalty += seriousCount * 8 + minorCount * 4;
