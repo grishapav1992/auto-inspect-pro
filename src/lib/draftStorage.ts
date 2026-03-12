@@ -73,7 +73,7 @@ export interface ReportDraft {
   tdBrakeRideTags: string[];
   tdPhotos: string[];
   tdNote: string;
-  mediaFiles: { id: string; url: string; type: "image" | "video"; children?: { id: string; url: string; type: "image" | "video" }[]; groupName?: string }[];
+  mediaFiles: { id: string; url: string; type: "image" | "video"; children?: { id: string; url: string; type: "image" | "video" }[]; groupName?: "body" | "structural" | "glass" | "lighting" | "underhood" | "wheels" | "interior" | "diagnostics" }[];
   engineVolume: string;
   engineType: string;
   gearboxType: string;
