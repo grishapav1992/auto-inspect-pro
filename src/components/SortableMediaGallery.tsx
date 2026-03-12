@@ -1124,10 +1124,39 @@ export default function SortableMediaGallery({
                   <motion.div initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -10 }} className="flex items-center justify-between px-4 py-2 border-b border-border/60">
                     <button type="button" onClick={exitGroupMode} className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors">Отмена</button>
                     <span className="text-sm font-semibold text-foreground">Выбрано: {groupSelectedIds.size}</span>
-                    <SelectActionsMenu disabled={groupSelectedIds.size === 0} onDelete={deleteGroupSelected} onGroup={() => {}} canGroup={false} onNote={() => setGroupNoteModalOpen(true)} />
+                    <div className="w-16" /> {/* spacer for centering */}
                   </motion.div>
-                )}
-              </AnimatePresence>
+
+                  {/* Bottom action bar for selected items */}
+                  {groupSelectedIds.size > 0 && (
+                    <motion.div
+                      initial={{ opacity: 0, y: 20 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      exit={{ opacity: 0, y: 20 }}
+                      className="fixed inset-x-0 bottom-0 z-[85] bg-card/95 backdrop-blur-md border-t border-border/60 px-6 py-3 flex items-center justify-around max-w-lg mx-auto"
+                    >
+                      <button
+                        type="button"
+                        onClick={() => setGroupNoteModalOpen(true)}
+                        className="flex flex-col items-center gap-1 text-primary active:scale-95 transition-transform"
+                      >
+                        <div className="rounded-full bg-primary/10 p-2.5">
+                          <ClipboardList className="h-5 w-5" />
+                        </div>
+                        <span className="text-[11px] font-medium">Заметка</span>
+                      </button>
+                      <button
+                        type="button"
+                        onClick={deleteGroupSelected}
+                        className="flex flex-col items-center gap-1 text-destructive active:scale-95 transition-transform"
+                      >
+                        <div className="rounded-full bg-destructive/10 p-2.5">
+                          <Trash2 className="h-5 w-5" />
+                        </div>
+                        <span className="text-[11px] font-medium">Удалить</span>
+                      </button>
+                    </motion.div>
+                  )}
 
               {/* Masonry grid with DnD */}
               <div className="flex-1 overflow-y-auto p-3">
