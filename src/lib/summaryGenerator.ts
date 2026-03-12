@@ -685,7 +685,7 @@ export function generateSummary(input: SummaryInput): SummaryResult {
         details.push({ label: "Колёса", value: "без замечаний", severity: "ok" });
       }
 
-      if (input.wheelsNote) details.push({ label: "📝 Раздел", value: input.wheelsNote.slice(0, 60), mediaRefs: getGroupMediaRefs(mediaIndex, "wheels") });
+      if (input.wheelsNote) details.push({ label: "Заметка", value: input.wheelsNote.slice(0, 60), mediaRefs: getGroupMediaRefs(mediaIndex, "wheels") });
       appendGroupNote(details, "wheels", input.mediaGroupInspections, WHEELS_DAMAGE_TAGS as readonly { id: string; label: string; emoji: string }[], mediaIndex, input.customTags);
 
       penalty += seriousCount * 8 + minorCount * 5;
