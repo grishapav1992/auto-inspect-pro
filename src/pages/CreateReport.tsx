@@ -1458,7 +1458,6 @@ const CreateReport = () => {
                     pendingMediaGroupRef.current = null;
                     
                     // Convert HEIC files
-                    const { convertHeicFiles } = await import("@/lib/convertHeic");
                     const files = await convertHeicFiles(rawFiles);
                     
                     const newMediaItems: MediaItem[] = [];

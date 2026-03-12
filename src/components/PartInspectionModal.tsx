@@ -671,7 +671,6 @@ const PartInspectionModal = ({
       return;
     }
 
-    const { convertHeicFiles } = await import("@/lib/convertHeic");
     const files = await convertHeicFiles(Array.from(rawFiles));
 
     const currentPendingTag = pendingTag;
