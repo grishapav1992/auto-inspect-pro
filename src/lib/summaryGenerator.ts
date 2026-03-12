@@ -510,7 +510,7 @@ export function generateSummary(input: SummaryInput): SummaryResult {
       appendGroupNote(details, "lighting", input.mediaGroupInspections, LIGHTING_DAMAGE_TAGS as readonly { id: string; label: string; emoji: string }[], mediaIndex, input.customTags);
       penalty += seriousCount * 8 + minorCount * 4;
       const status = seriousCount > 0 ? "bad" : minorCount > 0 ? "warn" : "ok";
-      sections.push({ title: "Светотехника", emoji: "💡", status, required: false, details });
+      sections.push({ title: "Светотехника", emoji: "•", status, required: false, details });
     }
   }
 
