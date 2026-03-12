@@ -1260,11 +1260,11 @@ export default function SortableMediaGallery({
                       c.id === groupSingleNoteId ? { ...c, inspection: insp } : c
                     ));
                   } else {
-                    // Group-level note — write to groupInspection AND propagate to all children
-                    const updatedChildren = groupChildren.map((c) => ({
-                      ...c,
-                      inspection: insp,
-                    }));
+                    // Group-level note — apply only to selected children
+                    const selectedSet = groupSelectedIds.size > 0 ? groupSelectedIds : new Set(groupChildren.map(c => c.id));
+                    const updatedChildren = groupChildren.map((c) =>
+                      selectedSet.has(c.id) ? { ...c, inspection: insp } : c
+                    );
                     const newItems = items.map((item) =>
                       item.id === openGroup.id
                         ? { ...item, groupInspection: insp, children: updatedChildren, url: updatedChildren[0]?.url ?? item.url }
