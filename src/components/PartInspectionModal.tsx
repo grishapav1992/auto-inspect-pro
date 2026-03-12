@@ -813,10 +813,9 @@ const PartInspectionModal = ({
 
   const canSave = isMulti ? filledCount > 0 : isPartFilled(state);
 
-  const hasDamage = !state.noDamage && state.tags.length > 0;
-  const sliderMax = hasDamage ? 1500 : 500;
-  const clampedFrom = Math.min(state.paintFrom, sliderMax);
-  const clampedTo = Math.min(state.paintTo, sliderMax);
+  const sliderMax = 1500;
+  const clampedFrom = Math.max(50, Math.min(state.paintFrom, sliderMax));
+  const clampedTo = Math.max(clampedFrom, Math.min(state.paintTo, sliderMax));
 
   const handleClose = useCallback(() => {
     if (onContinueInspection) {
