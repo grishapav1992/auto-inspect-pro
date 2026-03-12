@@ -69,19 +69,6 @@ export async function loadBlob(key: string): Promise<Blob | null> {
 }
 
 /**
- * Delete a single blob by key.
- */
-export async function deleteBlob(key: string): Promise<void> {
-  const db = await openDB();
-  return new Promise<void>((resolve, reject) => {
-    const tx = db.transaction(STORE_NAME, "readwrite");
-    tx.objectStore(STORE_NAME).delete(key);
-    tx.oncomplete = () => resolve();
-    tx.onerror = () => reject(tx.error);
-  });
-}
-
-/**
  * Delete multiple blobs by key.
  */
 export async function deleteBlobs(keys: string[]): Promise<void> {
@@ -96,41 +83,68 @@ export async function deleteBlobs(keys: string[]): Promise<void> {
   });
 }
 
-// ----- Object URL cache (per session) -----
+// ----- Bidirectional mapping: idbKey ↔ objectUrl -----
 
-const objectUrlCache = new Map<string, string>();
+const keyToObjUrl = new Map<string, string>();
+const objUrlToKey = new Map<string, string>();
 
 /**
- * Get a displayable object URL for an IDB key.
- * If the key is already a data: or http(s): URL, returns it as-is.
- * Caches the object URL for the session lifetime.
+ * Register a mapping between an IDB key and its object URL.
  */
-export async function resolveMediaUrl(url: string): Promise<string> {
-  if (!isIdbUrl(url)) return url;
+export function registerMediaUrl(idbKey: string, objectUrl: string): void {
+  keyToObjUrl.set(idbKey, objectUrl);
+  objUrlToKey.set(objectUrl, idbKey);
+}
 
-  const cached = objectUrlCache.get(url);
+/**
+ * Get the displayable object URL for an IDB key.
+ * Returns empty string if not resolved yet.
+ */
+export function getObjectUrl(idbKey: string): string {
+  return keyToObjUrl.get(idbKey) ?? "";
+}
+
+/**
+ * Get the IDB key for a given object URL (or data: URL / other).
+ * Returns the URL itself if it's not mapped (backward compat with data: URLs).
+ */
+export function getIdbKey(url: string): string {
+  return objUrlToKey.get(url) ?? url;
+}
+
+/**
+ * Resolve an IDB key to an object URL, loading from IDB if needed.
+ */
+export async function resolveMediaUrl(idbKey: string): Promise<string> {
+  if (!isIdbUrl(idbKey)) return idbKey;
+
+  const cached = keyToObjUrl.get(idbKey);
   if (cached) return cached;
 
-  const blob = await loadBlob(url);
+  const blob = await loadBlob(idbKey);
   if (!blob) return "";
 
   const objUrl = URL.createObjectURL(blob);
-  objectUrlCache.set(url, objUrl);
+  registerMediaUrl(idbKey, objUrl);
   return objUrl;
 }
 
 /**
- * Revoke all cached object URLs (call on app teardown if needed).
+ * Resolve all IDB URLs in an array, returning displayable URLs.
  */
-export function revokeAllObjectUrls(): void {
-  for (const objUrl of objectUrlCache.values()) {
-    URL.revokeObjectURL(objUrl);
-  }
-  objectUrlCache.clear();
+export async function resolveMediaUrls(urls: string[]): Promise<string[]> {
+  return Promise.all(urls.map(resolveMediaUrl));
 }
 
 /**
- * Collect all IDB keys from draft photo arrays and inspection records.
+ * Convert an array of displayable URLs back to IDB keys for storage.
+ */
+export function toStorageUrls(urls: string[]): string[] {
+  return urls.map((url) => objUrlToKey.get(url) ?? url);
+}
+
+/**
+ * Collect all IDB keys from a draft-like object.
  */
 export function collectIdbKeys(draft: {
   inspectionPhotos?: string[];
