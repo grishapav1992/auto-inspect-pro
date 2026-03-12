@@ -291,8 +291,8 @@ function SortableMediaCard({
   const isSelectMode = interactionMode === "select";
   const dndProps = !isSelectMode ? { ...attributes, ...listeners } : {};
 
-  const longPressTimer = React.useRef<ReturnType<typeof setTimeout> | null>(null);
-  const didLongPress = React.useRef(false);
+  const longPressTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const didLongPress = useRef(false);
 
   const clearLongPress = () => {
     if (longPressTimer.current) {
