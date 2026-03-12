@@ -1,4 +1,4 @@
-import heic2any from "heic2any";
+// Dynamic import to keep heic2any out of main bundle
 
 const HEIC_MIME_TYPES = new Set([
   "image/heic",
@@ -21,6 +21,7 @@ export async function convertHeicIfNeeded(file: File): Promise<File> {
   if (!isHeicFile(file)) return file;
 
   try {
+    const heic2any = (await import("heic2any")).default;
     const converted = await heic2any({
       blob: file,
       toType: "image/jpeg",
