@@ -170,7 +170,7 @@ export function SummaryNoteCard({ note }: { note: string }) {
       initial={{ opacity: 0, y: 10 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ delay: 0.3 }}
-      className="rounded-xl border border-border/60 bg-card p-3.5 space-y-2"
+      className="rounded-lg border border-border/60 bg-card p-3.5 space-y-2"
     >
       <div className="flex items-center gap-2">
         <span className="text-base">📋</span>
