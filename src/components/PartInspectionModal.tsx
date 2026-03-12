@@ -663,19 +663,22 @@ const PartInspectionModal = ({
     }
   };
 
-  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const files = e.target.files;
-    if (!files || files.length === 0) {
+  const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const rawFiles = e.target.files;
+    if (!rawFiles || rawFiles.length === 0) {
       setPendingTag(null);
       return;
     }
+
+    const { convertHeicFiles } = await import("@/lib/convertHeic");
+    const files = await convertHeicFiles(Array.from(rawFiles));
 
     const currentPendingTag = pendingTag;
     let processedCount = 0;
     const totalFiles = files.length;
     const newPhotoUrls: string[] = [];
 
-    Array.from(files).forEach((file) => {
+    files.forEach((file) => {
       const reader = new FileReader();
       reader.onload = (ev) => {
         if (ev.target?.result) {
