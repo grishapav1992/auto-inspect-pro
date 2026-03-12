@@ -479,7 +479,7 @@ export function generateSummary(input: SummaryInput): SummaryResult {
     if (!input.hasLightingPhotos && !hasData) {
       details.push({ label: "Светотехника", value: "не осмотрена", severity: "minor" });
       penalty += 5;
-      sections.push({ title: "Светотехника", emoji: "💡", status: "warn", required: false, details });
+      sections.push({ title: "Светотехника", emoji: "•", status: "warn", required: false, details });
     } else {
       const elements = MEDIA_GROUP_ELEMENTS.lighting;
       const lightingSeriousIds = getSeriousIds([...DAMAGE_TAG_GROUPS] as any);
