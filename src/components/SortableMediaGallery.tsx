@@ -394,6 +394,12 @@ function SortableMediaCard({
         {/* Note button (only in normal mode, inside groups) */}
         {onNote && interactionMode === "normal" && !item.children && (() => {
           const hasData = item.inspection && (item.inspection.noDamage || item.inspection.tags.length > 0 || item.inspection.note || item.inspection.elementType || (item.inspection.audioRecordings && item.inspection.audioRecordings.length > 0));
+          const isDraft = item.inspection?.isDraft;
+          const btnColor = hasData
+            ? isDraft
+              ? "bg-warning text-warning-foreground"
+              : "bg-success text-success-foreground"
+            : "bg-black/60 text-white/90";
           return (
             <button
               type="button"
@@ -402,11 +408,7 @@ function SortableMediaCard({
                 e.stopPropagation();
                 onNote();
               }}
-              className={`absolute top-2 right-2 rounded-full backdrop-blur-sm transition-all active:scale-90 z-10 flex items-center gap-1 ${
-                hasData
-                  ? "bg-primary text-primary-foreground px-2 py-1"
-                  : "bg-black/60 text-white/90 px-2 py-1"
-              }`}
+              className={`absolute top-2 right-2 rounded-full backdrop-blur-sm transition-all active:scale-90 z-10 flex items-center gap-1 px-2 py-1 ${btnColor}`}
             >
               {hasData ? (
                 <>
@@ -422,44 +424,18 @@ function SortableMediaCard({
             </button>
           );
         })()}
-      </div>
 
-      {/* Inspection info — compact indicator below photo */}
-      {interactionMode === "normal" && !item.children && item.inspection && (() => {
-        const insp = item.inspection!;
-        const hasElementType = elementTypes && elementTypes.length > 0 && insp.elementType;
-        const elementLabel = hasElementType ? elementTypes!.find(et => et.id === insp.elementType)?.label : null;
-        const hasTags = insp.tags.length > 0;
-        const hasNote = !!insp.note;
-        const hasAudio = insp.audioRecordings && insp.audioRecordings.length > 0;
-        const isDraft = insp.isDraft;
-        const hasInspectionData = hasTags || hasNote || hasAudio || insp.noDamage || insp.paintThickness;
-        const hasAnything = hasElementType || hasInspectionData || isDraft;
-        if (!hasAnything) return null;
-        return (
-          <div className="mt-1.5 px-1 pb-0.5 flex items-center gap-1.5 min-w-0">
-            {isDraft && (
-              <span className="shrink-0 inline-flex items-center rounded bg-warning/15 px-1.5 py-0.5 text-[9px] font-semibold uppercase tracking-wide text-warning">
-                Черновик
-              </span>
-            )}
-            {elementLabel && (
-              <span className="text-[11px] font-medium text-foreground truncate leading-tight">
-                {elementLabel}
-              </span>
-            )}
-            {!elementLabel && hasInspectionData && (
-              <span className="inline-flex items-center gap-1 text-[10px] text-muted-foreground">
-                <Check className="h-3 w-3 text-success" />
-                <span>Заполнено</span>
-              </span>
-            )}
-            {elementLabel && hasInspectionData && (
-              <Check className="h-3 w-3 text-success shrink-0" />
-            )}
-          </div>
-        );
-      })()}
+        {/* Element label overlay — bottom of image */}
+        {interactionMode === "normal" && !item.children && item.inspection?.elementType && elementTypes && (() => {
+          const label = elementTypes.find(et => et.id === item.inspection!.elementType)?.label;
+          if (!label) return null;
+          return (
+            <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/60 to-transparent px-2 pb-1.5 pt-4 pointer-events-none">
+              <span className="text-[11px] font-medium text-white/90 leading-tight truncate block">{label}</span>
+            </div>
+          );
+        })()}
+      </div>
     </div>
   );
 }
