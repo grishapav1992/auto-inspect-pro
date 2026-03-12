@@ -21,6 +21,7 @@ export async function convertHeicIfNeeded(file: File): Promise<File> {
   if (!isHeicFile(file)) return file;
 
   try {
+    const heic2any = (await import("heic2any")).default;
     const converted = await heic2any({
       blob: file,
       toType: "image/jpeg",
