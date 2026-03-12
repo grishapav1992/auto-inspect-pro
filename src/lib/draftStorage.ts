@@ -433,14 +433,32 @@ export async function loadDraftWithMedia(draft: ReportDraft): Promise<ReportDraf
   };
 
   // Resolve media file URLs
+  const resolveMediaInspection = async (insp?: PartInspection): Promise<PartInspection | undefined> => {
+    if (!insp) return insp;
+    const result: PartInspection = { ...insp, photos: await resolveArr(insp.photos ?? []) };
+    if (insp.tagPhotos) {
+      const entries = await Promise.all(
+        Object.entries(insp.tagPhotos).map(async ([tag, urls]) => [tag, await resolveArr(urls)] as const),
+      );
+      result.tagPhotos = Object.fromEntries(entries);
+    }
+    return result;
+  };
+
   result.mediaFiles = await Promise.all(
     draft.mediaFiles.map(async (m) => {
-      const resolved: any = { ...m, url: await resolveMediaUrls([m.url]).then((r) => r[0]) };
+      const resolved: any = {
+        ...m,
+        url: await resolveMediaUrls([m.url]).then((r) => r[0]),
+        inspection: await resolveMediaInspection(m.inspection),
+        groupInspection: await resolveMediaInspection(m.groupInspection),
+      };
       if (m.children) {
         resolved.children = await Promise.all(
           m.children.map(async (c: any) => ({
             ...c,
             url: await resolveMediaUrls([c.url]).then((r) => r[0]),
+            inspection: await resolveMediaInspection(c.inspection),
           })),
         );
       }
