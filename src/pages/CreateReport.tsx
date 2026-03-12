@@ -574,9 +574,7 @@ const CreateReport = () => {
   const handleContinueExistingDraft = () => {
     if (duplicateDraft) {
       setShowDuplicateDialog(false);
-      // Navigate with replace and use key to force remount
       navigate(`/create?draft=${duplicateDraft.id}`, { replace: true });
-      // Force full remount by reloading state from the draft
       const draft = loadDrafts().find((d) => d.id === duplicateDraft.id);
       if (draft) {
         setVin(draft.vin);
@@ -638,6 +636,21 @@ const CreateReport = () => {
         setTdPhotos(draft.tdPhotos ?? []);
         setTdNote(draft.tdNote ?? "");
         setMediaFiles(draft.mediaFiles ?? []);
+        // Async resolve IDB URLs
+        loadDraftWithMedia(draft).then((resolved) => {
+          setInspectionPhotos(resolved.inspectionPhotos);
+          setUnderhoodPhotos(resolved.underhoodPhotos);
+          setBodyPhotos(resolved.bodyPhotos);
+          setGlassPhotos(resolved.glassPhotos);
+          setInteriorPhotos(resolved.interiorPhotos);
+          setWheelsPhotos(resolved.wheelsPhotos);
+          setTdPhotos(resolved.tdPhotos);
+          setMediaFiles(resolved.mediaFiles as any);
+          setInspections(resolved.inspections);
+          setBodyStructuralInspections(resolved.bodyStructuralInspections);
+          setBodyUndercarriageInspections(resolved.bodyUndercarriageInspections);
+          setGlassInspections(resolved.glassInspections);
+        }).catch((err) => console.warn("Failed to resolve IDB media:", err));
         setEngineVolume(draft.engineVolume ?? "");
         setEngineType(draft.engineType ?? "");
         setGearboxType(draft.gearboxType ?? "");
