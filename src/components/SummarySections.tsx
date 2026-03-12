@@ -173,6 +173,93 @@ export function SummaryNoteCard({ note }: { note: string }) {
   );
 }
 
+/** Card showing photos without damage (noDamage, isDraft, or no inspection) */
+export function NoDamageMediaCard({
+  mediaGroups,
+  onOpenCollage,
+}: {
+  mediaGroups?: Record<string, MediaItem[]>;
+  onOpenCollage?: (items: MediaItem[], index: number, groupName: MediaGroupName) => void;
+}) {
+  if (!mediaGroups) return null;
+
+  // Collect all "clean" items across groups: noDamage, isDraft, or no inspection at all
+  const cleanItems: { item: MediaItem; groupName: string }[] = [];
+  for (const [groupName, items] of Object.entries(mediaGroups)) {
+    for (const item of items) {
+      const ins = item.inspection;
+      if (!ins) {
+        // No inspection at all — unassigned
+        cleanItems.push({ item, groupName });
+      } else if (ins.noDamage) {
+        // Explicitly marked "no damage"
+        cleanItems.push({ item, groupName });
+      } else if (ins.isDraft && ins.tags.length === 0) {
+        // Draft without tags — not yet categorized as damaged
+        cleanItems.push({ item, groupName });
+      }
+    }
+  }
+
+  if (cleanItems.length === 0) return null;
+
+  return (
+    <div className="rounded-lg border border-border bg-card p-3.5 space-y-2">
+      <div className="flex items-center gap-2">
+        <span className="text-sm">✅</span>
+        <span className="text-[13px] font-medium flex-1">Без повреждений</span>
+        <span className="text-[9px] font-medium text-[hsl(var(--success))] bg-[hsl(var(--success)/0.08)] rounded-md px-1.5 py-0.5">
+          {cleanItems.length} фото
+        </span>
+      </div>
+      <p className="text-[11px] text-muted-foreground">
+        Элементы без выявленных повреждений и нераспределённые фото
+      </p>
+      <div className="grid grid-cols-3 gap-1.5">
+        {cleanItems.map(({ item, groupName }, idx) => (
+          <div
+            key={item.id}
+            className="relative rounded-md overflow-hidden cursor-pointer transition-opacity active:opacity-80 aspect-square"
+            onClick={() => {
+              // Build flat list of just the clean items for lightbox navigation
+              const allClean = cleanItems.map(c => c.item);
+              onOpenCollage?.(allClean, idx, groupName as MediaGroupName);
+            }}
+          >
+            {item.type === "video" ? (
+              <video
+                src={item.url}
+                className="w-full h-full object-cover pointer-events-none"
+                muted
+                playsInline
+                preload="metadata"
+              />
+            ) : (
+              <img
+                src={item.url}
+                alt=""
+                className="w-full h-full object-cover pointer-events-none"
+                loading="lazy"
+              />
+            )}
+            {/* Small badge for status */}
+            {item.inspection?.noDamage && (
+              <div className="absolute bottom-0.5 left-0.5 bg-[hsl(var(--success)/0.85)] text-white text-[8px] font-medium px-1 py-0.5 rounded">
+                ОК
+              </div>
+            )}
+            {item.inspection?.isDraft && !item.inspection?.noDamage && (
+              <div className="absolute bottom-0.5 left-0.5 bg-muted-foreground/70 text-white text-[8px] font-medium px-1 py-0.5 rounded">
+                Черновик
+              </div>
+            )}
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
 /** Итог специалиста (read-only view for completed reports) */
 export function ExpertConclusionCard({ conclusion }: { conclusion: string }) {
   if (!conclusion) return null;
