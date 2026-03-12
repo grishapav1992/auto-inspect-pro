@@ -38,7 +38,7 @@ import { CAR_PARTS, STRUCTURAL_PARTS, UNDERCARRIAGE_PARTS, GLASS_PARTS, GLASS_DA
 import { useUserTags } from "@/contexts/UserTagContext";
 import type { DiagnosticFile } from "@/lib/draftStorage";
 import { saveDraft, loadDrafts, deleteDraft, type ReportDraft } from "@/lib/draftStorage";
-import { convertHeicFiles } from "@/lib/convertHeic";
+import { normalizeUploadFiles } from "@/lib/media/normalizeUploadFile";
 import { generateSummary } from "@/lib/summaryGenerator";
 import { buildSummaryInputFromState } from "@/lib/buildSummaryInput";
 import { loadAllCustomTags } from "@/lib/customTagsLoader";
