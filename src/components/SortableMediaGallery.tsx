@@ -435,6 +435,7 @@ function SortableMediaCard({
             </div>
           );
         })()}
+      </div>
     </div>
   );
 }
