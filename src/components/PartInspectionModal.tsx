@@ -1274,7 +1274,7 @@ const PartInspectionModal = ({
             <input
               ref={fileRef}
               type="file"
-              accept="image/*,video/*,.heic,.heif"
+              accept="image/*,image/heic,image/heif,video/*,.heic,.heif"
               multiple
               capture="environment"
               className="hidden"

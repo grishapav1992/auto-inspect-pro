@@ -1449,20 +1449,52 @@ const CreateReport = () => {
                 <input
                   ref={mediaFileRef}
                   type="file"
-                  accept="image/*,video/*,.heic,.heif"
+                  accept="image/*,image/heic,image/heif,video/*,.heic,.heif"
                   multiple
                   className="hidden"
                   onChange={async (e) => {
                     const rawFiles = Array.from(e.target.files ?? []);
                     const groupName = pendingMediaGroupRef.current;
                     pendingMediaGroupRef.current = null;
-                    
-                    // Convert HEIC files
-                    const files = await convertHeicFiles(rawFiles);
-                    
+
+                    const { files, failedHeicNames } = await convertHeicFiles(rawFiles);
+                    if (failedHeicNames.length > 0) {
+                      window.alert(`Не удалось обработать HEIC: ${failedHeicNames.join(", ")}. Сохраните фото как JPEG и попробуйте снова.`);
+                    }
+
+                    if (files.length === 0) {
+                      e.target.value = "";
+                      return;
+                    }
+
                     const newMediaItems: MediaItem[] = [];
                     let processed = 0;
-                    
+                    const finalize = () => {
+                      if (processed !== files.length) return;
+                      if (groupName) {
+                        setMediaFiles((prev) => {
+                          const existingGroup = prev.find((item) => item.groupName === groupName && item.children);
+                          if (existingGroup) {
+                            return prev.map((item) =>
+                              item.id === existingGroup.id
+                                ? { ...item, children: [...(item.children || []), ...newMediaItems] }
+                                : item
+                            );
+                          }
+                          const group: MediaItem = {
+                            id: `group-${Date.now()}`,
+                            url: newMediaItems[0]?.url || "",
+                            type: newMediaItems[0]?.type || "image",
+                            children: newMediaItems,
+                            groupName,
+                          };
+                          return [...prev, group];
+                        });
+                      } else {
+                        setMediaFiles((prev) => [...prev, ...newMediaItems]);
+                      }
+                    };
+
                     files.forEach((file) => {
                       const reader = new FileReader();
                       reader.onload = () => {
@@ -1470,34 +1502,17 @@ const CreateReport = () => {
                           const fileType: "image" | "video" = file.type.startsWith("video") ? "video" : "image";
                           newMediaItems.push({
                             id: `media-${Date.now()}-${Math.random().toString(36).slice(2, 6)}`,
-                            url: reader.result as string,
+                            url: reader.result,
                             type: fileType,
                           });
                         }
                         processed++;
-                        if (processed === files.length && groupName) {
-                          setMediaFiles((prev) => {
-                            const existingGroup = prev.find((item) => item.groupName === groupName && item.children);
-                            if (existingGroup) {
-                              return prev.map((item) =>
-                                item.id === existingGroup.id
-                                  ? { ...item, children: [...(item.children || []), ...newMediaItems] }
-                                  : item
-                              );
-                            } else {
-                              const group: MediaItem = {
-                                id: `group-${Date.now()}`,
-                                url: newMediaItems[0]?.url || "",
-                                type: newMediaItems[0]?.type || "image",
-                                children: newMediaItems,
-                                groupName,
-                              };
-                              return [...prev, group];
-                            }
-                          });
-                        } else if (processed === files.length && !groupName) {
-                          setMediaFiles((prev) => [...prev, ...newMediaItems]);
-                        }
+                        finalize();
+                      };
+                      reader.onerror = () => {
+                        console.error("FileReader failed for", file.name);
+                        processed++;
+                        finalize();
                       };
                       reader.readAsDataURL(file);
                     });
