@@ -1558,10 +1558,10 @@ const CreateReport = () => {
                         <div className="rounded-lg bg-card/95 backdrop-blur-md border border-border shadow-card-hover p-3.5 space-y-2.5">
                           {/* Header row */}
                           <div className="flex items-center gap-3">
-                            <div className={`h-10 w-10 rounded-xl flex items-center justify-center shrink-0 ${isDone ? "bg-green-500/15" : "bg-primary/10"}`}>
+                            <div className={`h-9 w-9 rounded-lg flex items-center justify-center shrink-0 ${isDone ? "bg-[hsl(var(--success)/0.1)]" : "bg-primary/8"}`}>
                               {isDone ? (
                                 <motion.div initial={{ scale: 0 }} animate={{ scale: 1 }} transition={{ type: "spring", damping: 12 }}>
-                                  <Check className="h-5 w-5 text-green-500" />
+                                  <Check className="h-4 w-4 text-[hsl(var(--success))]" />
                                 </motion.div>
                               ) : (
                                 <Loader2 className="h-5 w-5 text-primary animate-spin" />
