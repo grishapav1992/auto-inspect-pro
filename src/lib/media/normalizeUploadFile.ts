@@ -4,7 +4,7 @@
  */
 
 import { convertHeicIfNeeded, type HeicConversionReport } from "@/lib/convertHeic";
-import { storeBlob } from "./mediaStore";
+import { storeBlob, registerMediaUrl } from "./mediaStore";
 
 const DEFAULT_MAX_WIDTH = 1920;
 const DEFAULT_QUALITY = 0.8;
