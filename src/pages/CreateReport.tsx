@@ -1915,32 +1915,33 @@ const CreateReport = () => {
                       }
                     }
                     return (
-                      <SummarySections
-                        sections={summary.sections}
-                        mediaGroups={summaryMediaGroups}
-                        onOpenMediaRef={(ref) => {
-                          const group = mediaFiles.find(f => f.groupName === ref.groupName && f.children && f.children.length > 0);
-                          if (!group?.children) return;
-                          const idx = group.children.findIndex(c => c.id === ref.mediaId);
-                          setSummaryLightbox({
-                            items: group.children,
-                            index: idx >= 0 ? idx : 0,
-                            groupName: ref.groupName as import("@/components/SortableMediaGallery").MediaGroupName,
-                          });
-                        }}
-                        onOpenCollage={(items, index, groupName) =>
-                          setSummaryLightbox({ items, index, groupName })
-                        }
-                      />
+                      <>
+                        <SummarySections
+                          sections={summary.sections}
+                          mediaGroups={summaryMediaGroups}
+                          onOpenMediaRef={(ref) => {
+                            const group = mediaFiles.find(f => f.groupName === ref.groupName && f.children && f.children.length > 0);
+                            if (!group?.children) return;
+                            const idx = group.children.findIndex(c => c.id === ref.mediaId);
+                            setSummaryLightbox({
+                              items: group.children,
+                              index: idx >= 0 ? idx : 0,
+                              groupName: ref.groupName as import("@/components/SortableMediaGallery").MediaGroupName,
+                            });
+                          }}
+                          onOpenCollage={(items, index, groupName) =>
+                            setSummaryLightbox({ items, index, groupName })
+                          }
+                        />
+                        <NoDamageMediaCard
+                          mediaGroups={summaryMediaGroups}
+                          onOpenCollage={(items, index, groupName) =>
+                            setSummaryLightbox({ items, index, groupName })
+                          }
+                        />
+                      </>
                     );
                   })()}
-
-                  <NoDamageMediaCard
-                    mediaGroups={summaryMediaGroups}
-                    onOpenCollage={(items, index, groupName) =>
-                      setSummaryLightbox({ items, index, groupName })
-                    }
-                  />
 
                   <SummaryNoteCard note={summaryNote} />
 
