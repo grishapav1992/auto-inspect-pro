@@ -110,6 +110,7 @@ export async function normalizeUploadFile(
 
   const key = await storeBlob(finalBlob);
   const objectUrl = URL.createObjectURL(finalBlob);
+  registerMediaUrl(key, objectUrl);
   return { key, objectUrl, type: "image", name: converted.name };
 }
 
