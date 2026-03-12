@@ -129,7 +129,7 @@ function GroupPicker({
         animate={{ opacity: 1, scale: 1, y: 0 }}
         exit={{ opacity: 0, scale: 0.9, y: 20 }}
         transition={{ type: "spring", damping: 25, stiffness: 400 }}
-        className="fixed inset-x-4 bottom-8 z-[86] bg-card border border-border/60 rounded-2xl shadow-2xl overflow-hidden max-w-sm mx-auto"
+        className="fixed inset-x-4 bottom-8 z-[86] bg-card border border-border rounded-lg shadow-card-hover overflow-hidden max-w-sm mx-auto"
       >
         <div className="px-4 pt-4 pb-2">
           <p className="text-sm font-semibold text-foreground">Выберите группу</p>
