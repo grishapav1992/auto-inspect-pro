@@ -611,7 +611,7 @@ export function generateSummary(input: SummaryInput): SummaryResult {
     if (!input.hasDiagnosticsPhotos && !hasData && !input.diagnosticNote) {
       details.push({ label: "Компьютерная диагностика", value: "не проводилась", severity: "minor" });
       penalty += 5;
-      sections.push({ title: "Компьютерная диагностика", emoji: "🖥️", status: "warn", required: false, details });
+      sections.push({ title: "Компьютерная диагностика", emoji: "•", status: "warn", required: false, details });
     } else {
       const elements = MEDIA_GROUP_ELEMENTS.diagnostics;
       const allDiagTags = DIAGNOSTICS_TAGS as readonly { id: string; label: string; emoji: string }[];
