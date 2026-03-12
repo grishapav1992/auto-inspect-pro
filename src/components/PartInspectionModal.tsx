@@ -671,12 +671,58 @@ const PartInspectionModal = ({
       return;
     }
 
-    const files = await convertHeicFiles(Array.from(rawFiles));
+    const { files, failedHeicNames } = await convertHeicFiles(Array.from(rawFiles));
+    if (failedHeicNames.length > 0) {
+      window.alert(`Не удалось обработать HEIC: ${failedHeicNames.join(", ")}. Сохраните фото как JPEG и попробуйте снова.`);
+    }
+
+    if (files.length === 0) {
+      e.target.value = "";
+      setPendingTag(null);
+      return;
+    }
 
     const currentPendingTag = pendingTag;
     let processedCount = 0;
     const totalFiles = files.length;
     const newPhotoUrls: string[] = [];
+
+    const finalize = () => {
+      if (processedCount !== totalFiles) return;
+      setStateMap((prev) => {
+        const partState = prev[activePart.id];
+        if (!partState) return prev;
+
+        if (currentPendingTag && newPhotoUrls.length > 0) {
+          const newTags = partState.tags.includes(currentPendingTag)
+            ? partState.tags
+            : [...partState.tags, currentPendingTag];
+          const existingTagPhotos = partState.tagPhotos[currentPendingTag] || [];
+          return {
+            ...prev,
+            [activePart.id]: {
+              ...partState,
+              noDamage: false,
+              tags: newTags,
+              photos: [...partState.photos, ...newPhotoUrls],
+              tagPhotos: {
+                ...partState.tagPhotos,
+                [currentPendingTag]: [...existingTagPhotos, ...newPhotoUrls],
+              },
+            },
+          };
+        }
+
+        return {
+          ...prev,
+          [activePart.id]: {
+            ...partState,
+            photos: [...partState.photos, ...newPhotoUrls],
+          },
+        };
+      });
+      setPendingTag(null);
+    };
 
     files.forEach((file) => {
       const reader = new FileReader();
@@ -685,44 +731,12 @@ const PartInspectionModal = ({
           newPhotoUrls.push(ev.target.result as string);
         }
         processedCount++;
-        if (processedCount === totalFiles) {
-          // All files read — now update state
-          setStateMap((prev) => {
-            const partState = prev[activePart.id];
-            if (!partState) return prev;
-
-            if (currentPendingTag && newPhotoUrls.length > 0) {
-              // Activate tag and associate photos
-              const newTags = partState.tags.includes(currentPendingTag)
-                ? partState.tags
-                : [...partState.tags, currentPendingTag];
-              const existingTagPhotos = partState.tagPhotos[currentPendingTag] || [];
-              return {
-                ...prev,
-                [activePart.id]: {
-                  ...partState,
-                  noDamage: false,
-                  tags: newTags,
-                  photos: [...partState.photos, ...newPhotoUrls],
-                  tagPhotos: {
-                    ...partState.tagPhotos,
-                    [currentPendingTag]: [...existingTagPhotos, ...newPhotoUrls],
-                  },
-                },
-              };
-            } else {
-              // General photo add (no tag)
-              return {
-                ...prev,
-                [activePart.id]: {
-                  ...partState,
-                  photos: [...partState.photos, ...newPhotoUrls],
-                },
-              };
-            }
-          });
-          setPendingTag(null);
-        }
+        finalize();
+      };
+      reader.onerror = () => {
+        console.error("FileReader failed for", file.name);
+        processedCount++;
+        finalize();
       };
       reader.readAsDataURL(file);
     });
@@ -1260,7 +1274,7 @@ const PartInspectionModal = ({
             <input
               ref={fileRef}
               type="file"
-              accept="image/*,video/*,.heic,.heif"
+              accept="image/*,image/heic,image/heif,video/*,.heic,.heif"
               multiple
               capture="environment"
               className="hidden"
