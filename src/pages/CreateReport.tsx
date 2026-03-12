@@ -1449,7 +1449,7 @@ const CreateReport = () => {
                 <input
                   ref={mediaFileRef}
                   type="file"
-                  accept="image/*,image/heic,image/heif,video/*,.heic,.heif"
+                  accept="image/*,.heic,.heif,video/*"
                   multiple
                   className="hidden"
                   onChange={async (e) => {
