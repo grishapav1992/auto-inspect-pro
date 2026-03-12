@@ -659,7 +659,7 @@ export function generateSummary(input: SummaryInput): SummaryResult {
     if (!input.hasWheelsPhotos && !hasData && !input.wheelsNote) {
       details.push({ label: "Колёса и тормозные механизмы", value: "не осмотрены", severity: "minor" });
       penalty += 5;
-      sections.push({ title: "Колёса и тормозные механизмы", emoji: "🛞", status: "warn", required: false, details });
+      sections.push({ title: "Колёса и тормозные механизмы", emoji: "•", status: "warn", required: false, details });
     } else {
       const elements = MEDIA_GROUP_ELEMENTS.wheels;
       const allWheelsTags = WHEELS_DAMAGE_TAGS as readonly { id: string; label: string; emoji: string }[];
