@@ -38,6 +38,7 @@ import { CAR_PARTS, STRUCTURAL_PARTS, UNDERCARRIAGE_PARTS, GLASS_PARTS, GLASS_DA
 import { useUserTags } from "@/contexts/UserTagContext";
 import type { DiagnosticFile } from "@/lib/draftStorage";
 import { saveDraft, loadDrafts, deleteDraft, type ReportDraft } from "@/lib/draftStorage";
+import { convertHeicFiles } from "@/lib/convertHeic";
 import { generateSummary } from "@/lib/summaryGenerator";
 import { buildSummaryInputFromState } from "@/lib/buildSummaryInput";
 import { loadAllCustomTags } from "@/lib/customTagsLoader";
@@ -1457,7 +1458,6 @@ const CreateReport = () => {
                     pendingMediaGroupRef.current = null;
                     
                     // Convert HEIC files
-                    const { convertHeicFiles } = await import("@/lib/convertHeic");
                     const files = await convertHeicFiles(rawFiles);
                     
                     const newMediaItems: MediaItem[] = [];
