@@ -273,7 +273,7 @@ export function generateSummary(input: SummaryInput): SummaryResult {
     if (input.plate) details.push({ label: "Госномер", value: input.plate, severity: "ok" });
     if (input.adLink) details.push({ label: "Объявление", value: input.adLink, severity: "ok" });
     const status = input.vin && (input.carBrand || input.carModel) ? "ok" : "warn";
-    sections.push({ title: "Автомобиль", emoji: "🚗", status, required: true, details });
+    sections.push({ title: "Автомобиль", emoji: "•", status, required: true, details });
   }
 
   // --- Section 2: Параметры ---
