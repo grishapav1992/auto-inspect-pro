@@ -1935,6 +1935,13 @@ const CreateReport = () => {
                     );
                   })()}
 
+                  <NoDamageMediaCard
+                    mediaGroups={summaryMediaGroups}
+                    onOpenCollage={(items, index, groupName) =>
+                      setSummaryLightbox({ items, index, groupName })
+                    }
+                  />
+
                   <SummaryNoteCard note={summaryNote} />
 
                   {/* 2. Итог специалиста */}

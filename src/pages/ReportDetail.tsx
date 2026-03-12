@@ -107,6 +107,13 @@ const ReportDetail = () => {
           }
         />
 
+        <NoDamageMediaCard
+          mediaGroups={mediaGroups}
+          onOpenCollage={(items, index, groupName) =>
+            setLightbox({ items, index, groupName })
+          }
+        />
+
         {report.summaryNote && <SummaryNoteCard note={report.summaryNote} />}
         <ExpertConclusionCard conclusion={report.expertConclusion || ""} />
       </motion.div>
