@@ -24,7 +24,7 @@ import EditablePaintValue from "@/components/EditablePaintValue";
 import InspectionGroupButton from "@/components/InspectionGroupButton";
 import type { InspectionGroupDef } from "@/components/InspectionGroupButton";
 import SortableMediaGallery, { type MediaItem, MediaPresentation } from "@/components/SortableMediaGallery";
-import { SummarySections, SummaryNoteCard } from "@/components/SummarySections";
+import { SummarySections, SummaryNoteCard, NoDamageMediaCard } from "@/components/SummarySections";
 import { MediaLightbox, type LightboxState } from "@/components/MediaLightbox";
 import TestDriveSections from "@/components/TestDriveSections";
 import UploadProgressDialog from "@/components/UploadProgressDialog";
