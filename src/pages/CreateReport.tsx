@@ -8,7 +8,7 @@ import { Input } from "@/components/ui/input";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
-import { ArrowLeft, Check, ChevronRight, ChevronDown, Clock, FileSearch, XCircle, Monitor, Camera, FileText, X, File, Paintbrush, Shield, Plus, Video, Play, Trash2, ImageIcon, Star, CalendarIcon, Mic, MicOff } from "lucide-react";
+import { ArrowLeft, Check, ChevronRight, ChevronDown, Clock, FileSearch, XCircle, Monitor, Camera, FileText, X, File, Paintbrush, Shield, Plus, Video, Play, Trash2, ImageIcon, Star, CalendarIcon, Mic, MicOff, Loader2 } from "lucide-react";
 import VinScanner from "@/components/VinScanner";
 import { useSpeechRecognition } from "@/hooks/useSpeechRecognition";
 import { Slider } from "@/components/ui/slider";
@@ -1542,33 +1542,55 @@ const CreateReport = () => {
                   }}
                 />
 
-                {/* Upload progress */}
+                {/* Upload progress — floating toast */}
                 <AnimatePresence>
-                  {mediaUploadProgress && (
-                    <motion.div
-                      initial={{ opacity: 0, height: 0 }}
-                      animate={{ opacity: 1, height: "auto" }}
-                      exit={{ opacity: 0, height: 0 }}
-                      className="overflow-hidden"
-                    >
-                      <div className="rounded-xl bg-card border border-border p-4 space-y-2">
-                        <div className="flex items-center justify-between text-sm">
-                          <span className="text-muted-foreground font-medium">Обработка фото…</span>
-                          <span className="text-foreground font-semibold">
-                            {mediaUploadProgress.current} / {mediaUploadProgress.total}
-                          </span>
+                  {mediaUploadProgress && (() => {
+                    const pct = Math.round((mediaUploadProgress.current / mediaUploadProgress.total) * 100);
+                    const isDone = pct >= 100;
+                    return (
+                      <motion.div
+                        initial={{ opacity: 0, y: 20, scale: 0.95 }}
+                        animate={{ opacity: 1, y: 0, scale: 1 }}
+                        exit={{ opacity: 0, y: 10, scale: 0.95 }}
+                        transition={{ type: "spring", damping: 25, stiffness: 300 }}
+                        className="fixed bottom-20 left-4 right-4 z-40 mx-auto max-w-sm"
+                      >
+                        <div className="rounded-2xl bg-card/95 backdrop-blur-md border border-border shadow-lg p-4 space-y-3">
+                          {/* Header row */}
+                          <div className="flex items-center gap-3">
+                            <div className={`h-10 w-10 rounded-xl flex items-center justify-center shrink-0 ${isDone ? "bg-green-500/15" : "bg-primary/10"}`}>
+                              {isDone ? (
+                                <motion.div initial={{ scale: 0 }} animate={{ scale: 1 }} transition={{ type: "spring", damping: 12 }}>
+                                  <Check className="h-5 w-5 text-green-500" />
+                                </motion.div>
+                              ) : (
+                                <Loader2 className="h-5 w-5 text-primary animate-spin" />
+                              )}
+                            </div>
+                            <div className="flex-1 min-w-0">
+                              <p className="text-sm font-semibold text-foreground">
+                                {isDone ? "Готово!" : "Обработка фото…"}
+                              </p>
+                              <p className="text-xs text-muted-foreground">
+                                {mediaUploadProgress.current} из {mediaUploadProgress.total} {isDone ? "обработано" : "файлов"}
+                              </p>
+                            </div>
+                            <span className="text-sm font-bold text-foreground tabular-nums">{pct}%</span>
+                          </div>
+
+                          {/* Progress bar */}
+                          <div className="h-1.5 rounded-full bg-muted overflow-hidden">
+                            <motion.div
+                              className={`h-full rounded-full ${isDone ? "bg-green-500" : "bg-primary"}`}
+                              initial={{ width: 0 }}
+                              animate={{ width: `${pct}%` }}
+                              transition={{ duration: 0.4, ease: "easeOut" }}
+                            />
+                          </div>
                         </div>
-                        <div className="h-2 rounded-full bg-muted overflow-hidden">
-                          <motion.div
-                            className="h-full rounded-full bg-primary"
-                            initial={{ width: 0 }}
-                            animate={{ width: `${Math.round((mediaUploadProgress.current / mediaUploadProgress.total) * 100)}%` }}
-                            transition={{ duration: 0.3 }}
-                          />
-                        </div>
-                      </div>
-                    </motion.div>
-                  )}
+                      </motion.div>
+                    );
+                  })()}
                 </AnimatePresence>
 
                 {(() => {
