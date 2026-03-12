@@ -523,7 +523,7 @@ export function generateSummary(input: SummaryInput): SummaryResult {
     if (!input.hasUnderhoodPhotos && !hasData && !input.underhoodNote) {
       details.push({ label: "Подкапотное пространство", value: "не осмотрено", severity: "minor" });
       penalty += 5;
-      sections.push({ title: "Подкапотное пространство", emoji: "🔧", status: "warn", required: true, details });
+      sections.push({ title: "Подкапотное пространство", emoji: "•", status: "warn", required: true, details });
     } else {
       const elements = MEDIA_GROUP_ELEMENTS.underhood;
       const allUnderhoodTags = UNDERHOOD_DAMAGE_TAGS as readonly { id: string; label: string; emoji: string }[];
