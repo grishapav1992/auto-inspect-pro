@@ -1085,12 +1085,16 @@ export default function SortableMediaGallery({
             >
               {/* Header */}
               <div className="flex items-center gap-3 px-4 pt-4 pb-3 border-b border-border">
-                <button type="button" onClick={closeGroupView} className="rounded-full p-1.5 text-foreground hover:bg-muted/60 transition-colors active:scale-90">
+                <button type="button" onClick={groupInteractionMode === "select" ? exitGroupMode : closeGroupView} className="rounded-full p-1.5 text-foreground hover:bg-muted/60 transition-colors active:scale-90">
                   <ChevronLeft className="h-5 w-5" />
                 </button>
                 <div className="flex-1 min-w-0">
                   <p className="text-sm font-semibold text-foreground">{openGroup.groupName ? MEDIA_GROUP_LABELS[openGroup.groupName] : "Группа"}</p>
-                  <p className="text-xs text-muted-foreground">{groupChildren.length} файлов</p>
+                  <p className="text-xs text-muted-foreground">
+                    {groupInteractionMode === "select"
+                      ? `Выбрано: ${groupSelectedIds.size}`
+                      : `${groupChildren.length} файлов`}
+                  </p>
                 </div>
                 {groupInteractionMode === "normal" && (
                   <div className="flex items-center gap-1.5">
@@ -1104,17 +1108,6 @@ export default function SortableMediaGallery({
                   </div>
                 )}
               </div>
-
-              {/* Group select mode header */}
-              <AnimatePresence>
-                {groupInteractionMode === "select" && (
-                  <motion.div initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -10 }} className="flex items-center justify-between px-4 py-2 border-b border-border/60">
-                    <button type="button" onClick={exitGroupMode} className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors">Отмена</button>
-                    <span className="text-sm font-semibold text-foreground">Выбрано: {groupSelectedIds.size}</span>
-                    <div className="w-16" />
-                  </motion.div>
-                )}
-              </AnimatePresence>
 
               {/* Bottom action bar for selected items */}
               <AnimatePresence>
