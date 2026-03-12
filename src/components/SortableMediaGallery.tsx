@@ -1260,7 +1260,7 @@ export default function SortableMediaGallery({
                       c.id === groupSingleNoteId ? { ...c, inspection: insp } : c
                     ));
                   } else {
-                    // Group-level note — apply only to selected children
+                    // Group-level note — apply to selected children, always update groupInspection
                     const selectedSet = groupSelectedIds.size > 0 ? groupSelectedIds : new Set(groupChildren.map(c => c.id));
                     const updatedChildren = groupChildren.map((c) =>
                       selectedSet.has(c.id) ? { ...c, inspection: insp } : c
