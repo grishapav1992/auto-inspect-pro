@@ -335,7 +335,7 @@ function SortableMediaCard({
           <img
             src={item.url}
             alt=""
-            className="w-full rounded-xl object-cover"
+            className="w-full rounded-xl object-cover aspect-[4/3]"
             loading="lazy"
             draggable={false}
             style={{ pointerEvents: "none" }}
