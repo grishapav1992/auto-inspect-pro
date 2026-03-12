@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,400&family=JetBrains+Mono:wght@400;500;600&display=swap');
 
 @tailwind base;
 @tailwind components;
@@ -6,93 +6,93 @@
 
 @layer base {
   :root {
-    --background: 220 20% 97%;
-    --foreground: 220 25% 10%;
+    --background: 220 16% 96%;
+    --foreground: 220 20% 12%;
 
     --card: 0 0% 100%;
-    --card-foreground: 220 25% 10%;
+    --card-foreground: 220 20% 12%;
 
     --popover: 0 0% 100%;
-    --popover-foreground: 220 25% 10%;
+    --popover-foreground: 220 20% 12%;
 
-    --primary: 220 90% 56%;
+    --primary: 220 72% 44%;
     --primary-foreground: 0 0% 100%;
 
-    --secondary: 220 14% 92%;
-    --secondary-foreground: 220 25% 10%;
+    --secondary: 220 12% 91%;
+    --secondary-foreground: 220 20% 12%;
 
-    --muted: 220 14% 95%;
-    --muted-foreground: 220 10% 46%;
+    --muted: 220 12% 93%;
+    --muted-foreground: 220 8% 50%;
 
-    --accent: 220 90% 95%;
-    --accent-foreground: 220 25% 10%;
+    --accent: 220 50% 93%;
+    --accent-foreground: 220 20% 12%;
 
-    --destructive: 0 84% 60%;
+    --destructive: 0 72% 51%;
     --destructive-foreground: 0 0% 100%;
 
-    --border: 220 13% 90%;
-    --input: 220 13% 90%;
-    --ring: 220 90% 56%;
+    --border: 220 12% 87%;
+    --input: 220 12% 87%;
+    --ring: 220 72% 44%;
 
-    --radius: 0.75rem;
+    --radius: 0.5rem;
 
-    --success: 152 69% 40%;
+    --success: 160 60% 36%;
     --success-foreground: 0 0% 100%;
-    --warning: 38 92% 50%;
+    --warning: 36 80% 48%;
     --warning-foreground: 0 0% 100%;
 
-    --sidebar-background: 0 0% 98%;
-    --sidebar-foreground: 240 5.3% 26.1%;
-    --sidebar-primary: 240 5.9% 10%;
-    --sidebar-primary-foreground: 0 0% 98%;
-    --sidebar-accent: 240 4.8% 95.9%;
-    --sidebar-accent-foreground: 240 5.9% 10%;
-    --sidebar-border: 220 13% 91%;
-    --sidebar-ring: 217.2 91.2% 59.8%;
+    --sidebar-background: 220 16% 97%;
+    --sidebar-foreground: 220 20% 20%;
+    --sidebar-primary: 220 72% 44%;
+    --sidebar-primary-foreground: 0 0% 100%;
+    --sidebar-accent: 220 12% 94%;
+    --sidebar-accent-foreground: 220 20% 12%;
+    --sidebar-border: 220 12% 88%;
+    --sidebar-ring: 220 72% 44%;
   }
 
   .dark {
-    --background: 220 20% 7%;
-    --foreground: 220 10% 95%;
+    --background: 224 18% 8%;
+    --foreground: 220 10% 92%;
 
-    --card: 220 20% 10%;
-    --card-foreground: 220 10% 95%;
+    --card: 224 16% 11%;
+    --card-foreground: 220 10% 92%;
 
-    --popover: 220 20% 10%;
-    --popover-foreground: 220 10% 95%;
+    --popover: 224 16% 11%;
+    --popover-foreground: 220 10% 92%;
 
-    --primary: 220 90% 60%;
+    --primary: 220 68% 52%;
     --primary-foreground: 0 0% 100%;
 
-    --secondary: 220 14% 16%;
-    --secondary-foreground: 220 10% 95%;
+    --secondary: 224 14% 16%;
+    --secondary-foreground: 220 10% 92%;
 
-    --muted: 220 14% 14%;
-    --muted-foreground: 220 10% 55%;
+    --muted: 224 14% 14%;
+    --muted-foreground: 220 8% 52%;
 
-    --accent: 220 90% 20%;
-    --accent-foreground: 220 10% 95%;
+    --accent: 220 40% 18%;
+    --accent-foreground: 220 10% 92%;
 
-    --destructive: 0 62% 30%;
+    --destructive: 0 60% 42%;
     --destructive-foreground: 0 0% 100%;
 
-    --border: 220 14% 18%;
-    --input: 220 14% 18%;
-    --ring: 220 90% 60%;
+    --border: 224 14% 18%;
+    --input: 224 14% 18%;
+    --ring: 220 68% 52%;
 
-    --success: 152 69% 45%;
+    --success: 160 55% 40%;
     --success-foreground: 0 0% 100%;
-    --warning: 38 92% 55%;
+    --warning: 36 75% 50%;
     --warning-foreground: 0 0% 100%;
 
-    --sidebar-background: 240 5.9% 10%;
-    --sidebar-foreground: 240 4.8% 95.9%;
-    --sidebar-primary: 224.3 76.3% 48%;
+    --sidebar-background: 224 18% 9%;
+    --sidebar-foreground: 220 10% 90%;
+    --sidebar-primary: 220 68% 52%;
     --sidebar-primary-foreground: 0 0% 100%;
-    --sidebar-accent: 240 3.7% 15.9%;
-    --sidebar-accent-foreground: 240 4.8% 95.9%;
-    --sidebar-border: 240 3.7% 15.9%;
-    --sidebar-ring: 217.2 91.2% 59.8%;
+    --sidebar-accent: 224 14% 14%;
+    --sidebar-accent-foreground: 220 10% 90%;
+    --sidebar-border: 224 14% 16%;
+    --sidebar-ring: 220 68% 52%;
   }
 }
 
@@ -102,10 +102,16 @@
   }
 
   body {
-    @apply bg-background text-foreground font-sans antialiased;
-    font-family: 'Inter', sans-serif;
+    @apply bg-background text-foreground antialiased;
+    font-family: 'DM Sans', system-ui, -apple-system, sans-serif;
     -webkit-tap-highlight-color: transparent;
     -webkit-font-smoothing: antialiased;
+    letter-spacing: -0.01em;
+  }
+
+  /* Monospace utility for VIN, codes, values */
+  .font-mono {
+    font-family: 'JetBrains Mono', ui-monospace, monospace !important;
   }
 }
 

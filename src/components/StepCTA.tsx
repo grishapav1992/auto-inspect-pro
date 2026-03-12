@@ -72,7 +72,7 @@ const StepCTA = ({
         type="button"
         onClick={onClick}
         disabled={disabled}
-        className="flex w-full items-center justify-center gap-2 rounded-xl bg-primary py-4 text-sm font-semibold text-primary-foreground transition-all disabled:opacity-40 active:scale-[0.98]"
+        className="flex w-full items-center justify-center gap-2 rounded-lg bg-primary py-3.5 text-sm font-semibold text-primary-foreground tracking-wide uppercase transition-all disabled:opacity-40 active:scale-[0.98] shadow-sm"
       >
         {label}
         <IconComponent className="h-4 w-4" />
