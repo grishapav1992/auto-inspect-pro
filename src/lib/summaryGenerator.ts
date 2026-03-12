@@ -598,7 +598,7 @@ export function generateSummary(input: SummaryInput): SummaryResult {
 
       penalty += seriousCount * 6 + minorCount * 3;
       const status = seriousCount > 0 ? "bad" : minorCount > 2 ? "warn" : "ok";
-      sections.push({ title: "Салон", emoji: "💺", status, required: true, details });
+      sections.push({ title: "Салон", emoji: "•", status, required: true, details });
     }
   }
 
