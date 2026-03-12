@@ -10,6 +10,7 @@ import { isPartStateFilled } from "@/lib/completionContract";
 import { resolveTag } from "@/lib/tagResolver";
 import EditablePaintValue from "@/components/EditablePaintValue";
 import { useUserTags } from "@/contexts/UserTagContext";
+import { convertHeicFiles } from "@/lib/convertHeic";
 
 interface PartInfo {
   id: string;
