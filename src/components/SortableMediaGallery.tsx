@@ -315,66 +315,7 @@ function SortableMediaCard({
             onPreview();
           }
         }}
-    listeners,
-    setNodeRef,
-    transform,
-    transition,
-    isDragging,
-  } = useSortable({ id: item.id, disabled: interactionMode === "select" });
-
-  const style: React.CSSProperties = {
-    transform: CSS.Transform.toString(transform),
-    transition,
-    opacity: isDragging ? 0.5 : 1,
-    zIndex: isDragging ? 50 : undefined,
-  };
-
-  const isSelectMode = interactionMode === "select";
-  const dndProps = !isSelectMode ? { ...attributes, ...listeners } : {};
-
-  const longPressTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
-  const didLongPress = useRef(false);
-
-  const clearLongPress = () => {
-    if (longPressTimer.current) {
-      clearTimeout(longPressTimer.current);
-      longPressTimer.current = null;
-    }
-  };
-
-  return (
-    <div>
-      <div
-        ref={setNodeRef}
-        style={style}
-        {...dndProps}
-        onPointerDown={(e) => {
-          didLongPress.current = false;
-          if (!isSelectMode && onLongPress) {
-            longPressTimer.current = setTimeout(() => {
-              didLongPress.current = true;
-              onLongPress();
-            }, 500);
-          }
-          if (!isSelectMode) {
-            listeners?.onPointerDown?.(e);
-          }
-        }}
-        onPointerMove={() => clearLongPress()}
-        onPointerUp={() => clearLongPress()}
-        onPointerCancel={() => clearLongPress()}
-        onClick={() => {
-          if (didLongPress.current) {
-            didLongPress.current = false;
-            return;
-          }
-          if (isSelectMode) {
-            onToggleSelect();
-          } else {
-            onPreview();
-          }
-        }}
-        className={`relative rounded-lg overflow-hidden border bg-card group touch-none select-none transition-all cursor-pointer ${
+        className={`relative rounded-lg overflow-hidden border bg-card group select-none transition-all cursor-pointer ${
           isSelected
             ? "border-primary ring-2 ring-primary/20"
             : item.inspection && !item.children && (item.inspection.noDamage || item.inspection.tags.length > 0 || item.inspection.note || item.inspection.elementType || (item.inspection.audioRecordings && item.inspection.audioRecordings.length > 0))
