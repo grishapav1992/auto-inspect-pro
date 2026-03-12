@@ -1161,7 +1161,7 @@ export default function SortableMediaGallery({
                   <SortableContext items={groupChildren.map((c) => c.id)} strategy={rectSortingStrategy}>
                     <div className="columns-2 gap-3 space-y-3">
                       {/* Add media button — first item, left column */}
-                      {groupInteractionMode === "normal" && (
+                      {(
                         <div className="break-inside-avoid">
                           <button
                             type="button"
