@@ -1,5 +1,6 @@
 import type { CarPickerResult } from "@/components/CarPicker";
 import type { PartInspection } from "@/types/inspection";
+import { isIdbUrl, getIdbKey, resolveMediaUrls, collectIdbKeys, deleteBlobs } from "@/lib/media/mediaStore";
 
 export interface DiagnosticFile {
   name: string;
