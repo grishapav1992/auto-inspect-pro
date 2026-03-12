@@ -139,6 +139,3 @@ export async function normalizeUploadFiles(
 
   return { files: normalized, failedNames };
 }
-
-  return { files: normalized, failedNames };
-}
