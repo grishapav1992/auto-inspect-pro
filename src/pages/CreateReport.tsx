@@ -360,6 +360,7 @@ const CreateReport = () => {
    const [mediaFiles, setMediaFiles] = useState<MediaItem[]>(existingDraft?.mediaFiles ?? DEMO_MEDIA);
    const mediaFileRef = useRef<HTMLInputElement>(null);
    const pendingMediaGroupRef = useRef<import("@/components/SortableMediaGallery").MediaGroupName | null>(null);
+   const [mediaUploadProgress, setMediaUploadProgress] = useState<{ current: number; total: number } | null>(null);
 
 
    // Auto-save draft function
