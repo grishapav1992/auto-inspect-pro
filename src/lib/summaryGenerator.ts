@@ -407,7 +407,7 @@ export function generateSummary(input: SummaryInput): SummaryResult {
         details.push({ label: "Остекление", value: "без повреждений", severity: "ok" });
       }
 
-      if (input.glassNote) details.push({ label: "📝 Раздел", value: input.glassNote.slice(0, 60), mediaRefs: getGroupMediaRefs(mediaIndex, "glass") });
+      if (input.glassNote) details.push({ label: "Заметка", value: input.glassNote.slice(0, 60), mediaRefs: getGroupMediaRefs(mediaIndex, "glass") });
       appendGroupNote(details, "glass", input.mediaGroupInspections, GLASS_DAMAGE_TAGS as readonly { id: string; label: string; emoji: string }[], mediaIndex, input.customTags);
 
       penalty += seriousCount * 10 + minorCount * 5;
