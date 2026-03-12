@@ -91,6 +91,7 @@ export async function normalizeUploadFile(
   if (isVideo) {
     const key = await storeBlob(file);
     const objectUrl = URL.createObjectURL(file);
+    registerMediaUrl(key, objectUrl);
     return { key, objectUrl, type: "video", name: file.name };
   }
 
