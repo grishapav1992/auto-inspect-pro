@@ -243,11 +243,6 @@ export function NoDamageMediaCard({
               />
             )}
             {/* Small badge for status */}
-            {item.inspection?.noDamage && (
-              <div className="absolute bottom-0.5 left-0.5 bg-[hsl(var(--success)/0.85)] text-white text-[8px] font-medium px-1 py-0.5 rounded">
-                ОК
-              </div>
-            )}
             {item.inspection?.isDraft && !item.inspection?.noDamage && (
               <div className="absolute bottom-0.5 left-0.5 bg-muted-foreground/70 text-white text-[8px] font-medium px-1 py-0.5 rounded">
                 Черновик
