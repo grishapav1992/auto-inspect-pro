@@ -330,7 +330,7 @@ export function generateSummary(input: SummaryInput): SummaryResult {
     else details.push({ label: "Юр. проверка", value: "не проверено", severity: "minor" });
     const status = input.legalLoaded ? "ok" : "warn";
     if (input.legalSkipped && !input.legalLoaded) penalty += 5;
-    sections.push({ title: "Юр. проверка", emoji: "⚖️", status, required: false, details });
+    sections.push({ title: "Юр. проверка", emoji: "•", status, required: false, details });
   }
 
   // --- Кузов ---
