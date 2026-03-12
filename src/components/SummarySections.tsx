@@ -207,7 +207,7 @@ export function NoDamageMediaCard({
     <div className="rounded-lg border border-border bg-card p-3.5 space-y-2">
       <div className="flex items-center gap-2">
         <span className="text-sm">✅</span>
-        <span className="text-[13px] font-medium flex-1">Без повреждений</span>
+        <span className="text-[13px] font-medium flex-1">Обзор авто</span>
         <span className="text-[9px] font-medium text-[hsl(var(--success))] bg-[hsl(var(--success)/0.08)] rounded-md px-1.5 py-0.5">
           {cleanItems.length} фото
         </span>

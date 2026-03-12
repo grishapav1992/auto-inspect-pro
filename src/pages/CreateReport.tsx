@@ -1916,6 +1916,12 @@ const CreateReport = () => {
                     }
                     return (
                       <>
+                        <NoDamageMediaCard
+                          mediaGroups={summaryMediaGroups}
+                          onOpenCollage={(items, index, groupName) =>
+                            setSummaryLightbox({ items, index, groupName })
+                          }
+                        />
                         <SummarySections
                           sections={summary.sections}
                           mediaGroups={summaryMediaGroups}
@@ -1929,12 +1935,6 @@ const CreateReport = () => {
                               groupName: ref.groupName as import("@/components/SortableMediaGallery").MediaGroupName,
                             });
                           }}
-                          onOpenCollage={(items, index, groupName) =>
-                            setSummaryLightbox({ items, index, groupName })
-                          }
-                        />
-                        <NoDamageMediaCard
-                          mediaGroups={summaryMediaGroups}
                           onOpenCollage={(items, index, groupName) =>
                             setSummaryLightbox({ items, index, groupName })
                           }
