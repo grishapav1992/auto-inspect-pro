@@ -1467,7 +1467,7 @@ const CreateReport = () => {
 
                     const newMediaItems: MediaItem[] = normalized.map((f) => ({
                       id: `media-${Date.now()}-${Math.random().toString(36).slice(2, 6)}`,
-                      url: f.key,
+                      url: f.objectUrl,
                       type: f.type,
                     }));
 
