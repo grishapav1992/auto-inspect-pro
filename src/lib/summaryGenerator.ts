@@ -690,7 +690,7 @@ export function generateSummary(input: SummaryInput): SummaryResult {
 
       penalty += seriousCount * 8 + minorCount * 5;
       const status = seriousCount > 0 ? "bad" : minorCount > 0 ? "warn" : "ok";
-      sections.push({ title: "Колёса и тормозные механизмы", emoji: "🛞", status, required: false, details });
+      sections.push({ title: "Колёса и тормозные механизмы", emoji: "•", status, required: false, details });
     }
   }
 
