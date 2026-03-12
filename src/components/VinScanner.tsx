@@ -2,6 +2,7 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import { Camera, ImagePlus, Loader2, RotateCcw } from "lucide-react";
 import { motion } from "framer-motion";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
+import { convertHeicIfNeeded } from "@/lib/convertHeic";
 
 interface VinScannerProps {
   onResult: (vin: string) => void;
