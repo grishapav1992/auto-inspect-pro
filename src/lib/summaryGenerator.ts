@@ -567,7 +567,7 @@ export function generateSummary(input: SummaryInput): SummaryResult {
     if (!input.hasInteriorPhotos && !hasData && !input.interiorNote) {
       details.push({ label: "Салон", value: "не осмотрен", severity: "minor" });
       penalty += 5;
-      sections.push({ title: "Салон", emoji: "💺", status: "warn", required: true, details });
+      sections.push({ title: "Салон", emoji: "•", status: "warn", required: true, details });
     } else {
       const elements = MEDIA_GROUP_ELEMENTS.interior;
       const allInteriorTags = INTERIOR_ALL_TAGS as { id: string; label: string; emoji: string }[];
