@@ -1109,22 +1109,6 @@ export default function SortableMediaGallery({
                   <div className="flex items-center gap-1.5">
                     <button
                       type="button"
-                      onClick={() => {
-                        setGroupSingleNoteId(null);
-                        setGroupNoteModalOpen(true);
-                      }}
-                      className={`rounded-full p-1.5 transition-colors active:scale-90 ${
-                        openGroup.groupInspection && !openGroup.groupInspection.isDraft
-                          ? "bg-primary text-primary-foreground"
-                          : openGroup.groupInspection?.isDraft
-                            ? "bg-amber-500 text-white"
-                            : "text-muted-foreground hover:text-foreground hover:bg-muted/60"
-                      }`}
-                    >
-                      <ClipboardList className="h-4 w-4" />
-                    </button>
-                    <button
-                      type="button"
                       onClick={() => setGroupInteractionMode("select")}
                       className="text-xs text-muted-foreground hover:text-foreground transition-colors active:scale-95 px-2 py-1 rounded-lg hover:bg-muted/60"
                     >
