@@ -133,6 +133,11 @@ function yieldToBrowser(): Promise<void> {
  */
 function compressImage(dataUrl: string, maxWidth = 800, quality = 0.6): Promise<string> {
   return new Promise((resolve) => {
+    // IDB keys are tiny strings — no compression needed
+    if (isIdbUrl(dataUrl)) {
+      resolve(dataUrl);
+      return;
+    }
     const cached = getCachedCompression(dataUrl);
     if (cached) {
       resolve(cached);
