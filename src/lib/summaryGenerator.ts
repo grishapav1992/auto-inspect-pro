@@ -319,7 +319,7 @@ export function generateSummary(input: SummaryInput): SummaryResult {
     }
     const status = allMatch ? "ok" : !allAnswered ? "warn" : "bad";
     if (!allMatch) penalty += !allAnswered ? 5 : 15;
-    sections.push({ title: "Сверка документов", emoji: "📄", status, required: true, details });
+    sections.push({ title: "Сверка документов", emoji: "•", status, required: true, details });
   }
 
   // --- Юр. проверка ---
