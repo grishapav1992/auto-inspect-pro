@@ -554,7 +554,7 @@ export function generateSummary(input: SummaryInput): SummaryResult {
 
       penalty += seriousCount * 8 + minorCount * 4;
       const status = seriousCount > 0 ? "bad" : minorCount > 0 ? "warn" : "ok";
-      sections.push({ title: "Подкапотное пространство", emoji: "🔧", status, required: true, details });
+      sections.push({ title: "Подкапотное пространство", emoji: "•", status, required: true, details });
     }
   }
 
