@@ -1494,7 +1494,15 @@ const CreateReport = () => {
                     const groupName = pendingMediaGroupRef.current;
                     pendingMediaGroupRef.current = null;
 
-                    const { files: normalized, failedNames } = await normalizeUploadFiles(rawFiles);
+                    if (rawFiles.length === 0) return;
+                    setMediaUploadProgress({ current: 0, total: rawFiles.length });
+
+                    const { files: normalized, failedNames } = await normalizeUploadFiles(rawFiles, {
+                      onProgress: (current) => setMediaUploadProgress((p) => p ? { ...p, current } : null),
+                    });
+
+                    setMediaUploadProgress(null);
+
                     if (failedNames.length > 0) {
                       window.alert(`Не удалось обработать HEIC: ${failedNames.join(", ")}. Сохраните фото как JPEG и попробуйте снова.`);
                     }
