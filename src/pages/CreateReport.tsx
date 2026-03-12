@@ -2138,14 +2138,14 @@ const CreateReport = () => {
   // Main sections list
   return (
     <div className="min-h-screen flex flex-col bg-background">
-      <header className="flex items-center gap-3 px-4 pb-3 pt-12">
-        <button onClick={() => navigate(-1)} className="rounded-full p-1.5 transition-colors hover:bg-muted">
+      <header className="flex items-center gap-3 px-4 pb-3 pt-12 border-b border-border/50">
+        <button onClick={() => navigate(-1)} className="rounded-lg p-1.5 transition-colors hover:bg-muted">
           <ArrowLeft className="h-5 w-5 text-foreground" />
         </button>
-        <h1 className="text-lg font-bold text-foreground">Новый отчёт</h1>
+        <h1 className="text-sm font-semibold text-foreground">Новый отчёт</h1>
       </header>
 
-      <div className="flex-1 overflow-y-auto px-4 pb-24 space-y-2">
+      <div className="flex-1 overflow-y-auto px-4 pb-24 pt-3 space-y-2">
         {steps.map((step, stepIndex) => {
           const value = completedValues[step.id];
           return (
@@ -2153,16 +2153,16 @@ const CreateReport = () => {
               key={step.id}
               type="button"
               onClick={() => setActiveSection(step.id)}
-              className="flex w-full items-center gap-3 rounded-2xl border border-border/60 bg-card p-4 hover:bg-accent/5 transition-colors active:scale-[0.98]"
+              className="flex w-full items-center gap-3 rounded-lg border border-border bg-card p-3.5 hover:border-primary/30 transition-colors active:bg-muted/30"
             >
-              <span className={`flex h-7 w-7 items-center justify-center rounded-full text-xs font-bold flex-shrink-0 ${value ? 'bg-primary text-primary-foreground' : 'bg-muted text-muted-foreground'}`}>
-                {value ? <Check className="h-3.5 w-3.5" /> : stepIndex + 1}
+              <span className={`flex h-6 w-6 items-center justify-center rounded-md text-[11px] font-medium flex-shrink-0 ${value ? 'bg-primary text-primary-foreground' : 'bg-muted text-muted-foreground'}`}>
+                {value ? <Check className="h-3 w-3" /> : stepIndex + 1}
               </span>
               <div className="flex-1 text-left min-w-0">
-                <h3 className="text-sm font-semibold text-foreground">{step.title}</h3>
-                {value && <p className="text-xs text-primary mt-0.5 truncate">{value}</p>}
+                <h3 className="text-[13px] font-medium text-foreground">{step.title}</h3>
+                {value && <p className="text-[11px] text-primary mt-0.5 truncate">{value}</p>}
               </div>
-              <ChevronRight className="h-4 w-4 text-muted-foreground flex-shrink-0" />
+              <ChevronRight className="h-4 w-4 text-muted-foreground/40 flex-shrink-0" />
             </button>
           );
         })}
