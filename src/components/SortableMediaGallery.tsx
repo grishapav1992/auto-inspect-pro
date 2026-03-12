@@ -378,15 +378,26 @@ function SortableMediaCard({
             {/* Show note status in select mode */}
             {!item.children && (() => {
               const hasData = item.inspection && (item.inspection.noDamage || item.inspection.tags.length > 0 || item.inspection.note || item.inspection.elementType || (item.inspection.audioRecordings && item.inspection.audioRecordings.length > 0));
-              if (!hasData) return null;
               const isDraft = item.inspection?.isDraft;
-              const badgeColor = isDraft
-                ? "bg-warning text-warning-foreground"
-                : "bg-success text-success-foreground";
+              const btnColor = hasData
+                ? isDraft
+                  ? "bg-warning text-warning-foreground"
+                  : "bg-success text-success-foreground"
+                : "bg-black/60 text-white/90";
               return (
-                <div className={`absolute top-2 right-2 z-10 rounded-full backdrop-blur-sm px-2 py-0.5 flex items-center gap-1 ${badgeColor}`}>
-                  <ClipboardList className="h-3 w-3" />
-                  <span className="text-[9px] font-semibold uppercase tracking-wide">{isDraft ? "Черновик" : "Готово"}</span>
+                <div className={`absolute top-2 right-2 z-10 rounded-full backdrop-blur-sm px-2 py-0.5 flex items-center gap-1 pointer-events-none ${btnColor}`}>
+                  {hasData ? <ClipboardList className="h-3 w-3" /> : <Plus className="h-3 w-3" />}
+                  <span className="text-[9px] font-semibold uppercase tracking-wide">Заметка</span>
+                </div>
+              );
+            })()}
+            {/* Element label in select mode */}
+            {!item.children && item.inspection?.elementType && elementTypes && (() => {
+              const label = elementTypes.find(et => et.id === item.inspection!.elementType)?.label;
+              if (!label) return null;
+              return (
+                <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/60 to-transparent px-2 pb-1.5 pt-4 pointer-events-none">
+                  <span className="text-[11px] font-medium text-white/90 leading-tight truncate block">{label}</span>
                 </div>
               );
             })()}
