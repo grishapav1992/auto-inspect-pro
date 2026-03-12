@@ -481,8 +481,8 @@ const VinScanner = ({ onResult, disabled }: VinScannerProps) => {
       <input
         ref={fileRef}
         type="file"
-        accept="image/*"
-        capture="environment"
+      accept="image/*,.heic,.heif"
+      capture="environment"
         onChange={handleFileChange}
         className="hidden"
       />
