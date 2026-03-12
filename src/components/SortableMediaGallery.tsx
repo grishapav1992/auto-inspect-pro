@@ -387,25 +387,41 @@ function SortableMediaCard({
       )}
 
       {/* Note button (only in normal mode, inside groups) */}
-      {onNote && interactionMode === "normal" && !item.children && (
-        <button
-          type="button"
-          onPointerDown={(e) => e.stopPropagation()}
-          onClick={(e) => {
-            e.stopPropagation();
-            onNote();
-          }}
-          className={`absolute top-2 right-2 rounded-full p-1.5 backdrop-blur-sm transition-all active:scale-90 z-10 ${
-            item.inspection && (item.inspection.noDamage || item.inspection.tags.length > 0 || item.inspection.note || item.inspection.elementType || (item.inspection.audioRecordings && item.inspection.audioRecordings.length > 0))
-              ? item.inspection.isDraft
-                ? "bg-amber-500 text-white"
-                : "bg-primary text-primary-foreground"
-              : "bg-black/50 text-white/90 opacity-0 group-hover:opacity-100"
-          }`}
-        >
-          <ClipboardList className="h-3.5 w-3.5" />
-        </button>
-      )}
+      {onNote && interactionMode === "normal" && !item.children && (() => {
+        const hasData = item.inspection && (item.inspection.noDamage || item.inspection.tags.length > 0 || item.inspection.note || item.inspection.elementType || (item.inspection.audioRecordings && item.inspection.audioRecordings.length > 0));
+        const isDraft = item.inspection?.isDraft;
+        return (
+          <button
+            type="button"
+            onPointerDown={(e) => e.stopPropagation()}
+            onClick={(e) => {
+              e.stopPropagation();
+              onNote();
+            }}
+            className={`absolute top-2 right-2 rounded-full backdrop-blur-sm transition-all active:scale-90 z-10 flex items-center gap-1 ${
+              hasData
+                ? isDraft
+                  ? "bg-amber-500 text-white px-2 py-1"
+                  : "bg-primary text-primary-foreground px-2 py-1"
+                : "bg-black/60 text-white/90 px-2 py-1"
+            }`}
+          >
+            {hasData ? (
+              <>
+                <ClipboardList className="h-3 w-3" />
+                <span className="text-[9px] font-semibold uppercase tracking-wide">
+                  {isDraft ? "Черновик" : "Заметка"}
+                </span>
+              </>
+            ) : (
+              <>
+                <Plus className="h-3 w-3" />
+                <span className="text-[9px] font-semibold uppercase tracking-wide">Заметка</span>
+              </>
+            )}
+          </button>
+        );
+      })()}
 
       {/* Draft badge */}
       {onNote && interactionMode === "normal" && !item.children && item.inspection?.isDraft && (
@@ -567,12 +583,14 @@ export function MediaPresentation({
   onClose,
   itemGroupMap,
   groupName,
+  onNote,
 }: {
   items: MediaItem[];
   initialIndex: number;
   onClose: () => void;
   itemGroupMap?: Map<string, MediaGroupName>;
   groupName?: MediaGroupName;
+  onNote?: (itemId: string) => void;
 }) {
   const [index, setIndex] = useState(initialIndex);
   const [direction, setDirection] = useState(0);
@@ -657,6 +675,20 @@ export function MediaPresentation({
               <Layers className="h-3 w-3 text-white/60" />
               <span className="text-[11px] text-white/70">{MEDIA_GROUP_LABELS[currentGroupName]}</span>
             </div>
+          )}
+          {onNote && (
+            <button
+              type="button"
+              onClick={() => onNote(item.id)}
+              className={`flex items-center gap-1.5 rounded-full px-3 py-1.5 backdrop-blur-sm transition-colors active:scale-95 ${
+                hasInspection
+                  ? "bg-primary text-primary-foreground"
+                  : "bg-white/10 text-white/80 hover:bg-white/20"
+              }`}
+            >
+              <ClipboardList className="h-3.5 w-3.5" />
+              <span className="text-[12px] font-medium">{hasInspection ? "Заметка" : "Добавить заметку"}</span>
+            </button>
           )}
           <span className="text-[12px] text-white/50 tabular-nums">{index + 1}/{items.length}</span>
         </div>
@@ -1194,6 +1226,11 @@ export default function SortableMediaGallery({
                     onClose={() => setGroupLightboxIndex(null)}
                     groupName={openGroup.groupName}
                     itemGroupMap={itemGroupMap}
+                    onNote={(itemId) => {
+                      setGroupLightboxIndex(null);
+                      setGroupSingleNoteId(itemId);
+                      setGroupNoteModalOpen(true);
+                    }}
                   />
                 )}
               </AnimatePresence>

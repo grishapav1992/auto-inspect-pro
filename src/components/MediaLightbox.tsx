@@ -17,9 +17,10 @@ export interface LightboxState {
 interface MediaLightboxProps {
   state: LightboxState | null;
   onClose: () => void;
+  onNote?: (itemId: string) => void;
 }
 
-export function MediaLightbox({ state, onClose }: MediaLightboxProps) {
+export function MediaLightbox({ state, onClose, onNote }: MediaLightboxProps) {
   return createPortal(
     <AnimatePresence>
       {state && (
@@ -28,6 +29,7 @@ export function MediaLightbox({ state, onClose }: MediaLightboxProps) {
           initialIndex={state.index}
           onClose={onClose}
           groupName={state.groupName}
+          onNote={onNote}
         />
       )}
     </AnimatePresence>,
