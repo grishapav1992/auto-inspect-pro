@@ -1263,7 +1263,12 @@ export default function SortableMediaGallery({
                       c.id === groupSingleNoteId ? { ...c, inspection: insp } : c
                     ));
                   } else {
-                    // Group-level note — write to groupInspection on the group entity
+                    // Group-level note — write to groupInspection AND propagate to all children
+                    const updatedChildren = groupChildren.map((c) => ({
+                      ...c,
+                      inspection: insp,
+                    }));
+                    updateGroupChildren(updatedChildren);
                     const newItems = items.map((item) =>
                       item.id === openGroup.id ? { ...item, groupInspection: insp } : item
                     );
