@@ -361,19 +361,36 @@ function SortableMediaCard({
           </>
         )}
 
-        {/* Selection check */}
+        {/* Selection check + note status */}
         {isSelectMode && (
-          <div className="absolute top-2 left-2 z-10">
-            <motion.div
-              initial={{ scale: 0 }}
-              animate={{ scale: 1 }}
-              className={`rounded-full w-6 h-6 flex items-center justify-center transition-colors ${
-                isSelected ? "bg-primary text-primary-foreground" : "bg-black/40 text-white/70 backdrop-blur-sm"
-              }`}
-            >
-              <CheckCircle2 className="h-4 w-4" />
-            </motion.div>
-          </div>
+          <>
+            <div className="absolute top-2 left-2 z-10">
+              <motion.div
+                initial={{ scale: 0 }}
+                animate={{ scale: 1 }}
+                className={`rounded-full w-6 h-6 flex items-center justify-center transition-colors ${
+                  isSelected ? "bg-primary text-primary-foreground" : "bg-black/40 text-white/70 backdrop-blur-sm"
+                }`}
+              >
+                <CheckCircle2 className="h-4 w-4" />
+              </motion.div>
+            </div>
+            {/* Show note status in select mode */}
+            {!item.children && (() => {
+              const hasData = item.inspection && (item.inspection.noDamage || item.inspection.tags.length > 0 || item.inspection.note || item.inspection.elementType || (item.inspection.audioRecordings && item.inspection.audioRecordings.length > 0));
+              if (!hasData) return null;
+              const isDraft = item.inspection?.isDraft;
+              const badgeColor = isDraft
+                ? "bg-warning text-warning-foreground"
+                : "bg-success text-success-foreground";
+              return (
+                <div className={`absolute top-2 right-2 z-10 rounded-full backdrop-blur-sm px-2 py-0.5 flex items-center gap-1 ${badgeColor}`}>
+                  <ClipboardList className="h-3 w-3" />
+                  <span className="text-[9px] font-semibold uppercase tracking-wide">{isDraft ? "Черновик" : "Готово"}</span>
+                </div>
+              );
+            })()}
+          </>
         )}
 
         {/* Delete (only in normal mode) */}
