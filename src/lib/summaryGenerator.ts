@@ -365,7 +365,7 @@ export function generateSummary(input: SummaryInput): SummaryResult {
         details.push({ label: "Разброс ЛКП", value: `${input.bodyPaintFrom}–${input.bodyPaintTo} мкм`, severity });
       }
 
-      if (input.bodyNote) details.push({ label: "📝 Раздел", value: input.bodyNote.slice(0, 60), mediaRefs: getGroupMediaRefs(mediaIndex, "body") });
+      if (input.bodyNote) details.push({ label: "Заметка", value: input.bodyNote.slice(0, 60), mediaRefs: getGroupMediaRefs(mediaIndex, "body") });
       appendGroupNote(details, "body", input.mediaGroupInspections, DAMAGE_TAGS, mediaIndex, input.customTags);
       penalty += seriousParts.length * 12 + minorParts.length * 4;
       const status = seriousParts.length > 0 ? "bad" : minorParts.length > 2 ? "warn" : "ok";
