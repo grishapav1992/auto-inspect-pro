@@ -207,7 +207,7 @@ function SelectActionsMenu({
               animate={{ opacity: 1, scale: 1, y: 0 }}
               exit={{ opacity: 0, scale: 0.9, y: -4 }}
               transition={{ type: "spring", damping: 25, stiffness: 400 }}
-              className="absolute right-0 top-full mt-1 z-[81] bg-card border border-border/60 rounded-xl shadow-2xl overflow-hidden min-w-[180px]"
+              className="absolute right-0 top-full mt-1 z-[81] bg-card border border-border rounded-lg shadow-card-hover overflow-hidden min-w-[180px]"
             >
               {onNote && (
                 <>
