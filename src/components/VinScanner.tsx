@@ -426,14 +426,18 @@ const VinScanner = ({ onResult, disabled }: VinScannerProps) => {
     }
   }, [reset, stopCamera]);
 
-  const handleFileChange = useCallback((event: React.ChangeEvent<HTMLInputElement>) => {
-    const file = event.target.files?.[0];
-    if (file) {
-      stopCamera();
-      void processImage(file);
-    }
-
+  const handleFileChange = useCallback(async (event: React.ChangeEvent<HTMLInputElement>) => {
+    const rawFile = event.target.files?.[0];
     event.target.value = "";
+    if (!rawFile) return;
+
+    stopCamera();
+    const converted = await convertHeicIfNeeded(rawFile);
+    if (converted) {
+      void processImage(converted);
+    } else {
+      setError("Не удалось обработать HEIC-файл. Сохраните фото как JPEG и попробуйте снова.");
+    }
   }, [processImage, stopCamera]);
 
   const handleCaptureFrame = useCallback(async () => {
