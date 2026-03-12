@@ -1226,6 +1226,11 @@ export default function SortableMediaGallery({
                     onClose={() => setGroupLightboxIndex(null)}
                     groupName={openGroup.groupName}
                     itemGroupMap={itemGroupMap}
+                    onNote={(itemId) => {
+                      setGroupLightboxIndex(null);
+                      setGroupSingleNoteId(itemId);
+                      setGroupNoteModalOpen(true);
+                    }}
                   />
                 )}
               </AnimatePresence>
