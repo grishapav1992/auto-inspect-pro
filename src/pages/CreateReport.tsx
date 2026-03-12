@@ -1555,7 +1555,7 @@ const CreateReport = () => {
                         transition={{ type: "spring", damping: 25, stiffness: 300 }}
                         className="fixed bottom-20 left-4 right-4 z-40 mx-auto max-w-sm"
                       >
-                        <div className="rounded-2xl bg-card/95 backdrop-blur-md border border-border shadow-lg p-4 space-y-3">
+                        <div className="rounded-lg bg-card/95 backdrop-blur-md border border-border shadow-card-hover p-3.5 space-y-2.5">
                           {/* Header row */}
                           <div className="flex items-center gap-3">
                             <div className={`h-10 w-10 rounded-xl flex items-center justify-center shrink-0 ${isDone ? "bg-green-500/15" : "bg-primary/10"}`}>
