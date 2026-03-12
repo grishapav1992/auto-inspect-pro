@@ -369,7 +369,7 @@ export function generateSummary(input: SummaryInput): SummaryResult {
       appendGroupNote(details, "body", input.mediaGroupInspections, DAMAGE_TAGS, mediaIndex, input.customTags);
       penalty += seriousParts.length * 12 + minorParts.length * 4;
       const status = seriousParts.length > 0 ? "bad" : minorParts.length > 2 ? "warn" : "ok";
-      sections.push({ title: "Кузов", emoji: "🚗", status, required: true, details });
+      sections.push({ title: "Кузов", emoji: "•", status, required: true, details });
     }
   }
 
