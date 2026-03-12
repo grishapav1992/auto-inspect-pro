@@ -195,7 +195,7 @@ const ReportsList = () => {
                     >
                       <div
                         onClick={() => navigate(`/report/${report.id}`)}
-                        className="rounded-xl border border-border/60 bg-card p-4 cursor-pointer transition-all active:scale-[0.98] hover:shadow-md"
+                        className="rounded-lg border border-border/70 bg-card p-3.5 cursor-pointer transition-all active:scale-[0.99] hover:border-primary/30"
                       >
                         <div className="flex items-start justify-between">
                           <div className="flex-1 min-w-0">
