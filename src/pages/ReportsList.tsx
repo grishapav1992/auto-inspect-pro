@@ -137,7 +137,7 @@ const ReportsList = () => {
                     >
                       <div
                         onClick={() => navigate(`/create?draft=${draft.id}`)}
-                        className="flex items-center justify-between rounded-lg border border-border/60 bg-card p-4 cursor-pointer transition-all active:scale-[0.98] hover:shadow-md"
+                        className="flex items-center justify-between rounded-lg border border-border/70 bg-card p-3.5 cursor-pointer transition-all active:scale-[0.99] hover:border-primary/30"
                       >
                         <div className="min-w-0 flex-1">
                           <h3 className="text-base font-bold text-foreground truncate">{titleLabel}</h3>
