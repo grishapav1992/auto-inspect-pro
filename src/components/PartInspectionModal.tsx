@@ -684,7 +684,7 @@ const PartInspectionModal = ({
     }
 
     const currentPendingTag = pendingTag;
-    const newPhotoUrls = normalized.map((f) => f.key);
+    const newPhotoUrls = normalized.map((f) => f.objectUrl);
 
     setStateMap((prev) => {
       const partState = prev[activePart.id];
