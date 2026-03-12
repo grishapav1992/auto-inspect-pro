@@ -8,7 +8,7 @@ import { Input } from "@/components/ui/input";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
-import { ArrowLeft, Check, ChevronRight, ChevronDown, Clock, FileSearch, XCircle, Monitor, Camera, FileText, X, File, Paintbrush, Shield, Plus, Video, Play, Trash2, ImageIcon, Star, CalendarIcon, Mic, MicOff } from "lucide-react";
+import { ArrowLeft, Check, ChevronRight, ChevronDown, Clock, FileSearch, XCircle, Monitor, Camera, FileText, X, File, Paintbrush, Shield, Plus, Video, Play, Trash2, ImageIcon, Star, CalendarIcon, Mic, MicOff, Loader2 } from "lucide-react";
 import VinScanner from "@/components/VinScanner";
 import { useSpeechRecognition } from "@/hooks/useSpeechRecognition";
 import { Slider } from "@/components/ui/slider";
