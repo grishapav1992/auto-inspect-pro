@@ -1192,51 +1192,6 @@ const PartInspectionModal = ({
           </AnimatePresence>
           )}
 
-          {/* Divider */}
-          {strategy.paintThickness && (!strategy.elementTypes || state.elementType) && <div className="mx-4 border-t border-border/40" />}
-
-          {/* Paint thickness slider */}
-          {strategy.paintThickness && (!strategy.elementTypes || state.elementType) && (
-          <div className="px-4 py-3">
-            <div className="flex items-center gap-1.5 mb-3">
-              <Paintbrush className="h-3.5 w-3.5 text-muted-foreground/60" />
-              <p className="text-[11px] font-semibold uppercase tracking-wider text-muted-foreground/60">Толщина окраса</p>
-            </div>
-            <div className="rounded-xl border border-border/60 bg-card p-3">
-              <div className="flex justify-between items-center mb-3">
-                <EditablePaintValue
-                  value={clampedFrom}
-                  min={50}
-                  max={clampedTo}
-                  suffix="мкм"
-                  onChange={(v) => updateState({ paintFrom: v })}
-                />
-                <span className="text-[11px] text-muted-foreground">—</span>
-                <EditablePaintValue
-                  value={clampedTo}
-                  min={clampedFrom}
-                  max={sliderMax}
-                  suffix="мкм"
-                  onChange={(v) => updateState({ paintTo: v })}
-                />
-              </div>
-              <Slider
-                min={50}
-                max={sliderMax}
-                step={50}
-                value={[clampedFrom, clampedTo]}
-                onValueChange={([from, to]) => {
-                  updateState({ paintFrom: from, paintTo: to });
-                }}
-                minStepsBetweenThumbs={1}
-              />
-              <div className="flex justify-between mt-2 text-[10px] text-muted-foreground/60">
-                <span>50 мкм</span>
-                <span>{sliderMax} мкм</span>
-              </div>
-            </div>
-          </div>
-          )}
 
           {/* Divider */}
           {strategy.note && (!strategy.elementTypes || state.elementType) && <div className="mx-4 border-t border-border/40" />}
