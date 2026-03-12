@@ -700,7 +700,7 @@ export function generateSummary(input: SummaryInput): SummaryResult {
     if (input.tdConducted === false) {
       details.push({ label: "Тест-драйв", value: "не проводился", severity: "minor" });
       if (input.tdNote) details.push(`${input.tdNote.slice(0, 60)}`);
-      sections.push({ title: "Тест-драйв", emoji: "🏁", status: "ok", required: true, details });
+      sections.push({ title: "Тест-драйв", emoji: "•", status: "ok", required: true, details });
     } else {
       const tdSections: { label: string; ok: boolean; tags: string[] }[] = [
         { label: "ДВС на ходу", ok: input.tdEngineOk, tags: input.tdEngineTags },
