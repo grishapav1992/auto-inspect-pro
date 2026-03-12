@@ -273,7 +273,48 @@ function SortableMediaCard({
   onLongPress?: () => void;
 }) {
   const {
-    attributes,
+    setNodeRef,
+  } = useSortable({ id: item.id, disabled: true });
+
+  const isSelectMode = interactionMode === "select";
+
+  const longPressTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const didLongPress = useRef(false);
+
+  const clearLongPress = () => {
+    if (longPressTimer.current) {
+      clearTimeout(longPressTimer.current);
+      longPressTimer.current = null;
+    }
+  };
+
+  return (
+    <div>
+      <div
+        ref={setNodeRef}
+        onPointerDown={() => {
+          didLongPress.current = false;
+          if (!isSelectMode && onLongPress) {
+            longPressTimer.current = setTimeout(() => {
+              didLongPress.current = true;
+              onLongPress();
+            }, 500);
+          }
+        }}
+        onPointerMove={() => clearLongPress()}
+        onPointerUp={() => clearLongPress()}
+        onPointerCancel={() => clearLongPress()}
+        onClick={() => {
+          if (didLongPress.current) {
+            didLongPress.current = false;
+            return;
+          }
+          if (isSelectMode) {
+            onToggleSelect();
+          } else {
+            onPreview();
+          }
+        }}
     listeners,
     setNodeRef,
     transform,
