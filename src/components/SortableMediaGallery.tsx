@@ -1218,6 +1218,12 @@ export default function SortableMediaGallery({
                             interactionMode={groupInteractionMode}
                             isSelected={groupSelectedIds.has(child.id)}
                             onToggleSelect={() => groupToggleSelect(child.id)}
+                            onLongPress={() => {
+                              if (groupInteractionMode === "normal") {
+                                setGroupInteractionMode("select");
+                                setGroupSelectedIds(new Set([child.id]));
+                              }
+                            }}
                             onNote={() => {
                               setGroupSingleNoteId(child.id);
                               setGroupNoteModalOpen(true);
