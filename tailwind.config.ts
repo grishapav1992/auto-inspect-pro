@@ -70,11 +70,14 @@ export default {
         lg: "var(--radius)",
         md: "calc(var(--radius) - 2px)",
         sm: "calc(var(--radius) - 4px)",
-        xs: "0.25rem",
       },
       fontFamily: {
-        sans: ["'DM Sans'", "system-ui", "-apple-system", "sans-serif"],
+        sans: ["'Inter'", "system-ui", "-apple-system", "sans-serif"],
         mono: ["'JetBrains Mono'", "ui-monospace", "monospace"],
+      },
+      boxShadow: {
+        card: "0 1px 2px 0 hsl(220 18% 13% / 0.04)",
+        "card-hover": "0 2px 8px -2px hsl(220 18% 13% / 0.08)",
       },
       keyframes: {
         "accordion-down": {

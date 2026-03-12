@@ -1,4 +1,4 @@
-import { motion, AnimatePresence } from "framer-motion";
+import { AnimatePresence } from "framer-motion";
 import { ChevronRight, Check, AlertTriangle } from "lucide-react";
 
 export interface StepCTAReason {
@@ -9,10 +9,8 @@ export interface StepCTAReason {
 interface StepCTAProps {
   onClick: () => void;
   disabled: boolean;
-  /** Список причин блокировки — показывается пользователю когда кнопка заблокирована */
   reasons?: (string | StepCTAReason)[];
   label?: string;
-  /** Иконка — Check или ChevronRight */
   icon?: "next" | "done";
 }
 
@@ -29,15 +27,10 @@ const StepCTA = ({
     <div className="space-y-2">
       <AnimatePresence>
         {disabled && reasons.length > 0 && (
-          <motion.div
-            initial={{ opacity: 0, height: 0 }}
-            animate={{ opacity: 1, height: "auto" }}
-            exit={{ opacity: 0, height: 0 }}
-            className="rounded-xl border border-[hsl(var(--warning)/0.3)] bg-[hsl(var(--warning)/0.06)] px-3.5 py-2.5 space-y-1"
-          >
+          <div className="rounded-lg border border-[hsl(var(--warning)/0.25)] bg-[hsl(var(--warning)/0.04)] px-3 py-2.5 space-y-1">
             <div className="flex items-center gap-1.5">
               <AlertTriangle className="h-3 w-3 text-[hsl(var(--warning))]" />
-              <p className="text-[11px] font-semibold text-[hsl(var(--warning))]">
+              <p className="text-[11px] font-medium text-[hsl(var(--warning))]">
                 Для продолжения:
               </p>
             </div>
@@ -46,7 +39,7 @@ const StepCTA = ({
               const text = isObj ? reason.text : reason;
               const handler = isObj ? reason.onClick : undefined;
               return handler ? (
-                <div key={i} className="flex items-center justify-between pl-[18px] pr-1">
+                <div key={i} className="flex items-center justify-between pl-4 pr-1">
                   <p className="text-[11px] text-muted-foreground leading-relaxed">
                     • {text}
                   </p>
@@ -60,19 +53,19 @@ const StepCTA = ({
                   </button>
                 </div>
               ) : (
-                <p key={i} className="text-[11px] text-muted-foreground leading-relaxed pl-[18px]">
+                <p key={i} className="text-[11px] text-muted-foreground leading-relaxed pl-4">
                   • {text}
                 </p>
               );
             })}
-          </motion.div>
+          </div>
         )}
       </AnimatePresence>
       <button
         type="button"
         onClick={onClick}
         disabled={disabled}
-        className="flex w-full items-center justify-center gap-2 rounded-lg bg-primary py-3.5 text-sm font-semibold text-primary-foreground tracking-wide uppercase transition-all disabled:opacity-40 active:scale-[0.98] shadow-sm"
+        className="flex w-full items-center justify-center gap-2 rounded-lg bg-primary py-3 text-sm font-medium text-primary-foreground transition-all disabled:opacity-40 active:opacity-90"
       >
         {label}
         <IconComponent className="h-4 w-4" />

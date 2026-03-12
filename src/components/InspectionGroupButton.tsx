@@ -1,4 +1,3 @@
-import { motion } from "framer-motion";
 import { Check, ChevronRight } from "lucide-react";
 import type { PartInspection } from "@/types/inspection";
 import { DAMAGE_TAGS, DAMAGE_TAG_GROUPS } from "@/types/inspection";
@@ -47,25 +46,21 @@ const InspectionGroupButton = ({
     .filter(Boolean) as { id: string; label: string; ins: PartInspection }[];
 
   return (
-    <motion.button
+    <button
       type="button"
-      initial={{ opacity: 0, y: 12 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ delay }}
-      whileTap={{ scale: 0.98 }}
       onClick={onClick}
-      className={`flex w-full items-start gap-3 rounded-lg border bg-card px-4 py-3 transition-all ${
+      className={`flex w-full items-start gap-3 rounded-lg border bg-card px-3.5 py-3 transition-colors ${
         allDone
           ? hasDamage
-            ? "border-destructive/30 bg-destructive/5"
-            : "border-[hsl(var(--success)/0.3)] bg-[hsl(var(--success)/0.04)]"
-          : "border-border/70 hover:border-primary/40"
+            ? "border-destructive/25 bg-destructive/3"
+            : "border-[hsl(var(--success)/0.25)] bg-[hsl(var(--success)/0.03)]"
+          : "border-border hover:border-primary/30"
       }`}
     >
-      <span className="text-xl mt-0.5 w-7 h-7 flex items-center justify-center flex-shrink-0">{group.icon}</span>
+      <span className="text-lg mt-0.5 w-6 h-6 flex items-center justify-center flex-shrink-0">{group.icon}</span>
       <div className="flex-1 text-left min-w-0">
         <div className="flex items-center justify-between">
-          <p className="text-sm font-medium text-foreground">{group.title}</p>
+          <p className="text-[13px] font-medium text-foreground">{group.title}</p>
           <span className="text-[11px] text-muted-foreground ml-2">
             {filledCount}/{totalCount}
           </span>
@@ -93,10 +88,10 @@ const InspectionGroupButton = ({
                     return (
                       <span
                         key={tag.id}
-                        className={`text-[10px] rounded-full px-1.5 py-0.5 font-medium ${
+                        className={`text-[10px] rounded-md px-1.5 py-0.5 font-medium ${
                           isSerious
-                            ? "bg-destructive/10 text-destructive"
-                            : "bg-[hsl(var(--warning)/0.12)] text-[hsl(var(--warning)/0.85)]"
+                            ? "bg-destructive/8 text-destructive"
+                            : "bg-[hsl(var(--warning)/0.08)] text-[hsl(var(--warning))]"
                         }`}
                       >
                         {tag.emoji} {tag.label}
@@ -110,11 +105,11 @@ const InspectionGroupButton = ({
         )}
       </div>
       {allDone ? (
-        <span className="text-xs font-medium text-[hsl(var(--success))] mt-0.5">✅</span>
+        <Check className="h-4 w-4 text-[hsl(var(--success))] mt-0.5" />
       ) : (
-        <ChevronRight className="h-4 w-4 text-muted-foreground mt-0.5" />
+        <ChevronRight className="h-4 w-4 text-muted-foreground/50 mt-0.5" />
       )}
-    </motion.button>
+    </button>
   );
 };
 

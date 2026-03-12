@@ -129,7 +129,7 @@ function GroupPicker({
         animate={{ opacity: 1, scale: 1, y: 0 }}
         exit={{ opacity: 0, scale: 0.9, y: 20 }}
         transition={{ type: "spring", damping: 25, stiffness: 400 }}
-        className="fixed inset-x-4 bottom-8 z-[86] bg-card border border-border/60 rounded-2xl shadow-2xl overflow-hidden max-w-sm mx-auto"
+        className="fixed inset-x-4 bottom-8 z-[86] bg-card border border-border rounded-lg shadow-card-hover overflow-hidden max-w-sm mx-auto"
       >
         <div className="px-4 pt-4 pb-2">
           <p className="text-sm font-semibold text-foreground">Выберите группу</p>
@@ -142,7 +142,7 @@ function GroupPicker({
                 key={key}
                 type="button"
                 onClick={() => onSelect(key)}
-                className="w-full flex items-center gap-3 px-3 py-3 text-sm font-medium rounded-xl transition-colors hover:bg-muted/60 active:scale-[0.98]"
+                className="w-full flex items-center gap-3 px-3 py-2.5 text-sm font-medium rounded-lg transition-colors hover:bg-muted/60"
               >
                 <Layers className="h-4 w-4 text-muted-foreground" />
                 <div className="flex flex-col items-start">
@@ -207,7 +207,7 @@ function SelectActionsMenu({
               animate={{ opacity: 1, scale: 1, y: 0 }}
               exit={{ opacity: 0, scale: 0.9, y: -4 }}
               transition={{ type: "spring", damping: 25, stiffness: 400 }}
-              className="absolute right-0 top-full mt-1 z-[81] bg-card border border-border/60 rounded-xl shadow-2xl overflow-hidden min-w-[180px]"
+              className="absolute right-0 top-full mt-1 z-[81] bg-card border border-border rounded-lg shadow-card-hover overflow-hidden min-w-[180px]"
             >
               {onNote && (
                 <>
@@ -307,12 +307,12 @@ function SortableMediaCard({
             onPreview();
           }
         }}
-        className={`relative rounded-xl overflow-hidden border-2 bg-card group touch-none select-none transition-all cursor-pointer ${
+        className={`relative rounded-lg overflow-hidden border bg-card group touch-none select-none transition-all cursor-pointer ${
           isSelected
-            ? "border-primary ring-2 ring-primary/30"
+            ? "border-primary ring-2 ring-primary/20"
             : item.inspection && !item.children && (item.inspection.noDamage || item.inspection.tags.length > 0 || item.inspection.note || item.inspection.elementType || (item.inspection.audioRecordings && item.inspection.audioRecordings.length > 0))
-              ? "border-primary/40"
-              : "border-border/60"
+              ? "border-primary/30"
+              : "border-border"
         }`}
       >
         {item.type === "video" ? (
@@ -477,7 +477,7 @@ function SortableMediaCard({
 
 function MediaOverlayCard({ item }: { item: MediaItem }) {
   return (
-    <div className="rounded-xl overflow-hidden border-2 border-primary/60 bg-card shadow-2xl w-40">
+    <div className="rounded-lg overflow-hidden border border-primary/40 bg-card shadow-card-hover w-40">
       {item.type === "video" ? (
         <video src={item.url} className="w-full rounded-xl" muted playsInline />
       ) : (
