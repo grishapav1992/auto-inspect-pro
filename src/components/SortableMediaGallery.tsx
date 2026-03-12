@@ -424,49 +424,38 @@ function SortableMediaCard({
         })()}
       </div>
 
-      {/* Inspection info — below photo */}
+      {/* Inspection info — compact indicator below photo */}
       {interactionMode === "normal" && !item.children && item.inspection && (() => {
         const insp = item.inspection!;
         const hasElementType = elementTypes && elementTypes.length > 0 && insp.elementType;
-        const tagEmojis = resolveTags(insp.tags, item.groupName, insp.elementType);
+        const elementLabel = hasElementType ? elementTypes!.find(et => et.id === insp.elementType)?.label : null;
+        const hasTags = insp.tags.length > 0;
         const hasNote = !!insp.note;
         const hasAudio = insp.audioRecordings && insp.audioRecordings.length > 0;
         const isDraft = insp.isDraft;
-        const hasAnything = hasElementType || tagEmojis.length > 0 || hasNote || hasAudio || insp.noDamage || isDraft;
+        const hasInspectionData = hasTags || hasNote || hasAudio || insp.noDamage || insp.paintThickness;
+        const hasAnything = hasElementType || hasInspectionData || isDraft;
         if (!hasAnything) return null;
         return (
-          <div className="mt-1.5 px-0.5 space-y-0.5">
-            <div className="flex items-center gap-1.5 flex-wrap">
-              {isDraft && (
-                <span className="inline-flex items-center rounded-full bg-amber-500/15 px-1.5 py-0.5 text-[9px] font-semibold uppercase tracking-wide text-amber-600">
-                  Черновик
-                </span>
-              )}
-              {hasElementType && (
-                <span className="text-[10px] font-medium text-muted-foreground truncate">
-                  {elementTypes!.find(et => et.id === insp.elementType)?.label}
-                </span>
-              )}
-              {insp.noDamage && (
-                <span className="inline-flex items-center gap-0.5 text-[10px] font-medium text-[hsl(var(--success))]">
-                  ✅ Ок
-                </span>
-              )}
-            </div>
-            {tagEmojis.length > 0 && (
-              <div className="flex items-center gap-0.5 flex-wrap">
-                {tagEmojis.map((tag, i) => (
-                  <span key={i} className="text-[11px] leading-none" title={tag.label}>{tag.emoji}</span>
-                ))}
-              </div>
+          <div className="mt-1.5 px-1 pb-0.5 flex items-center gap-1.5 min-w-0">
+            {isDraft && (
+              <span className="shrink-0 inline-flex items-center rounded bg-warning/15 px-1.5 py-0.5 text-[9px] font-semibold uppercase tracking-wide text-warning">
+                Черновик
+              </span>
             )}
-            {(hasNote || hasAudio) && (
-              <div className="flex items-center gap-1 min-w-0">
-                {hasAudio && <Mic className="h-3 w-3 text-muted-foreground/60 shrink-0" />}
-                {hasNote && (
-                  <span className="text-[10px] text-muted-foreground truncate leading-tight">{insp.note}</span>
-                )}
-              </div>
+            {elementLabel && (
+              <span className="text-[11px] font-medium text-foreground truncate leading-tight">
+                {elementLabel}
+              </span>
+            )}
+            {!elementLabel && hasInspectionData && (
+              <span className="inline-flex items-center gap-1 text-[10px] text-muted-foreground">
+                <Check className="h-3 w-3 text-success" />
+                <span>Заполнено</span>
+              </span>
+            )}
+            {elementLabel && hasInspectionData && (
+              <Check className="h-3 w-3 text-success shrink-0" />
             )}
           </div>
         );
