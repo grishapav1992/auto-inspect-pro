@@ -360,6 +360,7 @@ const CreateReport = () => {
    const [mediaFiles, setMediaFiles] = useState<MediaItem[]>(existingDraft?.mediaFiles ?? DEMO_MEDIA);
    const mediaFileRef = useRef<HTMLInputElement>(null);
    const pendingMediaGroupRef = useRef<import("@/components/SortableMediaGallery").MediaGroupName | null>(null);
+   const [mediaUploadProgress, setMediaUploadProgress] = useState<{ current: number; total: number } | null>(null);
 
 
    // Auto-save draft function
@@ -1494,7 +1495,15 @@ const CreateReport = () => {
                     const groupName = pendingMediaGroupRef.current;
                     pendingMediaGroupRef.current = null;
 
-                    const { files: normalized, failedNames } = await normalizeUploadFiles(rawFiles);
+                    if (rawFiles.length === 0) return;
+                    setMediaUploadProgress({ current: 0, total: rawFiles.length });
+
+                    const { files: normalized, failedNames } = await normalizeUploadFiles(rawFiles, {
+                      onProgress: (current) => setMediaUploadProgress((p) => p ? { ...p, current } : null),
+                    });
+
+                    setMediaUploadProgress(null);
+
                     if (failedNames.length > 0) {
                       window.alert(`Не удалось обработать HEIC: ${failedNames.join(", ")}. Сохраните фото как JPEG и попробуйте снова.`);
                     }
@@ -1533,7 +1542,35 @@ const CreateReport = () => {
                   }}
                 />
 
-                {/* Paint thickness ranges — body */}
+                {/* Upload progress */}
+                <AnimatePresence>
+                  {mediaUploadProgress && (
+                    <motion.div
+                      initial={{ opacity: 0, height: 0 }}
+                      animate={{ opacity: 1, height: "auto" }}
+                      exit={{ opacity: 0, height: 0 }}
+                      className="overflow-hidden"
+                    >
+                      <div className="rounded-xl bg-card border border-border p-4 space-y-2">
+                        <div className="flex items-center justify-between text-sm">
+                          <span className="text-muted-foreground font-medium">Обработка фото…</span>
+                          <span className="text-foreground font-semibold">
+                            {mediaUploadProgress.current} / {mediaUploadProgress.total}
+                          </span>
+                        </div>
+                        <div className="h-2 rounded-full bg-muted overflow-hidden">
+                          <motion.div
+                            className="h-full rounded-full bg-primary"
+                            initial={{ width: 0 }}
+                            animate={{ width: `${Math.round((mediaUploadProgress.current / mediaUploadProgress.total) * 100)}%` }}
+                            transition={{ duration: 0.3 }}
+                          />
+                        </div>
+                      </div>
+                    </motion.div>
+                  )}
+                </AnimatePresence>
+
                 {(() => {
                   const filledCount = Object.values(inspections).filter(i => i.paintThickness).length;
                   return (

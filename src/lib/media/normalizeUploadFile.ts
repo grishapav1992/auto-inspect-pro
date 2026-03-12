@@ -119,24 +119,22 @@ export async function normalizeUploadFile(
  */
 export async function normalizeUploadFiles(
   files: File[],
-  opts?: { maxWidth?: number; quality?: number },
+  opts?: { maxWidth?: number; quality?: number; onProgress?: (processed: number) => void },
 ): Promise<NormalizeResult> {
-  const results = await Promise.all(
-    files.map(async (file) => ({
-      original: file,
-      result: await normalizeUploadFile(file, opts),
-    })),
-  );
-
   const normalized: NormalizedFile[] = [];
   const failedNames: string[] = [];
+  let processed = 0;
 
-  for (const r of results) {
-    if (r.result) {
-      normalized.push(r.result);
+  // Process sequentially to report progress
+  for (const file of files) {
+    const result = await normalizeUploadFile(file, opts);
+    if (result) {
+      normalized.push(result);
     } else {
-      failedNames.push(r.original.name);
+      failedNames.push(file.name);
     }
+    processed++;
+    opts?.onProgress?.(processed);
   }
 
   return { files: normalized, failedNames };

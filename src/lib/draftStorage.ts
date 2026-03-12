@@ -73,7 +73,22 @@ export interface ReportDraft {
   tdBrakeRideTags: string[];
   tdPhotos: string[];
   tdNote: string;
-  mediaFiles: { id: string; url: string; type: "image" | "video"; children?: { id: string; url: string; type: "image" | "video" }[]; groupName?: "body" | "structural" | "glass" | "lighting" | "underhood" | "wheels" | "interior" | "diagnostics" }[];
+  mediaFiles: {
+    id: string;
+    url: string;
+    type: "image" | "video";
+    note?: string;
+    inspection?: PartInspection;
+    children?: {
+      id: string;
+      url: string;
+      type: "image" | "video";
+      note?: string;
+      inspection?: PartInspection;
+    }[];
+    groupName?: "body" | "structural" | "glass" | "lighting" | "underhood" | "wheels" | "interior" | "diagnostics";
+    groupInspection?: PartInspection;
+  }[];
   engineVolume: string;
   engineType: string;
   gearboxType: string;
@@ -295,11 +310,31 @@ function convertDraftUrlsToKeys(draft: ReportDraft): ReportDraft {
     bodyStructuralInspections: convertInspectionUrlsToKeys(draft.bodyStructuralInspections),
     bodyUndercarriageInspections: convertInspectionUrlsToKeys(draft.bodyUndercarriageInspections),
     glassInspections: convertInspectionUrlsToKeys(draft.glassInspections),
-    mediaFiles: draft.mediaFiles.map((m) => ({
-      ...m,
-      url: getIdbKey(m.url),
-      ...(m.children ? { children: m.children.map((c: any) => ({ ...c, url: getIdbKey(c.url) })) } : {}),
-    })),
+    mediaFiles: draft.mediaFiles.map((m) => {
+      const convertMediaInspection = (insp?: PartInspection) => {
+        if (!insp) return insp;
+        const result: PartInspection = { ...insp, photos: convertUrlsToKeys(insp.photos ?? []) };
+        if (insp.tagPhotos) {
+          result.tagPhotos = Object.fromEntries(
+            Object.entries(insp.tagPhotos).map(([tag, urls]) => [tag, convertUrlsToKeys(urls)]),
+          );
+        }
+        return result;
+      };
+      return {
+        ...m,
+        url: getIdbKey(m.url),
+        inspection: convertMediaInspection(m.inspection),
+        groupInspection: convertMediaInspection(m.groupInspection),
+        ...(m.children ? {
+          children: m.children.map((c) => ({
+            ...c,
+            url: getIdbKey(c.url),
+            inspection: convertMediaInspection(c.inspection),
+          })),
+        } : {}),
+      };
+    }),
   };
 }
 
@@ -398,14 +433,32 @@ export async function loadDraftWithMedia(draft: ReportDraft): Promise<ReportDraf
   };
 
   // Resolve media file URLs
+  const resolveMediaInspection = async (insp?: PartInspection): Promise<PartInspection | undefined> => {
+    if (!insp) return insp;
+    const result: PartInspection = { ...insp, photos: await resolveArr(insp.photos ?? []) };
+    if (insp.tagPhotos) {
+      const entries = await Promise.all(
+        Object.entries(insp.tagPhotos).map(async ([tag, urls]) => [tag, await resolveArr(urls)] as const),
+      );
+      result.tagPhotos = Object.fromEntries(entries);
+    }
+    return result;
+  };
+
   result.mediaFiles = await Promise.all(
     draft.mediaFiles.map(async (m) => {
-      const resolved: any = { ...m, url: await resolveMediaUrls([m.url]).then((r) => r[0]) };
+      const resolved: any = {
+        ...m,
+        url: await resolveMediaUrls([m.url]).then((r) => r[0]),
+        inspection: await resolveMediaInspection(m.inspection),
+        groupInspection: await resolveMediaInspection(m.groupInspection),
+      };
       if (m.children) {
         resolved.children = await Promise.all(
           m.children.map(async (c: any) => ({
             ...c,
             url: await resolveMediaUrls([c.url]).then((r) => r[0]),
+            inspection: await resolveMediaInspection(c.inspection),
           })),
         );
       }
