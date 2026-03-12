@@ -724,7 +724,7 @@ export function generateSummary(input: SummaryInput): SummaryResult {
       penalty += totalDefects * 6;
       const allOk = tdSections.every(s => s.ok && s.tags.length === 0);
       const status = allOk ? "ok" : totalDefects > 3 ? "bad" : "warn";
-      sections.push({ title: "Тест-драйв", emoji: "🏁", status, required: true, details });
+      sections.push({ title: "Тест-драйв", emoji: "•", status, required: true, details });
     }
   }
 
