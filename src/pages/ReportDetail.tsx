@@ -77,19 +77,19 @@ const ReportDetail = () => {
   return (
     <div className="min-h-screen pb-24">
       {/* Header */}
-      <header className="sticky top-0 z-40 flex items-center gap-3 bg-background/80 backdrop-blur-xl px-4 pb-3 pt-12">
-        <button onClick={() => navigate(-1)} className="rounded-full p-1.5 transition-colors hover:bg-muted">
+      <header className="sticky top-0 z-40 flex items-center gap-3 bg-background/90 backdrop-blur-md border-b border-border/50 px-4 pb-3 pt-12">
+        <button onClick={() => navigate(-1)} className="rounded-lg p-1.5 transition-colors hover:bg-muted">
           <ArrowLeft className="h-5 w-5 text-foreground" />
         </button>
         <div className="flex-1 min-w-0">
-          <h1 className="text-lg font-bold text-foreground truncate">{title}</h1>
-          <p className="text-xs text-muted-foreground">
+          <h1 className="text-sm font-semibold text-foreground truncate">{title}</h1>
+          <p className="text-[11px] text-muted-foreground">
             {report.createdAt}
             {report.generation ? ` · ${report.generation}` : ""}
           </p>
         </div>
-        <button className="rounded-full p-2 transition-colors hover:bg-muted">
-          <Share2 className="h-5 w-5 text-muted-foreground" />
+        <button className="rounded-lg p-2 transition-colors hover:bg-muted">
+          <Share2 className="h-4 w-4 text-muted-foreground" />
         </button>
       </header>
 
