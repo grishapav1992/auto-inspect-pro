@@ -302,7 +302,7 @@ export function generateSummary(input: SummaryInput): SummaryResult {
     if (details.length === 0) details.push({ label: "Параметры", value: "не заполнены", severity: "minor" });
     const hasMileage = !!input.mileage;
     const status = hasMileage && details.length > 3 ? "ok" : "warn";
-    sections.push({ title: "Параметры", emoji: "📋", status, required: true, details });
+    sections.push({ title: "Параметры", emoji: "•", status, required: true, details });
   }
 
   // --- Сверка документов ---
