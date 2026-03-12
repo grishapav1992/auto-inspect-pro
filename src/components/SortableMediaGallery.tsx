@@ -583,12 +583,14 @@ export function MediaPresentation({
   onClose,
   itemGroupMap,
   groupName,
+  onNote,
 }: {
   items: MediaItem[];
   initialIndex: number;
   onClose: () => void;
   itemGroupMap?: Map<string, MediaGroupName>;
   groupName?: MediaGroupName;
+  onNote?: (itemId: string) => void;
 }) {
   const [index, setIndex] = useState(initialIndex);
   const [direction, setDirection] = useState(0);
@@ -673,6 +675,20 @@ export function MediaPresentation({
               <Layers className="h-3 w-3 text-white/60" />
               <span className="text-[11px] text-white/70">{MEDIA_GROUP_LABELS[currentGroupName]}</span>
             </div>
+          )}
+          {onNote && (
+            <button
+              type="button"
+              onClick={() => onNote(item.id)}
+              className={`flex items-center gap-1.5 rounded-full px-3 py-1.5 backdrop-blur-sm transition-colors active:scale-95 ${
+                hasInspection
+                  ? "bg-primary text-primary-foreground"
+                  : "bg-white/10 text-white/80 hover:bg-white/20"
+              }`}
+            >
+              <ClipboardList className="h-3.5 w-3.5" />
+              <span className="text-[12px] font-medium">{hasInspection ? "Заметка" : "Добавить заметку"}</span>
+            </button>
           )}
           <span className="text-[12px] text-white/50 tabular-nums">{index + 1}/{items.length}</span>
         </div>
