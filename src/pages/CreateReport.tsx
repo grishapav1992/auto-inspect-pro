@@ -901,15 +901,15 @@ const CreateReport = () => {
 
     return (
       <div className="min-h-screen flex flex-col bg-background">
-        <header className="flex items-center gap-3 px-4 pb-3 pt-12">
-          <button onClick={() => setActiveSection(null)} className="rounded-full p-1.5 transition-colors hover:bg-muted">
+        <header className="flex items-center gap-3 px-4 pb-3 pt-12 border-b border-border/50">
+          <button onClick={() => setActiveSection(null)} className="rounded-lg p-1.5 transition-colors hover:bg-muted">
             <ArrowLeft className="h-5 w-5 text-foreground" />
           </button>
           <div className="flex-1 min-w-0">
-            <h1 className="text-lg font-bold text-foreground truncate">{step.title}</h1>
-            <p className="text-xs text-muted-foreground">{step.description}</p>
+            <h1 className="text-sm font-semibold text-foreground truncate">{step.title}</h1>
+            <p className="text-[11px] text-muted-foreground">{step.description}</p>
           </div>
-          <span className="text-xs text-muted-foreground flex-shrink-0">{stepIndex + 1}/{steps.length}</span>
+          <span className="text-[11px] text-muted-foreground flex-shrink-0 font-mono">{stepIndex + 1}/{steps.length}</span>
         </header>
 
         <div className="flex-1 overflow-y-auto px-4 pb-24">
