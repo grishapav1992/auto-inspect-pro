@@ -340,7 +340,7 @@ export function generateSummary(input: SummaryInput): SummaryResult {
     if (!input.hasBodyPhotos && Object.keys(input.inspections).length === 0) {
       details.push({ label: "Кузов", value: "не осмотрен", severity: "minor" });
       penalty += 10;
-      sections.push({ title: "Кузов", emoji: "🚗", status: "warn", required: true, details });
+      sections.push({ title: "Кузов", emoji: "•", status: "warn", required: true, details });
     } else {
       const inspected = input.inspections;
       const seriousParts = Object.values(inspected).filter((p) => p.tags.some((t) => SERIOUS_TAG_IDS.includes(t)));
