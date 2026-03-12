@@ -259,6 +259,7 @@ function SortableMediaCard({
   onNote,
   elementTypes,
   onElementTypeChange,
+  onLongPress,
 }: {
   item: MediaItem;
   onRemove: () => void;
@@ -269,6 +270,7 @@ function SortableMediaCard({
   onNote?: () => void;
   elementTypes?: readonly { id: string; label: string }[];
   onElementTypeChange?: (elementType: string | undefined) => void;
+  onLongPress?: () => void;
 }) {
   const {
     attributes,
@@ -289,6 +291,16 @@ function SortableMediaCard({
   const isSelectMode = interactionMode === "select";
   const dndProps = !isSelectMode ? { ...attributes, ...listeners } : {};
 
+  const longPressTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const didLongPress = useRef(false);
+
+  const clearLongPress = () => {
+    if (longPressTimer.current) {
+      clearTimeout(longPressTimer.current);
+      longPressTimer.current = null;
+    }
+  };
+
   return (
     <div>
       <div
@@ -296,11 +308,25 @@ function SortableMediaCard({
         style={style}
         {...dndProps}
         onPointerDown={(e) => {
+          didLongPress.current = false;
+          if (!isSelectMode && onLongPress) {
+            longPressTimer.current = setTimeout(() => {
+              didLongPress.current = true;
+              onLongPress();
+            }, 500);
+          }
           if (!isSelectMode) {
             listeners?.onPointerDown?.(e);
           }
         }}
+        onPointerMove={() => clearLongPress()}
+        onPointerUp={() => clearLongPress()}
+        onPointerCancel={() => clearLongPress()}
         onClick={() => {
+          if (didLongPress.current) {
+            didLongPress.current = false;
+            return;
+          }
           if (isSelectMode) {
             onToggleSelect();
           } else {
@@ -1192,6 +1218,12 @@ export default function SortableMediaGallery({
                             interactionMode={groupInteractionMode}
                             isSelected={groupSelectedIds.has(child.id)}
                             onToggleSelect={() => groupToggleSelect(child.id)}
+                            onLongPress={() => {
+                              if (groupInteractionMode === "normal") {
+                                setGroupInteractionMode("select");
+                                setGroupSelectedIds(new Set([child.id]));
+                              }
+                            }}
                             onNote={() => {
                               setGroupSingleNoteId(child.id);
                               setGroupNoteModalOpen(true);
