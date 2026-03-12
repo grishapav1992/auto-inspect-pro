@@ -290,200 +290,185 @@ function SortableMediaCard({
   const dndProps = !isSelectMode ? { ...attributes, ...listeners } : {};
 
   return (
-    <div
-      ref={setNodeRef}
-      style={style}
-      {...dndProps}
-      onPointerDown={(e) => {
-        if (!isSelectMode) {
-          listeners?.onPointerDown?.(e);
-        }
-      }}
-      onClick={() => {
-        if (isSelectMode) {
-          onToggleSelect();
-        } else {
-          onPreview();
-        }
-      }}
-      className={`relative rounded-xl overflow-hidden border-2 bg-card group touch-none select-none transition-all cursor-pointer ${
-        isSelected
-          ? "border-primary ring-2 ring-primary/30"
-          : item.inspection && !item.children && (item.inspection.noDamage || item.inspection.tags.length > 0 || item.inspection.note || item.inspection.elementType || (item.inspection.audioRecordings && item.inspection.audioRecordings.length > 0))
-            ? "border-primary/40"
-            : "border-border/60"
-      }`}
-    >
-      {item.type === "video" ? (
-        <>
-          <video
+    <div>
+      <div
+        ref={setNodeRef}
+        style={style}
+        {...dndProps}
+        onPointerDown={(e) => {
+          if (!isSelectMode) {
+            listeners?.onPointerDown?.(e);
+          }
+        }}
+        onClick={() => {
+          if (isSelectMode) {
+            onToggleSelect();
+          } else {
+            onPreview();
+          }
+        }}
+        className={`relative rounded-xl overflow-hidden border-2 bg-card group touch-none select-none transition-all cursor-pointer ${
+          isSelected
+            ? "border-primary ring-2 ring-primary/30"
+            : item.inspection && !item.children && (item.inspection.noDamage || item.inspection.tags.length > 0 || item.inspection.note || item.inspection.elementType || (item.inspection.audioRecordings && item.inspection.audioRecordings.length > 0))
+              ? "border-primary/40"
+              : "border-border/60"
+        }`}
+      >
+        {item.type === "video" ? (
+          <>
+            <video
+              src={item.url}
+              className="w-full rounded-xl"
+              muted
+              playsInline
+              draggable={false}
+              style={{ pointerEvents: "none" }}
+            />
+            <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
+              <div className="rounded-full bg-black/40 p-2.5 backdrop-blur-sm">
+                <Play className="h-5 w-5 text-white fill-white" />
+              </div>
+            </div>
+          </>
+        ) : (
+          <img
             src={item.url}
-            className="w-full rounded-xl"
-            muted
-            playsInline
+            alt=""
+            className="w-full rounded-xl object-cover"
+            loading="lazy"
             draggable={false}
             style={{ pointerEvents: "none" }}
           />
-          <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
-            <div className="rounded-full bg-black/40 p-2.5 backdrop-blur-sm">
-              <Play className="h-5 w-5 text-white fill-white" />
-            </div>
-          </div>
-        </>
-      ) : (
-        <img
-          src={item.url}
-          alt=""
-          className="w-full rounded-xl object-cover"
-          loading="lazy"
-          draggable={false}
-          style={{ pointerEvents: "none" }}
-        />
-      )}
+        )}
 
-      {/* Group stack indicator */}
-      {item.children && item.children.length >= 1 && (
-        <>
-          <div className="absolute -bottom-1 left-2 right-2 h-3 rounded-b-xl bg-muted/80 border-2 border-t-0 border-border/40 -z-[1]" />
-          <div className="absolute -bottom-2 left-4 right-4 h-3 rounded-b-xl bg-muted/50 border-2 border-t-0 border-border/30 -z-[2]" />
-          <div className="absolute top-2 right-2 z-10 flex flex-col items-end gap-1">
-            <div className="rounded-full bg-black/50 backdrop-blur-sm px-2 py-0.5 flex items-center gap-1">
-              <Layers className="h-3 w-3 text-white/90" />
-              <span className="text-[10px] font-semibold text-white/90">{item.children.length}</span>
-            </div>
-            {item.groupName && (
-              <div className="rounded-full bg-black/50 backdrop-blur-sm px-2 py-0.5">
-                <span className="text-[10px] font-medium text-white/90">{MEDIA_GROUP_LABELS[item.groupName]}</span>
+        {/* Group stack indicator */}
+        {item.children && item.children.length >= 1 && (
+          <>
+            <div className="absolute -bottom-1 left-2 right-2 h-3 rounded-b-xl bg-muted/80 border-2 border-t-0 border-border/40 -z-[1]" />
+            <div className="absolute -bottom-2 left-4 right-4 h-3 rounded-b-xl bg-muted/50 border-2 border-t-0 border-border/30 -z-[2]" />
+            <div className="absolute top-2 right-2 z-10 flex flex-col items-end gap-1">
+              <div className="rounded-full bg-black/50 backdrop-blur-sm px-2 py-0.5 flex items-center gap-1">
+                <Layers className="h-3 w-3 text-white/90" />
+                <span className="text-[10px] font-semibold text-white/90">{item.children.length}</span>
               </div>
-            )}
+              {item.groupName && (
+                <div className="rounded-full bg-black/50 backdrop-blur-sm px-2 py-0.5">
+                  <span className="text-[10px] font-medium text-white/90">{MEDIA_GROUP_LABELS[item.groupName]}</span>
+                </div>
+              )}
+            </div>
+          </>
+        )}
+
+        {/* Selection check */}
+        {isSelectMode && (
+          <div className="absolute top-2 left-2 z-10">
+            <motion.div
+              initial={{ scale: 0 }}
+              animate={{ scale: 1 }}
+              className={`rounded-full w-6 h-6 flex items-center justify-center transition-colors ${
+                isSelected ? "bg-primary text-primary-foreground" : "bg-black/40 text-white/70 backdrop-blur-sm"
+              }`}
+            >
+              <CheckCircle2 className="h-4 w-4" />
+            </motion.div>
           </div>
-        </>
-      )}
+        )}
 
-      {/* Selection check */}
-      {isSelectMode && (
-        <div className="absolute top-2 left-2 z-10">
-          <motion.div
-            initial={{ scale: 0 }}
-            animate={{ scale: 1 }}
-            className={`rounded-full w-6 h-6 flex items-center justify-center transition-colors ${
-              isSelected ? "bg-primary text-primary-foreground" : "bg-black/40 text-white/70 backdrop-blur-sm"
-            }`}
-          >
-            <CheckCircle2 className="h-4 w-4" />
-          </motion.div>
-        </div>
-      )}
-
-      {/* Delete (only in normal mode) */}
-      {interactionMode === "normal" && (
-        <button
-          type="button"
-          onPointerDown={(e) => e.stopPropagation()}
-          onClick={(e) => {
-            e.stopPropagation();
-            onRemove();
-          }}
-          className="absolute top-2 left-2 rounded-full bg-black/50 p-1.5 text-white/90 backdrop-blur-sm opacity-0 group-hover:opacity-100 transition-opacity active:scale-90"
-        >
-          <Trash2 className="h-3.5 w-3.5" />
-        </button>
-      )}
-
-      {/* Note button (only in normal mode, inside groups) */}
-      {onNote && interactionMode === "normal" && !item.children && (() => {
-        const hasData = item.inspection && (item.inspection.noDamage || item.inspection.tags.length > 0 || item.inspection.note || item.inspection.elementType || (item.inspection.audioRecordings && item.inspection.audioRecordings.length > 0));
-        const isDraft = item.inspection?.isDraft;
-        return (
+        {/* Delete (only in normal mode) */}
+        {interactionMode === "normal" && (
           <button
             type="button"
             onPointerDown={(e) => e.stopPropagation()}
             onClick={(e) => {
               e.stopPropagation();
-              onNote();
+              onRemove();
             }}
-            className={`absolute top-2 right-2 rounded-full backdrop-blur-sm transition-all active:scale-90 z-10 flex items-center gap-1 ${
-              hasData
-                ? isDraft
-                  ? "bg-amber-500 text-white px-2 py-1"
-                  : "bg-primary text-primary-foreground px-2 py-1"
-                : "bg-black/60 text-white/90 px-2 py-1"
-            }`}
+            className="absolute top-2 left-2 rounded-full bg-black/50 p-1.5 text-white/90 backdrop-blur-sm opacity-0 group-hover:opacity-100 transition-opacity active:scale-90"
           >
-            {hasData ? (
-              <>
-                <ClipboardList className="h-3 w-3" />
-                <span className="text-[9px] font-semibold uppercase tracking-wide">
-                  {isDraft ? "Черновик" : "Заметка"}
-                </span>
-              </>
-            ) : (
-              <>
-                <Plus className="h-3 w-3" />
-                <span className="text-[9px] font-semibold uppercase tracking-wide">Заметка</span>
-              </>
-            )}
+            <Trash2 className="h-3.5 w-3.5" />
           </button>
-        );
-      })()}
+        )}
 
-      {/* Draft badge */}
-      {onNote && interactionMode === "normal" && !item.children && item.inspection?.isDraft && (
-        <div className="absolute top-10 left-2 z-10 rounded-full bg-amber-500/90 backdrop-blur-sm px-2 py-0.5">
-          <span className="text-[9px] font-semibold text-white tracking-wide uppercase">Черновик</span>
-        </div>
-      )}
+        {/* Note button (only in normal mode, inside groups) */}
+        {onNote && interactionMode === "normal" && !item.children && (() => {
+          const hasData = item.inspection && (item.inspection.noDamage || item.inspection.tags.length > 0 || item.inspection.note || item.inspection.elementType || (item.inspection.audioRecordings && item.inspection.audioRecordings.length > 0));
+          return (
+            <button
+              type="button"
+              onPointerDown={(e) => e.stopPropagation()}
+              onClick={(e) => {
+                e.stopPropagation();
+                onNote();
+              }}
+              className={`absolute top-2 right-2 rounded-full backdrop-blur-sm transition-all active:scale-90 z-10 flex items-center gap-1 ${
+                hasData
+                  ? "bg-primary text-primary-foreground px-2 py-1"
+                  : "bg-black/60 text-white/90 px-2 py-1"
+              }`}
+            >
+              {hasData ? (
+                <>
+                  <ClipboardList className="h-3 w-3" />
+                  <span className="text-[9px] font-semibold uppercase tracking-wide">Заметка</span>
+                </>
+              ) : (
+                <>
+                  <Plus className="h-3 w-3" />
+                  <span className="text-[9px] font-semibold uppercase tracking-wide">Заметка</span>
+                </>
+              )}
+            </button>
+          );
+        })()}
+      </div>
 
-      {/* Inspection info — right side, below note button */}
+      {/* Inspection info — below photo */}
       {interactionMode === "normal" && !item.children && item.inspection && (() => {
         const insp = item.inspection!;
         const hasElementType = elementTypes && elementTypes.length > 0 && insp.elementType;
         const tagEmojis = resolveTags(insp.tags, item.groupName, insp.elementType);
         const hasNote = !!insp.note;
         const hasAudio = insp.audioRecordings && insp.audioRecordings.length > 0;
-        const hasAnything = hasElementType || tagEmojis.length > 0 || hasNote || hasAudio || insp.noDamage;
+        const isDraft = insp.isDraft;
+        const hasAnything = hasElementType || tagEmojis.length > 0 || hasNote || hasAudio || insp.noDamage || isDraft;
         if (!hasAnything) return null;
-        const hasRightBadges = hasElementType || insp.noDamage;
-        const hasBottom = tagEmojis.length > 0 || hasNote || hasAudio;
         return (
-          <>
-            {hasRightBadges && (
-              <div className="absolute top-10 right-2 z-10 flex flex-col items-end gap-1">
-                {hasElementType && (
-                  <div className="rounded-full bg-black/50 backdrop-blur-sm px-2 py-0.5">
-                    <span className="text-[10px] font-medium text-white/90">
-                      {elementTypes!.find(et => et.id === insp.elementType)?.label}
-                    </span>
-                  </div>
-                )}
-                {insp.noDamage && (
-                  <div className="rounded-full bg-black/50 backdrop-blur-sm px-2 py-0.5 flex items-center gap-1">
-                    <span className="text-[10px] leading-none">✅</span>
-                    <span className="text-[10px] text-white/80">Ок</span>
-                  </div>
+          <div className="mt-1.5 px-0.5 space-y-0.5">
+            <div className="flex items-center gap-1.5 flex-wrap">
+              {isDraft && (
+                <span className="inline-flex items-center rounded-full bg-amber-500/15 px-1.5 py-0.5 text-[9px] font-semibold uppercase tracking-wide text-amber-600">
+                  Черновик
+                </span>
+              )}
+              {hasElementType && (
+                <span className="text-[10px] font-medium text-muted-foreground truncate">
+                  {elementTypes!.find(et => et.id === insp.elementType)?.label}
+                </span>
+              )}
+              {insp.noDamage && (
+                <span className="inline-flex items-center gap-0.5 text-[10px] font-medium text-[hsl(var(--success))]">
+                  ✅ Ок
+                </span>
+              )}
+            </div>
+            {tagEmojis.length > 0 && (
+              <div className="flex items-center gap-0.5 flex-wrap">
+                {tagEmojis.map((tag, i) => (
+                  <span key={i} className="text-[11px] leading-none" title={tag.label}>{tag.emoji}</span>
+                ))}
+              </div>
+            )}
+            {(hasNote || hasAudio) && (
+              <div className="flex items-center gap-1 min-w-0">
+                {hasAudio && <Mic className="h-3 w-3 text-muted-foreground/60 shrink-0" />}
+                {hasNote && (
+                  <span className="text-[10px] text-muted-foreground truncate leading-tight">{insp.note}</span>
                 )}
               </div>
             )}
-            {hasBottom && (
-              <div className="absolute bottom-0 left-0 right-0 z-10 bg-gradient-to-t from-black/70 to-transparent pt-4 px-2 pb-1.5 space-y-1">
-                {tagEmojis.length > 0 && (
-                  <div className="flex items-center gap-0.5 flex-wrap">
-                    {tagEmojis.map((tag, i) => (
-                      <span key={i} className="text-[11px] leading-none" title={tag.label}>{tag.emoji}</span>
-                    ))}
-                  </div>
-                )}
-                {(hasNote || hasAudio) && (
-                  <div className="flex items-center gap-1.5 min-w-0">
-                    {hasAudio && <Mic className="h-3 w-3 text-white/70 shrink-0" />}
-                    {hasNote && (
-                      <span className="text-[10px] text-white/80 truncate leading-tight">{insp.note}</span>
-                    )}
-                  </div>
-                )}
-              </div>
-            )}
-          </>
+          </div>
         );
       })()}
     </div>
