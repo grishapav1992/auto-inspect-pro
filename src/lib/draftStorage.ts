@@ -254,12 +254,62 @@ export function loadDrafts(): ReportDraft[] {
 }
 
 /**
- * saveDraft — сжимает фото и сохраняет черновик в localStorage.
- * Если найден существующий черновик с тем же VIN (но другим id) — обновляет его.
- * При переполнении хранилища пытается удалить старые черновики и повторить.
+ * convertDraftUrlsToKeys — заменяет objectUrl → idb://key во всех фото-полях черновика
+ * перед сохранением в localStorage.
+ */
+function convertUrlsToKeys(urls: string[]): string[] {
+  return urls.map((u) => getIdbKey(u));
+}
+
+function convertInspectionUrlsToKeys(
+  inspections: Record<string, PartInspection>,
+): Record<string, PartInspection> {
+  const output: Record<string, PartInspection> = {};
+  for (const [key, insp] of Object.entries(inspections)) {
+    if (!insp) continue;
+    const next: PartInspection = {
+      ...insp,
+      photos: convertUrlsToKeys(insp.photos ?? []),
+    };
+    if (insp.tagPhotos) {
+      next.tagPhotos = Object.fromEntries(
+        Object.entries(insp.tagPhotos).map(([tag, urls]) => [tag, convertUrlsToKeys(urls)]),
+      );
+    }
+    output[key] = next;
+  }
+  return output;
+}
+
+function convertDraftUrlsToKeys(draft: ReportDraft): ReportDraft {
+  return {
+    ...draft,
+    inspectionPhotos: convertUrlsToKeys(draft.inspectionPhotos),
+    underhoodPhotos: convertUrlsToKeys(draft.underhoodPhotos),
+    bodyPhotos: convertUrlsToKeys(draft.bodyPhotos),
+    glassPhotos: convertUrlsToKeys(draft.glassPhotos),
+    interiorPhotos: convertUrlsToKeys(draft.interiorPhotos),
+    wheelsPhotos: convertUrlsToKeys(draft.wheelsPhotos),
+    tdPhotos: convertUrlsToKeys(draft.tdPhotos),
+    inspections: convertInspectionUrlsToKeys(draft.inspections),
+    bodyStructuralInspections: convertInspectionUrlsToKeys(draft.bodyStructuralInspections),
+    bodyUndercarriageInspections: convertInspectionUrlsToKeys(draft.bodyUndercarriageInspections),
+    glassInspections: convertInspectionUrlsToKeys(draft.glassInspections),
+    mediaFiles: draft.mediaFiles.map((m) => ({
+      ...m,
+      url: getIdbKey(m.url),
+      ...(m.children ? { children: m.children.map((c: any) => ({ ...c, url: getIdbKey(c.url) })) } : {}),
+    })),
+  };
+}
+
+/**
+ * saveDraft — конвертирует objectUrl→idb-ключи, сжимает оставшиеся base64,
+ * и сохраняет черновик в localStorage.
  */
 export async function saveDraft(draft: ReportDraft): Promise<void> {
-  const compressed = await compressDraftPhotos(draft);
+  const keyed = convertDraftUrlsToKeys(draft);
+  const compressed = await compressDraftPhotos(keyed);
   const drafts = loadDrafts();
   const existingByVin = compressed.vin
     ? drafts.find((d) => d.id !== compressed.id && d.vin === compressed.vin)
@@ -281,23 +331,89 @@ export async function saveDraft(draft: ReportDraft): Promise<void> {
     localStorage.setItem(STORAGE_KEY, JSON.stringify(updated));
   } catch (e) {
     console.warn("Draft save failed (storage full), trying to free space...", e);
-    // Remove oldest drafts to free space — single attempt, no recursion
     const trimmed = updated.slice(0, Math.max(1, updated.length - 1));
     try {
       localStorage.setItem(STORAGE_KEY, JSON.stringify(trimmed));
     } catch {
       console.error("Cannot save draft — localStorage is full.");
-      throw e; // Propagate so useDebouncedAutosave can activate cooldown
+      throw e;
     }
   }
 }
 
 /**
- * deleteDraft — удаляет черновик по id из localStorage.
+ * deleteDraft — удаляет черновик по id из localStorage и очищает связанные blob-ы в IndexedDB.
  */
 export function deleteDraft(id: string): void {
-  const drafts = loadDrafts().filter((d) => d.id !== id);
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(drafts));
+  const drafts = loadDrafts();
+  const target = drafts.find((d) => d.id === id);
+  if (target) {
+    const keys = collectIdbKeys(target);
+    if (keys.length > 0) {
+      deleteBlobs(keys).catch((err) => console.warn("Failed to delete IDB blobs:", err));
+    }
+  }
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(drafts.filter((d) => d.id !== id)));
+}
+
+/**
+ * loadDraftWithMedia — загружает черновик и резолвит все idb:// ключи в objectUrl.
+ * Используется при восстановлении черновика в CreateReport.
+ */
+export async function loadDraftWithMedia(draft: ReportDraft): Promise<ReportDraft> {
+  const resolveArr = async (urls: string[]) => resolveMediaUrls(urls);
+
+  const resolveInspections = async (rec: Record<string, PartInspection>): Promise<Record<string, PartInspection>> => {
+    const out: Record<string, PartInspection> = {};
+    for (const [key, insp] of Object.entries(rec)) {
+      if (!insp) continue;
+      const next: PartInspection = {
+        ...insp,
+        photos: await resolveArr(insp.photos ?? []),
+      };
+      if (insp.tagPhotos) {
+        const entries = await Promise.all(
+          Object.entries(insp.tagPhotos).map(async ([tag, urls]) => [tag, await resolveArr(urls)] as const),
+        );
+        next.tagPhotos = Object.fromEntries(entries);
+      }
+      out[key] = next;
+    }
+    return out;
+  };
+
+  const result: ReportDraft = {
+    ...draft,
+    inspectionPhotos: await resolveArr(draft.inspectionPhotos),
+    underhoodPhotos: await resolveArr(draft.underhoodPhotos),
+    bodyPhotos: await resolveArr(draft.bodyPhotos),
+    glassPhotos: await resolveArr(draft.glassPhotos),
+    interiorPhotos: await resolveArr(draft.interiorPhotos),
+    wheelsPhotos: await resolveArr(draft.wheelsPhotos),
+    tdPhotos: await resolveArr(draft.tdPhotos),
+    inspections: await resolveInspections(draft.inspections),
+    bodyStructuralInspections: await resolveInspections(draft.bodyStructuralInspections),
+    bodyUndercarriageInspections: await resolveInspections(draft.bodyUndercarriageInspections),
+    glassInspections: await resolveInspections(draft.glassInspections),
+  };
+
+  // Resolve media file URLs
+  result.mediaFiles = await Promise.all(
+    draft.mediaFiles.map(async (m) => {
+      const resolved: any = { ...m, url: await resolveMediaUrls([m.url]).then((r) => r[0]) };
+      if (m.children) {
+        resolved.children = await Promise.all(
+          m.children.map(async (c: any) => ({
+            ...c,
+            url: await resolveMediaUrls([c.url]).then((r) => r[0]),
+          })),
+        );
+      }
+      return resolved;
+    }),
+  );
+
+  return result;
 }
 
 /**
