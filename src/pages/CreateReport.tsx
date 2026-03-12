@@ -37,7 +37,7 @@ import type { PartInspection } from "@/types/inspection";
 import { CAR_PARTS, STRUCTURAL_PARTS, UNDERCARRIAGE_PARTS, GLASS_PARTS, GLASS_DAMAGE_TAGS, GLASS_STRATEGY, DAMAGE_TAGS, DAMAGE_TAG_GROUPS } from "@/types/inspection";
 import { useUserTags } from "@/contexts/UserTagContext";
 import type { DiagnosticFile } from "@/lib/draftStorage";
-import { saveDraft, loadDrafts, deleteDraft, type ReportDraft } from "@/lib/draftStorage";
+import { saveDraft, loadDrafts, deleteDraft, loadDraftWithMedia, type ReportDraft } from "@/lib/draftStorage";
 import { normalizeUploadFiles } from "@/lib/media/normalizeUploadFile";
 import { generateSummary } from "@/lib/summaryGenerator";
 import { buildSummaryInputFromState } from "@/lib/buildSummaryInput";
