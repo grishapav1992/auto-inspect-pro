@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,400&family=JetBrains+Mono:wght@400;500;600&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap');
 
 @tailwind base;
 @tailwind components;
@@ -6,93 +6,111 @@
 
 @layer base {
   :root {
-    --background: 220 16% 96%;
-    --foreground: 220 20% 12%;
+    /* Surface */
+    --background: 216 18% 96%;
+    --foreground: 220 18% 13%;
 
     --card: 0 0% 100%;
-    --card-foreground: 220 20% 12%;
+    --card-foreground: 220 18% 13%;
 
     --popover: 0 0% 100%;
-    --popover-foreground: 220 20% 12%;
+    --popover-foreground: 220 18% 13%;
 
-    --primary: 220 72% 44%;
+    /* Primary — steel blue */
+    --primary: 215 60% 42%;
     --primary-foreground: 0 0% 100%;
 
-    --secondary: 220 12% 91%;
-    --secondary-foreground: 220 20% 12%;
+    /* Secondary — neutral light */
+    --secondary: 216 14% 91%;
+    --secondary-foreground: 220 18% 13%;
 
-    --muted: 220 12% 93%;
-    --muted-foreground: 220 8% 50%;
+    /* Muted */
+    --muted: 216 12% 93%;
+    --muted-foreground: 216 8% 48%;
 
-    --accent: 220 50% 93%;
-    --accent-foreground: 220 20% 12%;
+    /* Accent */
+    --accent: 215 30% 92%;
+    --accent-foreground: 220 18% 13%;
 
-    --destructive: 0 72% 51%;
+    /* Destructive — muted red */
+    --destructive: 0 55% 48%;
     --destructive-foreground: 0 0% 100%;
 
-    --border: 220 12% 87%;
-    --input: 220 12% 87%;
-    --ring: 220 72% 44%;
+    /* Borders */
+    --border: 216 14% 86%;
+    --input: 216 14% 86%;
+    --ring: 215 60% 42%;
 
+    /* Radius — tight, professional */
     --radius: 0.5rem;
 
-    --success: 160 60% 36%;
+    /* Status — muted, not neon */
+    --success: 158 45% 34%;
     --success-foreground: 0 0% 100%;
-    --warning: 36 80% 48%;
+    --warning: 34 65% 46%;
     --warning-foreground: 0 0% 100%;
 
-    --sidebar-background: 220 16% 97%;
-    --sidebar-foreground: 220 20% 20%;
-    --sidebar-primary: 220 72% 44%;
+    /* Sidebar */
+    --sidebar-background: 216 18% 97%;
+    --sidebar-foreground: 220 18% 18%;
+    --sidebar-primary: 215 60% 42%;
     --sidebar-primary-foreground: 0 0% 100%;
-    --sidebar-accent: 220 12% 94%;
-    --sidebar-accent-foreground: 220 20% 12%;
-    --sidebar-border: 220 12% 88%;
-    --sidebar-ring: 220 72% 44%;
+    --sidebar-accent: 216 12% 94%;
+    --sidebar-accent-foreground: 220 18% 13%;
+    --sidebar-border: 216 14% 88%;
+    --sidebar-ring: 215 60% 42%;
+
+    /* Motion */
+    --transition-fast: 150ms;
+    --transition-normal: 200ms;
+
+    /* Shadows */
+    --shadow-sm: 0 1px 2px 0 hsl(220 18% 13% / 0.04);
+    --shadow-md: 0 2px 8px -2px hsl(220 18% 13% / 0.08);
   }
 
   .dark {
-    --background: 224 18% 8%;
-    --foreground: 220 10% 92%;
+    --background: 222 18% 8%;
+    --foreground: 216 10% 90%;
 
-    --card: 224 16% 11%;
-    --card-foreground: 220 10% 92%;
+    --card: 222 16% 11%;
+    --card-foreground: 216 10% 90%;
 
-    --popover: 224 16% 11%;
-    --popover-foreground: 220 10% 92%;
+    --popover: 222 16% 11%;
+    --popover-foreground: 216 10% 90%;
 
-    --primary: 220 68% 52%;
+    --primary: 215 55% 50%;
     --primary-foreground: 0 0% 100%;
 
-    --secondary: 224 14% 16%;
-    --secondary-foreground: 220 10% 92%;
+    --secondary: 222 14% 16%;
+    --secondary-foreground: 216 10% 90%;
 
-    --muted: 224 14% 14%;
-    --muted-foreground: 220 8% 52%;
+    --muted: 222 14% 14%;
+    --muted-foreground: 216 8% 50%;
 
-    --accent: 220 40% 18%;
-    --accent-foreground: 220 10% 92%;
+    --accent: 215 30% 18%;
+    --accent-foreground: 216 10% 90%;
 
-    --destructive: 0 60% 42%;
+    --destructive: 0 50% 40%;
     --destructive-foreground: 0 0% 100%;
 
-    --border: 224 14% 18%;
-    --input: 224 14% 18%;
-    --ring: 220 68% 52%;
+    --border: 222 14% 18%;
+    --input: 222 14% 18%;
+    --ring: 215 55% 50%;
 
-    --success: 160 55% 40%;
+    --success: 158 40% 38%;
     --success-foreground: 0 0% 100%;
-    --warning: 36 75% 50%;
+    --warning: 34 60% 48%;
     --warning-foreground: 0 0% 100%;
 
-    --sidebar-background: 224 18% 9%;
-    --sidebar-foreground: 220 10% 90%;
-    --sidebar-primary: 220 68% 52%;
+    --sidebar-background: 222 18% 9%;
+    --sidebar-foreground: 216 10% 88%;
+    --sidebar-primary: 215 55% 50%;
     --sidebar-primary-foreground: 0 0% 100%;
-    --sidebar-accent: 224 14% 14%;
-    --sidebar-accent-foreground: 220 10% 90%;
-    --sidebar-border: 224 14% 16%;
-    --sidebar-ring: 220 68% 52%;
+    --sidebar-accent: 222 14% 14%;
+    --sidebar-accent-foreground: 216 10% 88%;
+    --sidebar-border: 222 14% 16%;
+    --sidebar-ring: 215 55% 50%;
   }
 }
 
@@ -103,13 +121,12 @@
 
   body {
     @apply bg-background text-foreground antialiased;
-    font-family: 'DM Sans', system-ui, -apple-system, sans-serif;
+    font-family: 'Inter', system-ui, -apple-system, sans-serif;
     -webkit-tap-highlight-color: transparent;
     -webkit-font-smoothing: antialiased;
-    letter-spacing: -0.01em;
+    letter-spacing: -0.006em;
   }
 
-  /* Monospace utility for VIN, codes, values */
   .font-mono {
     font-family: 'JetBrains Mono', ui-monospace, monospace !important;
   }
@@ -123,4 +140,9 @@ html, body {
 /* Safe area padding for notched devices */
 .safe-bottom {
   padding-bottom: env(safe-area-inset-bottom, 0px);
+}
+
+/* Utility for consistent card shadow */
+.card-shadow {
+  box-shadow: var(--shadow-sm);
 }
