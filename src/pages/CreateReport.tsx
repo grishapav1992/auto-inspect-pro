@@ -1448,13 +1448,17 @@ const CreateReport = () => {
                 <input
                   ref={mediaFileRef}
                   type="file"
-                  accept="image/*,video/*"
+                  accept="image/*,video/*,.heic,.heif"
                   multiple
                   className="hidden"
-                  onChange={(e) => {
-                    const files = Array.from(e.target.files ?? []);
+                  onChange={async (e) => {
+                    const rawFiles = Array.from(e.target.files ?? []);
                     const groupName = pendingMediaGroupRef.current;
                     pendingMediaGroupRef.current = null;
+                    
+                    // Convert HEIC files
+                    const { convertHeicFiles } = await import("@/lib/convertHeic");
+                    const files = await convertHeicFiles(rawFiles);
                     
                     const newMediaItems: MediaItem[] = [];
                     let processed = 0;
@@ -1475,14 +1479,12 @@ const CreateReport = () => {
                           setMediaFiles((prev) => {
                             const existingGroup = prev.find((item) => item.groupName === groupName && item.children);
                             if (existingGroup) {
-                              // Append to existing group
                               return prev.map((item) =>
                                 item.id === existingGroup.id
                                   ? { ...item, children: [...(item.children || []), ...newMediaItems] }
                                   : item
                               );
                             } else {
-                              // Create new group
                               const group: MediaItem = {
                                 id: `group-${Date.now()}`,
                                 url: newMediaItems[0]?.url || "",
