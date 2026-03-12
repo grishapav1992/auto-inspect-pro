@@ -1457,66 +1457,42 @@ const CreateReport = () => {
                     const groupName = pendingMediaGroupRef.current;
                     pendingMediaGroupRef.current = null;
 
-                    const { files, failedHeicNames } = await convertHeicFiles(rawFiles);
-                    if (failedHeicNames.length > 0) {
-                      window.alert(`Не удалось обработать HEIC: ${failedHeicNames.join(", ")}. Сохраните фото как JPEG и попробуйте снова.`);
+                    const { files: normalized, failedNames } = await normalizeUploadFiles(rawFiles);
+                    if (failedNames.length > 0) {
+                      window.alert(`Не удалось обработать HEIC: ${failedNames.join(", ")}. Сохраните фото как JPEG и попробуйте снова.`);
                     }
 
-                    if (files.length === 0) {
-                      e.target.value = "";
-                      return;
-                    }
-
-                    const newMediaItems: MediaItem[] = [];
-                    let processed = 0;
-                    const finalize = () => {
-                      if (processed !== files.length) return;
-                      if (groupName) {
-                        setMediaFiles((prev) => {
-                          const existingGroup = prev.find((item) => item.groupName === groupName && item.children);
-                          if (existingGroup) {
-                            return prev.map((item) =>
-                              item.id === existingGroup.id
-                                ? { ...item, children: [...(item.children || []), ...newMediaItems] }
-                                : item
-                            );
-                          }
-                          const group: MediaItem = {
-                            id: `group-${Date.now()}`,
-                            url: newMediaItems[0]?.url || "",
-                            type: newMediaItems[0]?.type || "image",
-                            children: newMediaItems,
-                            groupName,
-                          };
-                          return [...prev, group];
-                        });
-                      } else {
-                        setMediaFiles((prev) => [...prev, ...newMediaItems]);
-                      }
-                    };
-
-                    files.forEach((file) => {
-                      const reader = new FileReader();
-                      reader.onload = () => {
-                        if (typeof reader.result === "string") {
-                          const fileType: "image" | "video" = file.type.startsWith("video") ? "video" : "image";
-                          newMediaItems.push({
-                            id: `media-${Date.now()}-${Math.random().toString(36).slice(2, 6)}`,
-                            url: reader.result,
-                            type: fileType,
-                          });
-                        }
-                        processed++;
-                        finalize();
-                      };
-                      reader.onerror = () => {
-                        console.error("FileReader failed for", file.name);
-                        processed++;
-                        finalize();
-                      };
-                      reader.readAsDataURL(file);
-                    });
                     e.target.value = "";
+                    if (normalized.length === 0) return;
+
+                    const newMediaItems: MediaItem[] = normalized.map((f) => ({
+                      id: `media-${Date.now()}-${Math.random().toString(36).slice(2, 6)}`,
+                      url: f.key,
+                      type: f.type,
+                    }));
+
+                    if (groupName) {
+                      setMediaFiles((prev) => {
+                        const existingGroup = prev.find((item) => item.groupName === groupName && item.children);
+                        if (existingGroup) {
+                          return prev.map((item) =>
+                            item.id === existingGroup.id
+                              ? { ...item, children: [...(item.children || []), ...newMediaItems] }
+                              : item
+                          );
+                        }
+                        const group: MediaItem = {
+                          id: `group-${Date.now()}`,
+                          url: newMediaItems[0]?.url || "",
+                          type: newMediaItems[0]?.type || "image",
+                          children: newMediaItems,
+                          groupName,
+                        };
+                        return [...prev, group];
+                      });
+                    } else {
+                      setMediaFiles((prev) => [...prev, ...newMediaItems]);
+                    }
                   }}
                 />
 
