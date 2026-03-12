@@ -1268,9 +1268,10 @@ export default function SortableMediaGallery({
                       ...c,
                       inspection: insp,
                     }));
-                    updateGroupChildren(updatedChildren);
                     const newItems = items.map((item) =>
-                      item.id === openGroup.id ? { ...item, groupInspection: insp } : item
+                      item.id === openGroup.id
+                        ? { ...item, groupInspection: insp, children: updatedChildren, url: updatedChildren[0]?.url ?? item.url }
+                        : item
                     );
                     onChange(newItems);
                   }
