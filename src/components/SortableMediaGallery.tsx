@@ -307,12 +307,12 @@ function SortableMediaCard({
             onPreview();
           }
         }}
-        className={`relative rounded-xl overflow-hidden border-2 bg-card group touch-none select-none transition-all cursor-pointer ${
+        className={`relative rounded-lg overflow-hidden border bg-card group touch-none select-none transition-all cursor-pointer ${
           isSelected
-            ? "border-primary ring-2 ring-primary/30"
+            ? "border-primary ring-2 ring-primary/20"
             : item.inspection && !item.children && (item.inspection.noDamage || item.inspection.tags.length > 0 || item.inspection.note || item.inspection.elementType || (item.inspection.audioRecordings && item.inspection.audioRecordings.length > 0))
-              ? "border-primary/40"
-              : "border-border/60"
+              ? "border-primary/30"
+              : "border-border"
         }`}
       >
         {item.type === "video" ? (
