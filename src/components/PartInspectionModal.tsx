@@ -1170,7 +1170,7 @@ const PartInspectionModal = ({
                               >
                                 {tag.emoji} {tag.label}
                                 {isActive && photoCount > 0 && (
-                                  <span className="ml-1 text-[11px] opacity-70">{photoCount} фото</span>
+                                  <span className="ml-1 text-[11px] opacity-70">📷{photoCount}</span>
                                 )}
                               </button>
                             );

@@ -273,7 +273,7 @@ export function generateSummary(input: SummaryInput): SummaryResult {
     if (input.plate) details.push({ label: "Госномер", value: input.plate, severity: "ok" });
     if (input.adLink) details.push({ label: "Объявление", value: input.adLink, severity: "ok" });
     const status = input.vin && (input.carBrand || input.carModel) ? "ok" : "warn";
-    sections.push({ title: "Автомобиль", emoji: "•", status, required: true, details });
+    sections.push({ title: "Автомобиль", emoji: "🚗", status, required: true, details });
   }
 
   // --- Section 2: Параметры ---
@@ -302,7 +302,7 @@ export function generateSummary(input: SummaryInput): SummaryResult {
     if (details.length === 0) details.push({ label: "Параметры", value: "не заполнены", severity: "minor" });
     const hasMileage = !!input.mileage;
     const status = hasMileage && details.length > 3 ? "ok" : "warn";
-    sections.push({ title: "Параметры", emoji: "•", status, required: true, details });
+    sections.push({ title: "Параметры", emoji: "📋", status, required: true, details });
   }
 
   // --- Сверка документов ---
@@ -319,7 +319,7 @@ export function generateSummary(input: SummaryInput): SummaryResult {
     }
     const status = allMatch ? "ok" : !allAnswered ? "warn" : "bad";
     if (!allMatch) penalty += !allAnswered ? 5 : 15;
-    sections.push({ title: "Сверка документов", emoji: "•", status, required: true, details });
+    sections.push({ title: "Сверка документов", emoji: "📄", status, required: true, details });
   }
 
   // --- Юр. проверка ---
@@ -330,7 +330,7 @@ export function generateSummary(input: SummaryInput): SummaryResult {
     else details.push({ label: "Юр. проверка", value: "не проверено", severity: "minor" });
     const status = input.legalLoaded ? "ok" : "warn";
     if (input.legalSkipped && !input.legalLoaded) penalty += 5;
-    sections.push({ title: "Юр. проверка", emoji: "•", status, required: false, details });
+    sections.push({ title: "Юр. проверка", emoji: "⚖️", status, required: false, details });
   }
 
   // --- Кузов ---
@@ -340,7 +340,7 @@ export function generateSummary(input: SummaryInput): SummaryResult {
     if (!input.hasBodyPhotos && Object.keys(input.inspections).length === 0) {
       details.push({ label: "Кузов", value: "не осмотрен", severity: "minor" });
       penalty += 10;
-      sections.push({ title: "Кузов", emoji: "•", status: "warn", required: true, details });
+      sections.push({ title: "Кузов", emoji: "🚗", status: "warn", required: true, details });
     } else {
       const inspected = input.inspections;
       const seriousParts = Object.values(inspected).filter((p) => p.tags.some((t) => SERIOUS_TAG_IDS.includes(t)));
@@ -365,11 +365,11 @@ export function generateSummary(input: SummaryInput): SummaryResult {
         details.push({ label: "Разброс ЛКП", value: `${input.bodyPaintFrom}–${input.bodyPaintTo} мкм`, severity });
       }
 
-      if (input.bodyNote) details.push({ label: "Заметка", value: input.bodyNote.slice(0, 60), mediaRefs: getGroupMediaRefs(mediaIndex, "body") });
+      if (input.bodyNote) details.push({ label: "📝 Раздел", value: input.bodyNote.slice(0, 60), mediaRefs: getGroupMediaRefs(mediaIndex, "body") });
       appendGroupNote(details, "body", input.mediaGroupInspections, DAMAGE_TAGS, mediaIndex, input.customTags);
       penalty += seriousParts.length * 12 + minorParts.length * 4;
       const status = seriousParts.length > 0 ? "bad" : minorParts.length > 2 ? "warn" : "ok";
-      sections.push({ title: "Кузов", emoji: "•", status, required: true, details });
+      sections.push({ title: "Кузов", emoji: "🚗", status, required: true, details });
     }
   }
 
@@ -380,7 +380,7 @@ export function generateSummary(input: SummaryInput): SummaryResult {
     if (!input.hasGlassPhotos && Object.keys(input.glassInspections).length === 0) {
       details.push({ label: "Остекление", value: "не осмотрено", severity: "minor" });
       penalty += 5;
-      sections.push({ title: "Остекление", emoji: "•", status: "warn", required: true, details });
+      sections.push({ title: "Остекление", emoji: "🪟", status: "warn", required: true, details });
     } else {
       const glassInspected = input.glassInspections;
       const glassSeriousIds = new Set(
@@ -407,12 +407,12 @@ export function generateSummary(input: SummaryInput): SummaryResult {
         details.push({ label: "Остекление", value: "без повреждений", severity: "ok" });
       }
 
-      if (input.glassNote) details.push({ label: "Заметка", value: input.glassNote.slice(0, 60), mediaRefs: getGroupMediaRefs(mediaIndex, "glass") });
+      if (input.glassNote) details.push({ label: "📝 Раздел", value: input.glassNote.slice(0, 60), mediaRefs: getGroupMediaRefs(mediaIndex, "glass") });
       appendGroupNote(details, "glass", input.mediaGroupInspections, GLASS_DAMAGE_TAGS as readonly { id: string; label: string; emoji: string }[], mediaIndex, input.customTags);
 
       penalty += seriousCount * 10 + minorCount * 5;
       const status = seriousCount > 0 ? "bad" : minorCount > 0 ? "warn" : "ok";
-      sections.push({ title: "Остекление", emoji: "•", status, required: true, details });
+      sections.push({ title: "Остекление", emoji: "🪟", status, required: true, details });
     }
   }
 
@@ -427,7 +427,7 @@ export function generateSummary(input: SummaryInput): SummaryResult {
     if (!input.hasStructuralPhotos && allInspected.length === 0) {
       details.push({ label: "Силовые элементы кузова", value: "не осмотрены", severity: "minor" });
       penalty += 5;
-      sections.push({ title: "Силовые элементы кузова", emoji: "•", status: "warn", required: false, details });
+      sections.push({ title: "Силовые элементы кузова", emoji: "🏗️", status: "warn", required: false, details });
     } else {
       const elements = MEDIA_GROUP_ELEMENTS.structural;
       const allStructTags = [...DAMAGE_TAGS] as { id: string; label: string; emoji: string }[];
@@ -467,7 +467,7 @@ export function generateSummary(input: SummaryInput): SummaryResult {
 
       penalty += seriousCount * 10 + minorCount * 5;
       const status = seriousCount > 0 ? "bad" : minorCount > 0 ? "warn" : "ok";
-      sections.push({ title: "Силовые элементы кузова", emoji: "•", status, required: false, details });
+      sections.push({ title: "Силовые элементы кузова", emoji: "🏗️", status, required: false, details });
     }
   }
 
@@ -479,7 +479,7 @@ export function generateSummary(input: SummaryInput): SummaryResult {
     if (!input.hasLightingPhotos && !hasData) {
       details.push({ label: "Светотехника", value: "не осмотрена", severity: "minor" });
       penalty += 5;
-      sections.push({ title: "Светотехника", emoji: "•", status: "warn", required: false, details });
+      sections.push({ title: "Светотехника", emoji: "💡", status: "warn", required: false, details });
     } else {
       const elements = MEDIA_GROUP_ELEMENTS.lighting;
       const lightingSeriousIds = getSeriousIds([...DAMAGE_TAG_GROUPS] as any);
@@ -510,7 +510,7 @@ export function generateSummary(input: SummaryInput): SummaryResult {
       appendGroupNote(details, "lighting", input.mediaGroupInspections, LIGHTING_DAMAGE_TAGS as readonly { id: string; label: string; emoji: string }[], mediaIndex, input.customTags);
       penalty += seriousCount * 8 + minorCount * 4;
       const status = seriousCount > 0 ? "bad" : minorCount > 0 ? "warn" : "ok";
-      sections.push({ title: "Светотехника", emoji: "•", status, required: false, details });
+      sections.push({ title: "Светотехника", emoji: "💡", status, required: false, details });
     }
   }
 
@@ -523,7 +523,7 @@ export function generateSummary(input: SummaryInput): SummaryResult {
     if (!input.hasUnderhoodPhotos && !hasData && !input.underhoodNote) {
       details.push({ label: "Подкапотное пространство", value: "не осмотрено", severity: "minor" });
       penalty += 5;
-      sections.push({ title: "Подкапотное пространство", emoji: "•", status: "warn", required: true, details });
+      sections.push({ title: "Подкапотное пространство", emoji: "🔧", status: "warn", required: true, details });
     } else {
       const elements = MEDIA_GROUP_ELEMENTS.underhood;
       const allUnderhoodTags = UNDERHOOD_DAMAGE_TAGS as readonly { id: string; label: string; emoji: string }[];
@@ -549,12 +549,12 @@ export function generateSummary(input: SummaryInput): SummaryResult {
         details.push({ label: "Подкапотное", value: "без замечаний", severity: "ok" });
       }
 
-      if (input.underhoodNote) details.push({ label: "Заметка", value: input.underhoodNote.slice(0, 60), mediaRefs: getGroupMediaRefs(mediaIndex, "underhood") });
+      if (input.underhoodNote) details.push({ label: "📝 Раздел", value: input.underhoodNote.slice(0, 60), mediaRefs: getGroupMediaRefs(mediaIndex, "underhood") });
       appendGroupNote(details, "underhood", input.mediaGroupInspections, UNDERHOOD_DAMAGE_TAGS as readonly { id: string; label: string; emoji: string }[], mediaIndex, input.customTags);
 
       penalty += seriousCount * 8 + minorCount * 4;
       const status = seriousCount > 0 ? "bad" : minorCount > 0 ? "warn" : "ok";
-      sections.push({ title: "Подкапотное пространство", emoji: "•", status, required: true, details });
+      sections.push({ title: "Подкапотное пространство", emoji: "🔧", status, required: true, details });
     }
   }
 
@@ -567,7 +567,7 @@ export function generateSummary(input: SummaryInput): SummaryResult {
     if (!input.hasInteriorPhotos && !hasData && !input.interiorNote) {
       details.push({ label: "Салон", value: "не осмотрен", severity: "minor" });
       penalty += 5;
-      sections.push({ title: "Салон", emoji: "•", status: "warn", required: true, details });
+      sections.push({ title: "Салон", emoji: "💺", status: "warn", required: true, details });
     } else {
       const elements = MEDIA_GROUP_ELEMENTS.interior;
       const allInteriorTags = INTERIOR_ALL_TAGS as { id: string; label: string; emoji: string }[];
@@ -593,12 +593,12 @@ export function generateSummary(input: SummaryInput): SummaryResult {
         details.push({ label: "Салон", value: "без повреждений", severity: "ok" });
       }
 
-      if (input.interiorNote) details.push({ label: "Заметка", value: input.interiorNote.slice(0, 60), mediaRefs: getGroupMediaRefs(mediaIndex, "interior") });
+      if (input.interiorNote) details.push({ label: "📝 Раздел", value: input.interiorNote.slice(0, 60), mediaRefs: getGroupMediaRefs(mediaIndex, "interior") });
       appendGroupNote(details, "interior", input.mediaGroupInspections, INTERIOR_ALL_TAGS as { id: string; label: string; emoji: string }[], mediaIndex, input.customTags);
 
       penalty += seriousCount * 6 + minorCount * 3;
       const status = seriousCount > 0 ? "bad" : minorCount > 2 ? "warn" : "ok";
-      sections.push({ title: "Салон", emoji: "•", status, required: true, details });
+      sections.push({ title: "Салон", emoji: "💺", status, required: true, details });
     }
   }
 
@@ -611,7 +611,7 @@ export function generateSummary(input: SummaryInput): SummaryResult {
     if (!input.hasDiagnosticsPhotos && !hasData && !input.diagnosticNote) {
       details.push({ label: "Компьютерная диагностика", value: "не проводилась", severity: "minor" });
       penalty += 5;
-      sections.push({ title: "Компьютерная диагностика", emoji: "•", status: "warn", required: false, details });
+      sections.push({ title: "Компьютерная диагностика", emoji: "🖥️", status: "warn", required: false, details });
     } else {
       const elements = MEDIA_GROUP_ELEMENTS.diagnostics;
       const allDiagTags = DIAGNOSTICS_TAGS as readonly { id: string; label: string; emoji: string }[];
@@ -641,12 +641,12 @@ export function generateSummary(input: SummaryInput): SummaryResult {
         details.push({ label: "Диагностика", value: "без ошибок", severity: "ok" });
       }
 
-      if (input.diagnosticNote) details.push({ label: "Заметка", value: input.diagnosticNote.slice(0, 80), mediaRefs: getGroupMediaRefs(mediaIndex, "diagnostics") });
+      if (input.diagnosticNote) details.push({ label: "📝 Раздел", value: input.diagnosticNote.slice(0, 80), mediaRefs: getGroupMediaRefs(mediaIndex, "diagnostics") });
       appendGroupNote(details, "diagnostics", input.mediaGroupInspections, DIAGNOSTICS_TAGS as readonly { id: string; label: string; emoji: string }[], mediaIndex, input.customTags);
 
       penalty += seriousCount * 8 + minorCount * 4;
       const status = seriousCount > 0 ? "bad" : minorCount > 0 ? "warn" : "ok";
-      sections.push({ title: "Компьютерная диагностика", emoji: "•", status, required: false, details });
+      sections.push({ title: "Компьютерная диагностика", emoji: "🖥️", status, required: false, details });
     }
   }
 
@@ -659,7 +659,7 @@ export function generateSummary(input: SummaryInput): SummaryResult {
     if (!input.hasWheelsPhotos && !hasData && !input.wheelsNote) {
       details.push({ label: "Колёса и тормозные механизмы", value: "не осмотрены", severity: "minor" });
       penalty += 5;
-      sections.push({ title: "Колёса и тормозные механизмы", emoji: "•", status: "warn", required: false, details });
+      sections.push({ title: "Колёса и тормозные механизмы", emoji: "🛞", status: "warn", required: false, details });
     } else {
       const elements = MEDIA_GROUP_ELEMENTS.wheels;
       const allWheelsTags = WHEELS_DAMAGE_TAGS as readonly { id: string; label: string; emoji: string }[];
@@ -685,12 +685,12 @@ export function generateSummary(input: SummaryInput): SummaryResult {
         details.push({ label: "Колёса", value: "без замечаний", severity: "ok" });
       }
 
-      if (input.wheelsNote) details.push({ label: "Заметка", value: input.wheelsNote.slice(0, 60), mediaRefs: getGroupMediaRefs(mediaIndex, "wheels") });
+      if (input.wheelsNote) details.push({ label: "📝 Раздел", value: input.wheelsNote.slice(0, 60), mediaRefs: getGroupMediaRefs(mediaIndex, "wheels") });
       appendGroupNote(details, "wheels", input.mediaGroupInspections, WHEELS_DAMAGE_TAGS as readonly { id: string; label: string; emoji: string }[], mediaIndex, input.customTags);
 
       penalty += seriousCount * 8 + minorCount * 5;
       const status = seriousCount > 0 ? "bad" : minorCount > 0 ? "warn" : "ok";
-      sections.push({ title: "Колёса и тормозные механизмы", emoji: "•", status, required: false, details });
+      sections.push({ title: "Колёса и тормозные механизмы", emoji: "🛞", status, required: false, details });
     }
   }
 
@@ -700,7 +700,7 @@ export function generateSummary(input: SummaryInput): SummaryResult {
     if (input.tdConducted === false) {
       details.push({ label: "Тест-драйв", value: "не проводился", severity: "minor" });
       if (input.tdNote) details.push(`${input.tdNote.slice(0, 60)}`);
-      sections.push({ title: "Тест-драйв", emoji: "•", status: "ok", required: true, details });
+      sections.push({ title: "Тест-драйв", emoji: "🏁", status: "ok", required: true, details });
     } else {
       const tdSections: { label: string; ok: boolean; tags: string[] }[] = [
         { label: "ДВС на ходу", ok: input.tdEngineOk, tags: input.tdEngineTags },
@@ -724,7 +724,7 @@ export function generateSummary(input: SummaryInput): SummaryResult {
       penalty += totalDefects * 6;
       const allOk = tdSections.every(s => s.ok && s.tags.length === 0);
       const status = allOk ? "ok" : totalDefects > 3 ? "bad" : "warn";
-      sections.push({ title: "Тест-драйв", emoji: "•", status, required: true, details });
+      sections.push({ title: "Тест-драйв", emoji: "🏁", status, required: true, details });
     }
   }
 
@@ -732,7 +732,7 @@ export function generateSummary(input: SummaryInput): SummaryResult {
   const score = Math.max(0, Math.min(100, 100 - penalty));
   const verdict: SummaryResult["verdict"] = score >= 70 ? "recommended" : score >= 40 ? "with_reservations" : "not_recommended";
   const verdictLabel = verdict === "recommended" ? "Рекомендуется к покупке" : verdict === "with_reservations" ? "С оговорками" : "Не рекомендуется";
-  const verdictEmoji = verdict === "recommended" ? "✓" : verdict === "with_reservations" ? "!" : "✗";
+  const verdictEmoji = verdict === "recommended" ? "✅" : verdict === "with_reservations" ? "⚠️" : "🚫";
 
   return { verdict, verdictLabel, verdictEmoji, score, sections };
 }
