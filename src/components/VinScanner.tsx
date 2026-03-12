@@ -2,6 +2,7 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import { Camera, ImagePlus, Loader2, RotateCcw } from "lucide-react";
 import { motion } from "framer-motion";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
+import { convertHeicIfNeeded } from "@/lib/convertHeic";
 
 interface VinScannerProps {
   onResult: (vin: string) => void;
@@ -425,14 +426,18 @@ const VinScanner = ({ onResult, disabled }: VinScannerProps) => {
     }
   }, [reset, stopCamera]);
 
-  const handleFileChange = useCallback((event: React.ChangeEvent<HTMLInputElement>) => {
-    const file = event.target.files?.[0];
-    if (file) {
-      stopCamera();
-      void processImage(file);
-    }
-
+  const handleFileChange = useCallback(async (event: React.ChangeEvent<HTMLInputElement>) => {
+    const rawFile = event.target.files?.[0];
     event.target.value = "";
+    if (!rawFile) return;
+
+    stopCamera();
+    const converted = await convertHeicIfNeeded(rawFile);
+    if (converted) {
+      void processImage(converted);
+    } else {
+      setError("Не удалось обработать HEIC-файл. Сохраните фото как JPEG и попробуйте снова.");
+    }
   }, [processImage, stopCamera]);
 
   const handleCaptureFrame = useCallback(async () => {
@@ -480,8 +485,8 @@ const VinScanner = ({ onResult, disabled }: VinScannerProps) => {
       <input
         ref={fileRef}
         type="file"
-        accept="image/*"
-        capture="environment"
+      accept="image/*,.heic,.heif"
+      capture="environment"
         onChange={handleFileChange}
         className="hidden"
       />

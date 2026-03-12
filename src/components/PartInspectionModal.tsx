@@ -10,7 +10,7 @@ import { isPartStateFilled } from "@/lib/completionContract";
 import { resolveTag } from "@/lib/tagResolver";
 import EditablePaintValue from "@/components/EditablePaintValue";
 import { useUserTags } from "@/contexts/UserTagContext";
-import { convertHeicFiles } from "@/lib/convertHeic";
+import { normalizeUploadFiles } from "@/lib/media/normalizeUploadFile";
 
 interface PartInfo {
   id: string;
@@ -671,76 +671,54 @@ const PartInspectionModal = ({
       return;
     }
 
-    const { files, failedHeicNames } = await convertHeicFiles(Array.from(rawFiles));
-    if (failedHeicNames.length > 0) {
-      window.alert(`Не удалось обработать HEIC: ${failedHeicNames.join(", ")}. Сохраните фото как JPEG и попробуйте снова.`);
+    const { files: normalized, failedNames } = await normalizeUploadFiles(Array.from(rawFiles));
+    if (failedNames.length > 0) {
+      window.alert(`Не удалось обработать HEIC: ${failedNames.join(", ")}. Сохраните фото как JPEG и попробуйте снова.`);
     }
 
-    if (files.length === 0) {
-      e.target.value = "";
+    e.target.value = "";
+
+    if (normalized.length === 0) {
       setPendingTag(null);
       return;
     }
 
     const currentPendingTag = pendingTag;
-    let processedCount = 0;
-    const totalFiles = files.length;
-    const newPhotoUrls: string[] = [];
+    const newPhotoUrls = normalized.map((f) => f.objectUrl);
 
-    const finalize = () => {
-      if (processedCount !== totalFiles) return;
-      setStateMap((prev) => {
-        const partState = prev[activePart.id];
-        if (!partState) return prev;
+    setStateMap((prev) => {
+      const partState = prev[activePart.id];
+      if (!partState) return prev;
 
-        if (currentPendingTag && newPhotoUrls.length > 0) {
-          const newTags = partState.tags.includes(currentPendingTag)
-            ? partState.tags
-            : [...partState.tags, currentPendingTag];
-          const existingTagPhotos = partState.tagPhotos[currentPendingTag] || [];
-          return {
-            ...prev,
-            [activePart.id]: {
-              ...partState,
-              noDamage: false,
-              tags: newTags,
-              photos: [...partState.photos, ...newPhotoUrls],
-              tagPhotos: {
-                ...partState.tagPhotos,
-                [currentPendingTag]: [...existingTagPhotos, ...newPhotoUrls],
-              },
-            },
-          };
-        }
-
+      if (currentPendingTag && newPhotoUrls.length > 0) {
+        const newTags = partState.tags.includes(currentPendingTag)
+          ? partState.tags
+          : [...partState.tags, currentPendingTag];
+        const existingTagPhotos = partState.tagPhotos[currentPendingTag] || [];
         return {
           ...prev,
           [activePart.id]: {
             ...partState,
+            noDamage: false,
+            tags: newTags,
             photos: [...partState.photos, ...newPhotoUrls],
+            tagPhotos: {
+              ...partState.tagPhotos,
+              [currentPendingTag]: [...existingTagPhotos, ...newPhotoUrls],
+            },
           },
         };
-      });
-      setPendingTag(null);
-    };
+      }
 
-    files.forEach((file) => {
-      const reader = new FileReader();
-      reader.onload = (ev) => {
-        if (ev.target?.result) {
-          newPhotoUrls.push(ev.target.result as string);
-        }
-        processedCount++;
-        finalize();
+      return {
+        ...prev,
+        [activePart.id]: {
+          ...partState,
+          photos: [...partState.photos, ...newPhotoUrls],
+        },
       };
-      reader.onerror = () => {
-        console.error("FileReader failed for", file.name);
-        processedCount++;
-        finalize();
-      };
-      reader.readAsDataURL(file);
     });
-    e.target.value = "";
+    setPendingTag(null);
   };
 
   // General photo add button (no tag association)
@@ -1274,7 +1252,7 @@ const PartInspectionModal = ({
             <input
               ref={fileRef}
               type="file"
-              accept="image/*,image/heic,image/heif,video/*,.heic,.heif"
+              accept="image/*,.heic,.heif"
               multiple
               capture="environment"
               className="hidden"
